@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>123 Main St, City, State</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; }
+        .header { background: #0d173c; color: white; padding: 15px 20px; text-align: center; }
+        .hero { background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1200'); background-size: cover; background-position: center; min-height: 500px; display: flex; align-items: center; justify-content: center; color: white; text-align: center; padding: 60px 20px; }
+        .hero-content h1 { font-size: clamp(2em, 5vw, 3.5em); margin-bottom: 20px; text-shadow: 2px 2px 8px rgba(0,0,0,0.7); }
+        .price-tag { background: #0d173c; color: white; padding: 20px 50px; font-size: clamp(2em, 4vw, 3em); font-weight: bold; border-radius: 10px; display: inline-block; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+        .section { padding: 80px 20px; }
+        .section-dark { background: #f8f9fa; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .section-title { text-align: center; margin-bottom: 50px; }
+        .section-title h2 { font-size: clamp(2em, 4vw, 3em); color: #0d173c; margin-bottom: 15px; }
+        .underline { width: 80px; height: 4px; background: #0d173c; margin: 20px auto; }
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 30px; }
+        .feature-card { background: #0d173c; color: white; padding: 40px; text-align: center; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .feature-icon { font-size: 4em; margin-bottom: 20px; }
+        .feature-card h3 { font-size: 1.3em; margin-bottom: 15px; opacity: 0.9; }
+        .feature-card h4 { font-size: 2.5em; font-weight: bold; }
+        .contacts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 40px; margin-top: 50px; }
+        .contact-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15); transition: transform 0.3s; }
+        .contact-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.2); }
+        .contact-header { padding: 25px; color: white; text-align: center; }
+        .realtor-card .contact-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .loan-officer-card .contact-header { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .contact-icon { font-size: 3em; margin-bottom: 10px; }
+        .contact-header h3 { font-size: 1.8em; margin: 0; }
+        .contact-content { padding: 35px; text-align: center; }
+        .contact-photo-placeholder { width: 150px; height: 150px; border-radius: 50%; margin: 0 auto 25px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; border: 5px solid #f0f0f0; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .loan-officer-placeholder { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .photo-icon { font-size: 4em; color: white; }
+        .contact-info h4 { font-size: 2em; color: #2d3748; margin-bottom: 10px; }
+        .contact-info .company { font-size: 1.2em; color: #718096; margin-bottom: 15px; font-weight: 500; }
+        .contact-info .nmls { font-size: 0.95em; color: #e53e3e; font-weight: 600; margin-bottom: 15px; padding: 5px 12px; background: #fff5f5; border-radius: 20px; display: inline-block; }
+        .contact-detail { font-size: 1.1em; color: #4a5568; margin: 10px 0; }
+        .contact-btn { display: inline-block; margin-top: 25px; padding: 15px 40px; color: white; text-decoration: none; border-radius: 10px; font-size: 1.2em; font-weight: 600; transition: all 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .realtor-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .realtor-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4); }
+        .loan-officer-btn { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .loan-officer-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(240, 147, 251, 0.4); }
+        .footer { background: #2c3e50; color: white; text-align: center; padding: 40px 20px; }
+        @media (max-width: 968px) { .contacts-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .section { padding: 50px 15px; } .contact-content { padding: 25px 20px; } }
+    </style>
+</head>
+<body>
+    <div class="header"><strong>🏠 Premium Property Listing</strong></div>
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Your Dream Home Awaits!</h1>
+            <p>Beautiful property for sale....</p>
+            <div class="price-tag">$500,000</div>
+        </div>
+    </div>
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>123 Main St</h2>
+                <p style="font-size: 1.3em; color: #666;">City, State 00000</p>
+                <div class="underline"></div>
+            </div>
+            <div class="features">
+                <div class="feature-card"><div class="feature-icon">🛏️</div><h3>Bedrooms</h3><h4>3</h4></div>
+                <div class="feature-card"><div class="feature-icon">🚿</div><h3>Bathrooms</h3><h4>2</h4></div>
+                <div class="feature-card"><div class="feature-icon">📅</div><h3>Year Built</h3><h4>2000</h4></div>
+                <div class="feature-card"><div class="feature-icon">📏</div><h3>Square Feet</h3><h4>2000</h4></div>
+            </div>
+        </div>
+    </section>
+    <section class="section section-dark">
+        <div class="container">
+            <div class="section-title"><h2>Property Description</h2><div class="underline"></div></div>
+            <div style="background: white; padding: 50px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08);">
+                <p style="font-size: 1.2em; color: #555; line-height: 1.9;">Beautiful property for sale.</p>
+            </div>
+        </div>
+    </section>
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Your Real Estate Team</h2>
+                <div class="underline"></div>
+                <p style="font-size: 1.2em; color: #666;">We're here to help you every step of the way!</p>
+            </div>
+            <div class="contacts-grid"></div>
+        </div>
+    </section>
+    <footer class="footer">
+        <p>&copy; 2025 All rights reserved.</p>
+    </footer>
+</body>
+</html>
