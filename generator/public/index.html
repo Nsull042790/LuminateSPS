@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luminate Property Site Generator</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #0d173c;
+            --primary-light: #1a2a5e;
+            --accent: #667eea;
+            --accent-secondary: #f5576c;
+            --success: #28a745;
+            --error: #dc3545;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-600: #6c757d;
+            --gray-800: #343a40;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: var(--gray-100);
+            min-height: 100vh;
+            color: var(--gray-800);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .logo-icon {
+            font-size: 1.5em;
+        }
+
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .status-dot.disconnected {
+            background: var(--error);
+        }
+
+        /* Main Layout */
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+        }
+
+        @media (max-width: 1200px) {
+            .main {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                order: -1;
+            }
+        }
+
+        /* Form Sections */
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .section-icon {
+            font-size: 1.5em;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Form Elements */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 0.9em;
+            color: var(--gray-600);
+        }
+
+        .form-group label .required {
+            color: var(--error);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 15px;
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-group input.error,
+        .form-group select.error,
+        .form-group textarea.error {
+            border-color: var(--error);
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 0.85em;
+        }
+
+        /* Photo Upload */
+        .photo-upload-area {
+            border: 3px dashed var(--gray-300);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--gray-100);
+        }
+
+        .photo-upload-area:hover,
+        .photo-upload-area.dragover {
+            border-color: var(--accent);
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .photo-upload-area .upload-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .photo-upload-area h3 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .photo-upload-area p {
+            color: var(--gray-600);
+            font-size: 0.95em;
+        }
+
+        .photo-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .photo-preview-item {
+            position: relative;
+            aspect-ratio: 4/3;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .photo-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-preview-item .remove-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-preview-item .photo-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px;
+        }
+
+        .photo-preview-item .photo-label input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 0.85em;
+            padding: 0;
+        }
+
+        .photo-preview-item .photo-label input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* Contact Cards in Form */
+        .contact-form-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .contact-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2em;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-avatar.loan-officer {
+            background: linear-gradient(135deg, #f093fb 0%, var(--accent-secondary) 100%);
+        }
+
+        .contact-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .contact-avatar input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .contact-avatar-hint {
+            font-size: 0.85em;
+            color: var(--gray-600);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-card h3 {
+            font-size: 1.1em;
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-800);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Properties List */
+        .properties-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .property-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: var(--gray-100);
+        }
+
+        .property-item:hover {
+            background: var(--gray-200);
+        }
+
+        .property-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .property-link:hover {
+            text-decoration: underline;
+        }
+
+        .property-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .property-actions button {
+            padding: 6px 10px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: auto;
+        }
+
+        .modal-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            color: var(--primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: var(--gray-600);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* Success State */
+        .success-message {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .success-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .success-message h2 {
+            color: var(--success);
+            margin-bottom: 15px;
+        }
+
+        .success-message .site-url {
+            display: block;
+            background: var(--gray-100);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            word-break: break-all;
+        }
+
+        .success-message .site-url a {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--error); }
+        .toast.info { background: var(--accent); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">🏠</span>
+                <span>Luminate Property Site Generator</span>
+            </div>
+            <div class="header-status">
+                <span class="status-dot" id="github-status"></span>
+                <span id="github-status-text">Checking GitHub...</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="form-container">
+            <form id="property-form">
+                <!-- Property Information -->
+                <section class="form-section">
+                    <div class="section-header">
+                        <span class="section-icon">🏡</span>
+                        <h2 class="section-title">Property Information</h2>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Street Address <span class="required">*</span></label>
+                            <input type="text" name="property.address" placeholder="123 Main Street" required>
+                        </div>
+                        <div class="form-group">
+                            <label>City <span class="required">*</span></label>
+                            <input type="text" name="property.city" placeholder="Austin" required>
+                        </div>
+                        <div class="form-group">
+                            <label>State <span class="required">*</span></label>
+                            <input type="text" name="property.state" placeholder="TX" maxlength="2" required>
+                        </div>
+                        <div class="form-group">
+                            <label>ZIP Code <span class="required">*</span></label>
+                            <input type="text" name="property.zip" placeholder="78701" required>
+                        </div>
+                        <div class="form-group">
+                            <label>List Price <span class="required">*</span></label>
+                            <input type="text" name="property.price" placeholder="$500,000" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Bedrooms <span class="required">*</span></label>
+                            <input type="number" name="property.bedrooms" placeholder="3" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Bathrooms <span class="required">*</span></label>
+                            <input type="text" name="property.bathrooms" placeholder="2" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Square Feet <span class="required">*</span></label>
+                            <input type="text" name="property.sqft" placeholder="2,000" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Year Built <span class="required">*</span></label>
+                            <input type="number" name="property.yearBuilt" placeholder="2000" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Garage</label>
+                            <input type="text" name="property.garage" placeholder="2 Car Attached">
+                        </div>
+                        <div class="form-group">
+                            <label>Lot Size</label>
+                            <input type="text" name="property.lotSize" placeholder="0.25 Acres">
+                        </div>
+                        <div class="form-group">
+                            <label>MLS Number</label>
+                            <input type="text" name="property.mls" placeholder="MLS12345678">
+                        </div>
+                        <div class="form-group">
+                            <label>HOA Fees</label>
+                            <input type="text" name="property.hoa" placeholder="$150/month">
+                        </div>
+                        <div class="form-group">
+                            <label>Property Tax</label>
+                            <input type="text" name="property.taxes" placeholder="$5,200/year">
+                        </div>
+                        <div class="form-group">
+                            <label>Headline</label>
+                            <input type="text" name="property.headline" placeholder="Your Dream Home Awaits!">
+                        </div>
+                        <div class="form-group">
+                            <label>Virtual Tour URL</label>
+                            <input type="url" name="property.virtualTourUrl" placeholder="https://my.matterport.com/...">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Property Description <span class="required">*</span></label>
+                            <textarea name="property.description" placeholder="Describe the property features, neighborhood, and selling points..." required></textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Property Details -->
+                <section class="form-section">
+                    <div class="section-header">
+                        <span class="section-icon">📋</span>
+                        <h2 class="section-title">Additional Details</h2>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Flooring</label>
+                            <input type="text" name="property.flooring" placeholder="Hardwood, Tile">
+                        </div>
+                        <div class="form-group">
+                            <label>Heating</label>
+                            <input type="text" name="property.heating" placeholder="Central Forced Air">
+                        </div>
+                        <div class="form-group">
+                            <label>Cooling</label>
+                            <input type="text" name="property.cooling" placeholder="Central A/C">
+                        </div>
+                        <div class="form-group">
+                            <label>Fireplace</label>
+                            <input type="text" name="property.fireplace" placeholder="Yes (1)">
+                        </div>
+                        <div class="form-group">
+                            <label>Roof</label>
+                            <input type="text" name="property.roof" placeholder="Composition Shingle">
+                        </div>
+                        <div class="form-group">
+                            <label>Pool</label>
+                            <input type="text" name="property.pool" placeholder="No">
+                        </div>
+                        <div class="form-group">
+                            <label>Fencing</label>
+                            <input type="text" name="property.fencing" placeholder="Wood Privacy">
+                        </div>
+                        <div class="form-group">
+                            <label>Parking</label>
+                            <input type="text" name="property.parking" placeholder="4 Spaces">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Photo Upload -->
+                <section class="form-section">
+                    <div class="section-header">
+                        <span class="section-icon">📷</span>
+                        <h2 class="section-title">Property Photos</h2>
+                    </div>
+                    <div class="photo-upload-area" id="photo-upload-area">
+                        <input type="file" id="photo-input" multiple accept="image/*" hidden>
+                        <div class="upload-icon">📁</div>
+                        <h3>Drag & Drop Photos Here</h3>
+                        <p>or click to browse (max 20 photos, 10MB each)</p>
+                    </div>
+                    <div class="photo-preview-grid" id="photo-preview-grid"></div>
+                </section>
+
+                <!-- Realtor Information -->
+                <section class="form-section">
+                    <div class="section-header">
+                        <span class="section-icon">🏠</span>
+                        <h2 class="section-title">Realtor Information</h2>
+                    </div>
+                    <div class="contact-form-header">
+                        <div class="contact-avatar" id="realtor-avatar">
+                            <span>👤</span>
+                            <input type="file" accept="image/*" id="realtor-photo-input">
+                        </div>
+                        <div>
+                            <p class="contact-avatar-hint">Click to upload photo</p>
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Full Name <span class="required">*</span></label>
+                            <input type="text" name="realtor.name" placeholder="Sarah Johnson" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" name="realtor.title" placeholder="Licensed Real Estate Agent">
+                        </div>
+                        <div class="form-group">
+                            <label>Company <span class="required">*</span></label>
+                            <input type="text" name="realtor.company" placeholder="Premier Realty Group" required>
+                        </div>
+                        <div class="form-group">
+                            <label>License # <span class="required">*</span></label>
+                            <input type="text" name="realtor.license" placeholder="RE12345678" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone <span class="required">*</span></label>
+                            <input type="tel" name="realtor.phone" placeholder="(555) 123-4567" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email <span class="required">*</span></label>
+                            <input type="email" name="realtor.email" placeholder="sarah@premierrealty.com" required>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Loan Officer Information -->
+                <section class="form-section">
+                    <div class="section-header">
+                        <span class="section-icon">💰</span>
+                        <h2 class="section-title">Loan Officer Information</h2>
+                    </div>
+                    <div class="contact-form-header">
+                        <div class="contact-avatar loan-officer" id="lo-avatar">
+                            <span>👤</span>
+                            <input type="file" accept="image/*" id="lo-photo-input">
+                        </div>
+                        <div>
+                            <p class="contact-avatar-hint">Click to upload photo</p>
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Full Name <span class="required">*</span></label>
+                            <input type="text" name="loanOfficer.name" placeholder="Michael Chen" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" name="loanOfficer.title" placeholder="Senior Loan Officer">
+                        </div>
+                        <div class="form-group">
+                            <label>Company <span class="required">*</span></label>
+                            <input type="text" name="loanOfficer.company" placeholder="Luminate Home Loans" required>
+                        </div>
+                        <div class="form-group">
+                            <label>NMLS # <span class="required">*</span></label>
+                            <input type="text" name="loanOfficer.nmls" placeholder="987654" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone <span class="required">*</span></label>
+                            <input type="tel" name="loanOfficer.phone" placeholder="(555) 987-6543" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email <span class="required">*</span></label>
+                            <input type="email" name="loanOfficer.email" placeholder="mchen@luminateloans.com" required>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Neighborhood (Optional) -->
+                <section class="form-section">
+                    <div class="section-header">
+                        <span class="section-icon">🏘️</span>
+                        <h2 class="section-title">Neighborhood Info (Optional)</h2>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Schools Score</label>
+                            <input type="text" name="property.schoolsScore" placeholder="A+">
+                        </div>
+                        <div class="form-group">
+                            <label>Walk Score</label>
+                            <input type="text" name="property.walkScore" placeholder="78">
+                        </div>
+                        <div class="form-group">
+                            <label>Commute Score</label>
+                            <input type="text" name="property.commuteScore" placeholder="A">
+                        </div>
+                        <div class="form-group">
+                            <label>Shopping Score</label>
+                            <input type="text" name="property.shoppingScore" placeholder="A+">
+                        </div>
+                    </div>
+                </section>
+            </form>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-card">
+                <h3>🚀 Actions</h3>
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-primary" id="generate-btn">
+                        <span>Generate & Publish</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="preview-btn">
+                        👁️ Preview
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="clear-btn">
+                        🗑️ Clear Form
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar-card">
+                <h3>📁 Your Property Sites</h3>
+                <div class="properties-list" id="properties-list">
+                    <p style="color: var(--gray-600); font-size: 0.9em;">Loading...</p>
+                </div>
+            </div>
+
+            <div class="sidebar-card">
+                <h3>💡 Tips</h3>
+                <ul style="font-size: 0.9em; color: var(--gray-600); padding-left: 20px; line-height: 1.8;">
+                    <li>Upload high-quality photos (min 800px wide)</li>
+                    <li>First photo becomes the hero image</li>
+                    <li>Add labels to photos for the gallery</li>
+                    <li>Include a compelling property description</li>
+                    <li>Double-check contact information</li>
+                </ul>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Preview Modal -->
+    <div class="modal-overlay" id="preview-modal">
+        <div class="modal" style="max-width: 95%; max-height: 95%;">
+            <div class="modal-header">
+                <h2>Preview</h2>
+                <button class="modal-close" onclick="closePreview()">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 0; height: 70vh;">
+                <iframe id="preview-iframe" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closePreview()">Close</button>
+                <button class="btn btn-success" onclick="generateFromPreview()">✓ Publish This Site</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="success-modal">
+        <div class="modal">
+            <div class="modal-body">
+                <div class="success-message">
+                    <div class="success-icon">🎉</div>
+                    <h2>Site Published Successfully!</h2>
+                    <p>Your property website is now live.</p>
+                    <div class="site-url">
+                        <a href="#" id="success-url" target="_blank"></a>
+                    </div>
+                    <p style="color: var(--gray-600); font-size: 0.9em;">
+                        Note: It may take 1-2 minutes to appear on GitHub Pages.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeSuccessModal()">Close</button>
+                <button class="btn btn-primary" onclick="copySuccessUrl()">📋 Copy URL</button>
+                <a class="btn btn-success" id="success-link" href="#" target="_blank">🔗 Open Site</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // State
+        let uploadedPhotos = [];
+        let realtorPhoto = null;
+        let loanOfficerPhoto = null;
+        let githubConfigured = false;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkGitHubStatus();
+            loadProperties();
+            setupPhotoUpload();
+            setupContactPhotoUploads();
+            setupFormHandlers();
+        });
+
+        // Check GitHub configuration
+        async function checkGitHubStatus() {
+            try {
+                const res = await fetch('/api/config');
+                const data = await res.json();
+                githubConfigured = data.githubConfigured;
+
+                const statusDot = document.getElementById('github-status');
+                const statusText = document.getElementById('github-status-text');
+
+                if (githubConfigured) {
+                    statusDot.classList.remove('disconnected');
+                    statusText.textContent = `GitHub Connected: ${data.owner}/${data.repo}`;
+                } else {
+                    statusDot.classList.add('disconnected');
+                    statusText.textContent = 'GitHub not configured';
+                }
+            } catch (err) {
+                console.error('Error checking GitHub status:', err);
+            }
+        }
+
+        // Load existing properties
+        async function loadProperties() {
+            try {
+                const res = await fetch('/api/properties');
+                const data = await res.json();
+                const list = document.getElementById('properties-list');
+
+                if (data.properties && data.properties.length > 0) {
+                    list.innerHTML = data.properties.map(p => `
+                        <div class="property-item">
+                            <a href="${p.url}" target="_blank" class="property-link">${p.slug}</a>
+                            <div class="property-actions">
+                                <button onclick="copyUrl('${p.url}')" title="Copy URL">📋</button>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    list.innerHTML = '<p style="color: var(--gray-600); font-size: 0.9em;">No properties yet. Create your first one!</p>';
+                }
+            } catch (err) {
+                console.error('Error loading properties:', err);
+            }
+        }
+
+        // Photo upload handling
+        function setupPhotoUpload() {
+            const uploadArea = document.getElementById('photo-upload-area');
+            const photoInput = document.getElementById('photo-input');
+
+            uploadArea.addEventListener('click', () => photoInput.click());
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                handlePhotoFiles(e.dataTransfer.files);
+            });
+
+            photoInput.addEventListener('change', (e) => {
+                handlePhotoFiles(e.target.files);
+            });
+        }
+
+        async function handlePhotoFiles(files) {
+            const formData = new FormData();
+            for (const file of files) {
+                if (uploadedPhotos.length >= 20) {
+                    showToast('Maximum 20 photos allowed', 'error');
+                    break;
+                }
+                formData.append('photos', file);
+            }
+
+            try {
+                const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    for (const file of data.files) {
+                        uploadedPhotos.push({
+                            path: file.path,
+                            label: '',
+                            preview: file.path
+                        });
+                    }
+                    renderPhotoPreview();
+                    showToast(`${data.files.length} photo(s) uploaded`, 'success');
+                }
+            } catch (err) {
+                showToast('Error uploading photos', 'error');
+            }
+        }
+
+        function renderPhotoPreview() {
+            const grid = document.getElementById('photo-preview-grid');
+            grid.innerHTML = uploadedPhotos.map((photo, index) => `
+                <div class="photo-preview-item">
+                    <img src="${photo.preview}" alt="Photo ${index + 1}">
+                    <button class="remove-btn" onclick="removePhoto(${index})">&times;</button>
+                    <div class="photo-label">
+                        <input type="text" placeholder="Add label..." value="${photo.label}"
+                               onchange="updatePhotoLabel(${index}, this.value)">
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function removePhoto(index) {
+            uploadedPhotos.splice(index, 1);
+            renderPhotoPreview();
+        }
+
+        function updatePhotoLabel(index, label) {
+            uploadedPhotos[index].label = label;
+        }
+
+        // Contact photo uploads
+        function setupContactPhotoUploads() {
+            document.getElementById('realtor-photo-input').addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const formData = new FormData();
+                    formData.append('photos', file);
+                    const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                    const data = await res.json();
+                    if (data.success) {
+                        realtorPhoto = data.files[0].path;
+                        document.getElementById('realtor-avatar').innerHTML =
+                            `<img src="${realtorPhoto}" alt="Realtor"><input type="file" accept="image/*" id="realtor-photo-input">`;
+                        setupContactPhotoUploads();
+                    }
+                }
+            });
+
+            document.getElementById('lo-photo-input').addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const formData = new FormData();
+                    formData.append('photos', file);
+                    const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                    const data = await res.json();
+                    if (data.success) {
+                        loanOfficerPhoto = data.files[0].path;
+                        document.getElementById('lo-avatar').innerHTML =
+                            `<img src="${loanOfficerPhoto}" alt="Loan Officer"><input type="file" accept="image/*" id="lo-photo-input">`;
+                        setupContactPhotoUploads();
+                    }
+                }
+            });
+        }
+
+        // Form handlers
+        function setupFormHandlers() {
+            document.getElementById('generate-btn').addEventListener('click', generateSite);
+            document.getElementById('preview-btn').addEventListener('click', previewSite);
+            document.getElementById('clear-btn').addEventListener('click', clearForm);
+
+            // Format price input
+            const priceInput = document.querySelector('input[name="property.price"]');
+            priceInput.addEventListener('blur', function() {
+                const value = parseFloat(this.value.replace(/[$,]/g, '')) || 0;
+                if (value > 0) {
+                    this.value = '$' + value.toLocaleString();
+                }
+            });
+
+            // Format sqft input
+            const sqftInput = document.querySelector('input[name="property.sqft"]');
+            sqftInput.addEventListener('blur', function() {
+                const value = parseFloat(this.value.replace(/,/g, '')) || 0;
+                if (value > 0) {
+                    this.value = value.toLocaleString();
+                }
+            });
+        }
+
+        function getFormData() {
+            const form = document.getElementById('property-form');
+            const formData = new FormData(form);
+            const data = { property: {}, realtor: {}, loanOfficer: {}, photos: [], testimonials: [] };
+
+            for (const [key, value] of formData.entries()) {
+                const parts = key.split('.');
+                if (parts.length === 2) {
+                    data[parts[0]][parts[1]] = value;
+                }
+            }
+
+            // Parse numeric values
+            data.property.price = parseFloat(data.property.price?.replace(/[$,]/g, '')) || 0;
+            data.property.sqft = parseFloat(data.property.sqft?.replace(/,/g, '')) || 0;
+            data.property.bedrooms = parseInt(data.property.bedrooms) || 0;
+            data.property.yearBuilt = parseInt(data.property.yearBuilt) || 0;
+
+            // Add photos
+            data.photos = uploadedPhotos.map(p => ({ path: p.path, label: p.label }));
+
+            // Add contact photos
+            if (realtorPhoto) data.realtor.photo = realtorPhoto;
+            if (loanOfficerPhoto) data.loanOfficer.photo = loanOfficerPhoto;
+
+            return data;
+        }
+
+        async function generateSite() {
+            const btn = document.getElementById('generate-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Generating...';
+
+            try {
+                const data = getFormData();
+                const res = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+
+                if (result.success) {
+                    if (result.published) {
+                        document.getElementById('success-url').textContent = result.url;
+                        document.getElementById('success-url').href = result.url;
+                        document.getElementById('success-link').href = result.url;
+                        document.getElementById('success-modal').classList.add('active');
+                        loadProperties();
+                    } else {
+                        // Download HTML if not published
+                        const blob = new Blob([result.html], { type: 'text/html' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${result.propertySlug}.html`;
+                        a.click();
+                        showToast('HTML downloaded. Configure GitHub for auto-publishing.', 'info');
+                    }
+                } else {
+                    showToast(result.error || 'Error generating site', 'error');
+                }
+            } catch (err) {
+                showToast('Error generating site', 'error');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<span>Generate & Publish</span>';
+        }
+
+        async function previewSite() {
+            try {
+                const data = getFormData();
+                const res = await fetch('/api/preview', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+
+                if (result.success) {
+                    const iframe = document.getElementById('preview-iframe');
+                    iframe.srcdoc = result.html;
+                    document.getElementById('preview-modal').classList.add('active');
+                }
+            } catch (err) {
+                showToast('Error generating preview', 'error');
+            }
+        }
+
+        function closePreview() {
+            document.getElementById('preview-modal').classList.remove('active');
+        }
+
+        function generateFromPreview() {
+            closePreview();
+            generateSite();
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('success-modal').classList.remove('active');
+        }
+
+        function copySuccessUrl() {
+            const url = document.getElementById('success-url').href;
+            navigator.clipboard.writeText(url);
+            showToast('URL copied to clipboard!', 'success');
+        }
+
+        function copyUrl(url) {
+            navigator.clipboard.writeText(url);
+            showToast('URL copied!', 'success');
+        }
+
+        function clearForm() {
+            if (confirm('Are you sure you want to clear the form?')) {
+                document.getElementById('property-form').reset();
+                uploadedPhotos = [];
+                realtorPhoto = null;
+                loanOfficerPhoto = null;
+                renderPhotoPreview();
+                document.getElementById('realtor-avatar').innerHTML = '<span>👤</span><input type="file" accept="image/*" id="realtor-photo-input">';
+                document.getElementById('lo-avatar').innerHTML = '<span>👤</span><input type="file" accept="image/*" id="lo-photo-input">';
+                setupContactPhotoUploads();
+                showToast('Form cleared', 'info');
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
