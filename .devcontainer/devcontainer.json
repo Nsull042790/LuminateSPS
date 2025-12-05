@@ -25,12 +25,12 @@
     }
   },
   "secrets": {
-    "GITHUB_TOKEN": {
+    "GH_PAT": {
       "description": "GitHub Personal Access Token with 'repo' scope for publishing sites"
     }
   },
   "remoteEnv": {
-    "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}",
+    "GITHUB_TOKEN": "${localEnv:GH_PAT}",
     "GITHUB_OWNER": "Nsull042790",
     "GITHUB_REPO": "LuminateSPS",
     "GITHUB_BRANCH": "main",
