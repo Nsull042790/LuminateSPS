@@ -1,0 +1,39 @@
+{
+  "name": "Luminate Property Site Generator",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "postCreateCommand": "cd generator && npm install",
+  "postStartCommand": "cd generator && npm start",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "Property Site Generator",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+  "secrets": {
+    "GITHUB_TOKEN": {
+      "description": "GitHub Personal Access Token with 'repo' scope for publishing sites"
+    }
+  },
+  "remoteEnv": {
+    "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}",
+    "GITHUB_OWNER": "Nsull042790",
+    "GITHUB_REPO": "LuminateSPS",
+    "GITHUB_BRANCH": "main",
+    "PORT": "3000"
+  }
+}
