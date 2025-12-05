@@ -8,7 +8,8 @@ function generatePropertyHTML(data) {
     realtor,
     loanOfficer,
     photos,
-    testimonials = []
+    testimonials = [],
+    showNeighborhood = true
   } = data;
 
   // Format price with commas
@@ -414,6 +415,7 @@ ${galleryItems}
     </section>
     ` : ''}
 
+    ${showNeighborhood ? `
     <!-- Neighborhood -->
     <section class="section ${property.virtualTourUrl ? 'section-dark' : ''}">
         <div class="container">
@@ -450,6 +452,7 @@ ${galleryItems}
             </div>
         </div>
     </section>
+    ` : ''}
 
     <!-- Mortgage Calculator -->
     <section class="section section-dark" id="calculator">

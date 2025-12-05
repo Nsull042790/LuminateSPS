@@ -589,6 +589,76 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
+        /* Toggle Switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .toggle-label {
+            font-size: 0.9em;
+            color: var(--gray-600);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--gray-300);
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: var(--accent);
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        .collapsible-content {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+            opacity: 1;
+        }
+
+        .collapsible-content.hidden {
+            max-height: 0;
+            opacity: 0;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .form-grid {
@@ -844,9 +914,16 @@
                 <section class="form-section">
                     <div class="section-header">
                         <span class="section-icon">🏘️</span>
-                        <h2 class="section-title">Neighborhood Info (Optional)</h2>
+                        <h2 class="section-title">Neighborhood Info</h2>
+                        <div class="toggle-container">
+                            <span class="toggle-label">Show on site</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="show-neighborhood" name="showNeighborhood" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
                     </div>
-                    <div class="form-grid">
+                    <div class="form-grid collapsible-content" id="neighborhood-fields">
                         <div class="form-group">
                             <label>Schools Score</label>
                             <input type="text" name="property.schoolsScore" placeholder="A+">
@@ -1152,6 +1229,17 @@
                     this.value = value.toLocaleString();
                 }
             });
+
+            // Neighborhood toggle
+            const neighborhoodToggle = document.getElementById('show-neighborhood');
+            const neighborhoodFields = document.getElementById('neighborhood-fields');
+            neighborhoodToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    neighborhoodFields.classList.remove('hidden');
+                } else {
+                    neighborhoodFields.classList.add('hidden');
+                }
+            });
         }
 
         function getFormData() {
@@ -1178,6 +1266,9 @@
             // Add contact photos
             if (realtorPhoto) data.realtor.photo = realtorPhoto;
             if (loanOfficerPhoto) data.loanOfficer.photo = loanOfficerPhoto;
+
+            // Add section toggles
+            data.showNeighborhood = document.getElementById('show-neighborhood').checked;
 
             return data;
         }
