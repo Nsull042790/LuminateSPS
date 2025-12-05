@@ -29,7 +29,7 @@ function generatePropertyHTML(data) {
 
   // Generate photo gallery items
   const galleryItems = photos.map((photo, index) => `
-                <div class="gallery-item" onclick="openLightbox(${index})">
+                <div class="gallery-item" data-index="${index}">
                     <img src="${photo.url}" alt="${photo.label || 'Property Photo'}" loading="lazy">
                     <span class="gallery-label">${photo.label || 'Photo ' + (index + 1)}</span>
                 </div>`).join('\n');
@@ -343,10 +343,10 @@ ${galleryItems}
 
     <!-- Lightbox -->
     <div class="lightbox" id="lightbox">
-        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
-        <span class="lightbox-nav lightbox-prev" onclick="changeSlide(-1)">&#10094;</span>
+        <span class="lightbox-close" id="lightbox-close">&times;</span>
+        <span class="lightbox-nav lightbox-prev" id="lightbox-prev">&#10094;</span>
         <img src="" alt="Gallery Image" id="lightbox-img">
-        <span class="lightbox-nav lightbox-next" onclick="changeSlide(1)">&#10095;</span>
+        <span class="lightbox-nav lightbox-next" id="lightbox-next">&#10095;</span>
     </div>
 
     <!-- Property Description -->
@@ -581,12 +581,12 @@ ${testimonialCards}
     <div class="share-section">
         <h3>📤 Share This Property</h3>
         <div class="share-buttons">
-            <a href="#" class="share-btn share-facebook" onclick="shareOnFacebook()" title="Share on Facebook">f</a>
-            <a href="#" class="share-btn share-twitter" onclick="shareOnTwitter()" title="Share on Twitter">𝕏</a>
-            <a href="#" class="share-btn share-linkedin" onclick="shareOnLinkedIn()" title="Share on LinkedIn">in</a>
-            <a href="#" class="share-btn share-email" onclick="shareViaEmail()" title="Share via Email">✉</a>
-            <a href="#" class="share-btn share-sms" onclick="shareViaSMS()" title="Share via Text">💬</a>
-            <button class="share-btn share-copy" onclick="copyLink()" title="Copy Link">🔗</button>
+            <a href="#" class="share-btn share-facebook" id="share-facebook" title="Share on Facebook">f</a>
+            <a href="#" class="share-btn share-twitter" id="share-twitter" title="Share on Twitter">𝕏</a>
+            <a href="#" class="share-btn share-linkedin" id="share-linkedin" title="Share on LinkedIn">in</a>
+            <a href="#" class="share-btn share-email" id="share-email" title="Share via Email">✉</a>
+            <a href="#" class="share-btn share-sms" id="share-sms" title="Share via Text">💬</a>
+            <button class="share-btn share-copy" id="share-copy" title="Copy Link">🔗</button>
         </div>
 
         <!-- QR Code -->
@@ -635,111 +635,136 @@ ${testimonialCards}
     </footer>
 
     <script>
-        // Gallery Images Array
-        const galleryImages = [
-            ${galleryImagesJS}
-        ];
-        let currentSlide = 0;
+        (function() {
+            // Gallery Images Array
+            var galleryImages = [
+                ${galleryImagesJS}
+            ];
+            var currentSlide = 0;
 
-        // Lightbox Functions
-        function openLightbox(index) {
-            currentSlide = index;
-            document.getElementById('lightbox').classList.add('active');
-            document.getElementById('lightbox-img').src = galleryImages[index];
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeLightbox() {
-            document.getElementById('lightbox').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        function changeSlide(direction) {
-            currentSlide += direction;
-            if (currentSlide >= galleryImages.length) currentSlide = 0;
-            if (currentSlide < 0) currentSlide = galleryImages.length - 1;
-            document.getElementById('lightbox-img').src = galleryImages[currentSlide];
-        }
-
-        // Close lightbox on escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeLightbox();
-            if (e.key === 'ArrowRight') changeSlide(1);
-            if (e.key === 'ArrowLeft') changeSlide(-1);
-        });
-
-        // Mortgage Calculator
-        function calculateMortgage() {
-            const homePriceInput = document.getElementById('home-price').value;
-            const downPaymentInput = document.getElementById('down-payment').value;
-            const interestRate = parseFloat(document.getElementById('interest-rate').value) / 100 / 12;
-            const loanTerm = parseInt(document.getElementById('loan-term').value) * 12;
-
-            const homePrice = parseFloat(homePriceInput.replace(/[$,]/g, '')) || 0;
-            const downPayment = parseFloat(downPaymentInput.replace(/[$,]/g, '')) || 0;
-            const loanAmount = homePrice - downPayment;
-
-            if (loanAmount > 0 && interestRate > 0) {
-                const monthlyPayment = loanAmount * (interestRate * Math.pow(1 + interestRate, loanTerm)) / (Math.pow(1 + interestRate, loanTerm) - 1);
-                const totalPayment = monthlyPayment * loanTerm;
-                const totalInterest = totalPayment - loanAmount;
-
-                document.getElementById('monthly-payment').textContent = '$' + Math.round(monthlyPayment).toLocaleString();
-                document.getElementById('loan-amount').textContent = '$' + loanAmount.toLocaleString();
-                document.getElementById('total-interest').textContent = '$' + Math.round(totalInterest).toLocaleString();
-                document.getElementById('total-cost').textContent = '$' + Math.round(totalPayment).toLocaleString();
+            // Lightbox Functions
+            function openLightbox(index) {
+                currentSlide = index;
+                document.getElementById('lightbox').classList.add('active');
+                document.getElementById('lightbox-img').src = galleryImages[index];
+                document.body.style.overflow = 'hidden';
             }
-        }
 
-        // Format currency inputs
-        document.getElementById('home-price').addEventListener('blur', function() {
-            const value = parseFloat(this.value.replace(/[$,]/g, '')) || 0;
-            this.value = '$' + value.toLocaleString();
-            calculateMortgage();
-        });
+            function closeLightbox() {
+                document.getElementById('lightbox').classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
 
-        document.getElementById('down-payment').addEventListener('blur', function() {
-            const value = parseFloat(this.value.replace(/[$,]/g, '')) || 0;
-            this.value = '$' + value.toLocaleString();
-            calculateMortgage();
-        });
+            function changeSlide(direction) {
+                currentSlide += direction;
+                if (currentSlide >= galleryImages.length) currentSlide = 0;
+                if (currentSlide < 0) currentSlide = galleryImages.length - 1;
+                document.getElementById('lightbox-img').src = galleryImages[currentSlide];
+            }
 
-        // Share Functions
-        const pageUrl = encodeURIComponent(window.location.href);
-        const pageTitle = encodeURIComponent('Check out this property: ${property.address} - ${formatPrice(property.price)}');
-
-        function shareOnFacebook() {
-            window.open('https://www.facebook.com/sharer/sharer.php?u=' + pageUrl, '_blank', 'width=600,height=400');
-        }
-
-        function shareOnTwitter() {
-            window.open('https://twitter.com/intent/tweet?url=' + pageUrl + '&text=' + pageTitle, '_blank', 'width=600,height=400');
-        }
-
-        function shareOnLinkedIn() {
-            window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + pageUrl, '_blank', 'width=600,height=400');
-        }
-
-        function shareViaEmail() {
-            window.location.href = 'mailto:?subject=' + pageTitle + '&body=I thought you might be interested in this property: ' + decodeURIComponent(pageUrl);
-        }
-
-        function shareViaSMS() {
-            window.location.href = 'sms:?body=' + decodeURIComponent(pageTitle) + ' ' + decodeURIComponent(pageUrl);
-        }
-
-        function copyLink() {
-            navigator.clipboard.writeText(window.location.href).then(function() {
-                const notification = document.getElementById('copy-notification');
-                notification.classList.add('show');
-                setTimeout(function() {
-                    notification.classList.remove('show');
-                }, 2000);
+            // Gallery item click handlers
+            var galleryItems = document.querySelectorAll('.gallery-item');
+            galleryItems.forEach(function(item) {
+                item.addEventListener('click', function() {
+                    var index = parseInt(this.getAttribute('data-index'));
+                    openLightbox(index);
+                });
             });
-        }
 
-        // Initialize calculator on page load
-        calculateMortgage();
+            // Lightbox controls
+            document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+            document.getElementById('lightbox-prev').addEventListener('click', function() { changeSlide(-1); });
+            document.getElementById('lightbox-next').addEventListener('click', function() { changeSlide(1); });
+
+            // Close lightbox on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowRight') changeSlide(1);
+                if (e.key === 'ArrowLeft') changeSlide(-1);
+            });
+
+            // Mortgage Calculator
+            function calculateMortgage() {
+                var homePriceInput = document.getElementById('home-price').value;
+                var downPaymentInput = document.getElementById('down-payment').value;
+                var interestRate = parseFloat(document.getElementById('interest-rate').value) / 100 / 12;
+                var loanTerm = parseInt(document.getElementById('loan-term').value) * 12;
+
+                var homePrice = parseFloat(homePriceInput.replace(/[$,]/g, '')) || 0;
+                var downPayment = parseFloat(downPaymentInput.replace(/[$,]/g, '')) || 0;
+                var loanAmount = homePrice - downPayment;
+
+                if (loanAmount > 0 && interestRate > 0) {
+                    var monthlyPayment = loanAmount * (interestRate * Math.pow(1 + interestRate, loanTerm)) / (Math.pow(1 + interestRate, loanTerm) - 1);
+                    var totalPayment = monthlyPayment * loanTerm;
+                    var totalInterest = totalPayment - loanAmount;
+
+                    document.getElementById('monthly-payment').textContent = '$' + Math.round(monthlyPayment).toLocaleString();
+                    document.getElementById('loan-amount').textContent = '$' + loanAmount.toLocaleString();
+                    document.getElementById('total-interest').textContent = '$' + Math.round(totalInterest).toLocaleString();
+                    document.getElementById('total-cost').textContent = '$' + Math.round(totalPayment).toLocaleString();
+                }
+            }
+
+            // Format currency inputs
+            document.getElementById('home-price').addEventListener('blur', function() {
+                var value = parseFloat(this.value.replace(/[$,]/g, '')) || 0;
+                this.value = '$' + value.toLocaleString();
+                calculateMortgage();
+            });
+
+            document.getElementById('down-payment').addEventListener('blur', function() {
+                var value = parseFloat(this.value.replace(/[$,]/g, '')) || 0;
+                this.value = '$' + value.toLocaleString();
+                calculateMortgage();
+            });
+
+            // Calculator input change handlers
+            document.getElementById('interest-rate').addEventListener('change', calculateMortgage);
+            document.getElementById('loan-term').addEventListener('change', calculateMortgage);
+
+            // Share Functions
+            var pageUrl = encodeURIComponent(window.location.href);
+            var pageTitle = encodeURIComponent('Check out this property: ${property.address} - ${formatPrice(property.price)}');
+
+            document.getElementById('share-facebook').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.open('https://www.facebook.com/sharer/sharer.php?u=' + pageUrl, '_blank', 'width=600,height=400');
+            });
+
+            document.getElementById('share-twitter').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.open('https://twitter.com/intent/tweet?url=' + pageUrl + '&text=' + pageTitle, '_blank', 'width=600,height=400');
+            });
+
+            document.getElementById('share-linkedin').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + pageUrl, '_blank', 'width=600,height=400');
+            });
+
+            document.getElementById('share-email').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'mailto:?subject=' + pageTitle + '&body=I thought you might be interested in this property: ' + decodeURIComponent(pageUrl);
+            });
+
+            document.getElementById('share-sms').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'sms:?body=' + decodeURIComponent(pageTitle) + ' ' + decodeURIComponent(pageUrl);
+            });
+
+            document.getElementById('share-copy').addEventListener('click', function() {
+                navigator.clipboard.writeText(window.location.href).then(function() {
+                    var notification = document.getElementById('copy-notification');
+                    notification.classList.add('show');
+                    setTimeout(function() {
+                        notification.classList.remove('show');
+                    }, 2000);
+                });
+            });
+
+            // Initialize calculator on page load
+            calculateMortgage();
+        })();
     </script>
 </body>
 </html>`;
