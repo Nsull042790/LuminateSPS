@@ -987,14 +987,14 @@
         <div class="modal" style="max-width: 95%; max-height: 95%;">
             <div class="modal-header">
                 <h2>Preview</h2>
-                <button class="modal-close" onclick="closePreview()">&times;</button>
+                <button class="modal-close" id="preview-close-btn">&times;</button>
             </div>
             <div class="modal-body" style="padding: 0; height: 70vh;">
                 <iframe id="preview-iframe" style="width: 100%; height: 100%; border: none;"></iframe>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closePreview()">Close</button>
-                <button class="btn btn-success" onclick="generateFromPreview()">✓ Publish This Site</button>
+                <button class="btn btn-secondary" id="preview-close-btn-footer">Close</button>
+                <button class="btn btn-success" id="preview-publish-btn">✓ Publish This Site</button>
             </div>
         </div>
     </div>
@@ -1016,8 +1016,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeSuccessModal()">Close</button>
-                <button class="btn btn-primary" onclick="copySuccessUrl()">📋 Copy URL</button>
+                <button class="btn btn-secondary" id="success-close-btn">Close</button>
+                <button class="btn btn-primary" id="success-copy-btn">📋 Copy URL</button>
                 <a class="btn btn-success" id="success-link" href="#" target="_blank">🔗 Open Site</a>
             </div>
         </div>
@@ -1040,7 +1040,20 @@
             setupPhotoUpload();
             setupContactPhotoUploads();
             setupFormHandlers();
+            setupModalHandlers();
         });
+
+        // Set up modal button event listeners
+        function setupModalHandlers() {
+            // Preview modal handlers
+            document.getElementById('preview-close-btn').addEventListener('click', closePreview);
+            document.getElementById('preview-close-btn-footer').addEventListener('click', closePreview);
+            document.getElementById('preview-publish-btn').addEventListener('click', generateFromPreview);
+
+            // Success modal handlers
+            document.getElementById('success-close-btn').addEventListener('click', closeSuccessModal);
+            document.getElementById('success-copy-btn').addEventListener('click', copySuccessUrl);
+        }
 
         // Check GitHub configuration
         async function checkGitHubStatus() {
@@ -1168,13 +1181,26 @@
             grid.innerHTML = uploadedPhotos.map((photo, index) => `
                 <div class="photo-preview-item">
                     <img src="${photo.preview}" alt="Photo ${index + 1}">
-                    <button class="remove-btn" onclick="removePhoto(${index})">&times;</button>
+                    <button class="remove-btn" data-index="${index}">&times;</button>
                     <div class="photo-label">
-                        <input type="text" placeholder="Add label..." value="${photo.label}"
-                               onchange="updatePhotoLabel(${index}, this.value)">
+                        <input type="text" placeholder="Add label..." value="${photo.label}" data-index="${index}">
                     </div>
                 </div>
             `).join('');
+
+            // Add event listeners for remove buttons
+            grid.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    removePhoto(parseInt(this.getAttribute('data-index')));
+                });
+            });
+
+            // Add event listeners for label inputs
+            grid.querySelectorAll('.photo-label input').forEach(input => {
+                input.addEventListener('change', function() {
+                    updatePhotoLabel(parseInt(this.getAttribute('data-index')), this.value);
+                });
+            });
         }
 
         function removePhoto(index) {
