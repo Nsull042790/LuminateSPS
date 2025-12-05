@@ -1076,10 +1076,25 @@
                         <div class="property-item">
                             <a href="${p.url}" target="_blank" class="property-link">${p.slug}</a>
                             <div class="property-actions">
-                                <button onclick="copyUrl('${p.url}')" title="Copy URL">📋</button>
+                                <button class="copy-btn" data-url="${p.url}" title="Copy URL">📋</button>
+                                <button class="delete-btn" data-slug="${p.slug}" title="Delete" style="color: var(--error);">🗑️</button>
                             </div>
                         </div>
                     `).join('');
+
+                    // Add event listeners for copy buttons
+                    list.querySelectorAll('.copy-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            copyUrl(this.getAttribute('data-url'));
+                        });
+                    });
+
+                    // Add event listeners for delete buttons
+                    list.querySelectorAll('.delete-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            deleteProperty(this.getAttribute('data-slug'));
+                        });
+                    });
                 } else {
                     list.innerHTML = '<p style="color: var(--gray-600); font-size: 0.9em;">No properties yet. Create your first one!</p>';
                 }
@@ -1359,6 +1374,29 @@
         function copyUrl(url) {
             navigator.clipboard.writeText(url);
             showToast('URL copied!', 'success');
+        }
+
+        async function deleteProperty(slug) {
+            if (!confirm(`Are you sure you want to delete "${slug}"? This cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/properties/${slug}`, {
+                    method: 'DELETE'
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('Property deleted successfully', 'success');
+                    loadProperties(); // Refresh the list
+                } else {
+                    showToast(data.error || 'Error deleting property', 'error');
+                }
+            } catch (err) {
+                showToast('Error deleting property', 'error');
+                console.error('Delete error:', err);
+            }
         }
 
         function clearForm() {
