@@ -9,6 +9,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {{ standard_header_includes }}
 
   {% set row = dynamic_page_hubdb_row %}
   {% set photos = row.photos|fromjson if row.photos else [] %}
@@ -477,5 +478,6 @@
       });
     });
   </script>
+  {{ standard_footer_includes }}
 </body>
 </html>
