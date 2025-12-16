@@ -1,6 +1,12 @@
-{# Get current user info from HubSpot #}
-{% set user_email = request.contact.email|default(request.query_dict.email, '') %}
-{% set user_name = request.contact.firstname|default('', '') ~ ' ' ~ request.contact.lastname|default('', '') %}
+{# Get current user info from HubSpot or URL parameter #}
+{% if request.contact.email %}
+  {% set user_email = request.contact.email %}
+{% elif request.query_dict.email %}
+  {% set user_email = request.query_dict.email %}
+{% else %}
+  {% set user_email = '' %}
+{% endif %}
+{% set user_name = request.contact.firstname|default('') ~ ' ' ~ request.contact.lastname|default('') %}
 
 <div class="property-generator" id="property-generator"
      data-user-email="{{ user_email }}"
