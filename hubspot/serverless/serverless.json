@@ -1,0 +1,34 @@
+{
+  "runtime": "nodejs18.x",
+  "version": "1.0",
+  "environment": {
+    "HUBSPOT_PORTAL_ID": "{{ secrets.HUBSPOT_PORTAL_ID }}",
+    "HUBSPOT_PRIVATE_APP_TOKEN": "{{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}"
+  },
+  "endpoints": {
+    "upload-file": {
+      "method": "POST",
+      "file": "functions/upload-file.js",
+      "path": "/upload-file"
+    },
+    "create-page": {
+      "method": "POST",
+      "file": "functions/create-page.js",
+      "path": "/create-page"
+    },
+    "list-pages": {
+      "method": "GET",
+      "file": "functions/list-pages.js",
+      "path": "/list-pages"
+    },
+    "delete-page": {
+      "method": "DELETE",
+      "file": "functions/delete-page.js",
+      "path": "/delete-page"
+    }
+  },
+  "secrets": [
+    "HUBSPOT_PORTAL_ID",
+    "HUBSPOT_PRIVATE_APP_TOKEN"
+  ]
+}
