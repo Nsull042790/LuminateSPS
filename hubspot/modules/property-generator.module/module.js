@@ -1,4 +1,4 @@
-// Property Generator Module JavaScript v2.1
+// Property Generator Module JavaScript v2.2 - Added Social Sharing
 // Uses HubSpot Serverless Functions for API calls
 (function() {
   var uploadedPhotos = [];
@@ -374,9 +374,30 @@
     }
     galleryJs += '];';
 
+    // Page URL and description for sharing
+    var pageTitle = p.address + ', ' + p.city + ', ' + p.state + ' - $' + p.price.toLocaleString();
+    var pageDescription = p.bedrooms + ' bed, ' + p.bathrooms + ' bath, ' + p.sqft.toLocaleString() + ' sq ft home in ' + p.city + ', ' + p.state + '. ' + (p.description ? p.description.substring(0, 150) : 'Beautiful property for sale.');
+    var heroImage = photos[0] ? photos[0].url : '';
+
     var html = '<!DOCTYPE html><html lang="en"><head>';
     html += '<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">';
-    html += '<title>' + p.address + ', ' + p.city + ', ' + p.state + '</title>';
+    html += '<title>' + pageTitle + '</title>';
+    html += '<meta name="description" content="' + pageDescription + '">';
+
+    // Open Graph Tags (Facebook, LinkedIn)
+    html += '<meta property="og:type" content="website">';
+    html += '<meta property="og:title" content="' + pageTitle + '">';
+    html += '<meta property="og:description" content="' + pageDescription + '">';
+    html += '<meta property="og:image" content="' + heroImage + '">';
+    html += '<meta property="og:image:width" content="1200">';
+    html += '<meta property="og:image:height" content="630">';
+
+    // Twitter Card Tags
+    html += '<meta name="twitter:card" content="summary_large_image">';
+    html += '<meta name="twitter:title" content="' + pageTitle + '">';
+    html += '<meta name="twitter:description" content="' + pageDescription + '">';
+    html += '<meta name="twitter:image" content="' + heroImage + '">';
+
     html += '<style>';
     html += '* { margin: 0; padding: 0; box-sizing: border-box; }';
     html += 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.6; color: #333; }';
@@ -438,6 +459,25 @@
     html += '.lightbox-prev { left: 20px; }';
     html += '.lightbox-next { right: 20px; }';
 
+    // Share buttons
+    html += '.share-bar { background: white; padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }';
+    html += '.share-bar-title { font-weight: 600; color: #4a5568; }';
+    html += '.share-buttons { display: flex; gap: 10px; flex-wrap: wrap; }';
+    html += '.share-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 14px; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; border: none; }';
+    html += '.share-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }';
+    html += '.share-btn-facebook { background: #1877f2; color: white; }';
+    html += '.share-btn-twitter { background: #000000; color: white; }';
+    html += '.share-btn-linkedin { background: #0a66c2; color: white; }';
+    html += '.share-btn-email { background: #ea4335; color: white; }';
+    html += '.share-btn-sms { background: #25d366; color: white; }';
+    html += '.share-btn-copy { background: #6b7280; color: white; }';
+    html += '.share-btn svg { width: 18px; height: 18px; fill: currentColor; }';
+    html += '@media (max-width: 768px) { .share-bar { padding: 12px 20px; } .share-btn span { display: none; } .share-btn { padding: 10px; } }';
+
+    // Copy toast notification
+    html += '.copy-toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0d173c; color: white; padding: 12px 24px; border-radius: 8px; font-weight: 500; opacity: 0; transition: opacity 0.3s; z-index: 1001; }';
+    html += '.copy-toast.show { opacity: 1; }';
+
     html += '</style></head><body>';
 
     // Hero Section
@@ -451,6 +491,49 @@
     if (p.sqft) html += '<div class="stat"><div class="stat-value">' + p.sqft.toLocaleString() + '</div><div class="stat-label">Sq Ft</div></div>';
     if (p.yearBuilt) html += '<div class="stat"><div class="stat-value">' + p.yearBuilt + '</div><div class="stat-label">Year Built</div></div>';
     html += '</div></div></div></section>';
+
+    // Share Bar - prepare share URLs (URL is injected dynamically via JS when page loads)
+    var shareText = encodeURIComponent(pageTitle);
+    var shareDesc = encodeURIComponent(pageDescription);
+
+    html += '<div class="share-bar">';
+    html += '<span class="share-bar-title">Share this property:</span>';
+    html += '<div class="share-buttons">';
+
+    // Facebook - uses current URL
+    html += '<a href="https://www.facebook.com/sharer/sharer.php?u=" class="share-btn share-btn-facebook" target="_blank" rel="noopener" id="share-facebook">';
+    html += '<svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>';
+    html += '<span>Facebook</span></a>';
+
+    // Twitter/X
+    html += '<a href="https://twitter.com/intent/tweet?text=' + shareText + '&url=" class="share-btn share-btn-twitter" target="_blank" rel="noopener" id="share-twitter">';
+    html += '<svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>';
+    html += '<span>Tweet</span></a>';
+
+    // LinkedIn
+    html += '<a href="https://www.linkedin.com/sharing/share-offsite/?url=" class="share-btn share-btn-linkedin" target="_blank" rel="noopener" id="share-linkedin">';
+    html += '<svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>';
+    html += '<span>LinkedIn</span></a>';
+
+    // Email
+    html += '<a href="mailto:?subject=' + shareText + '&body=Check out this property: " class="share-btn share-btn-email" id="share-email">';
+    html += '<svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>';
+    html += '<span>Email</span></a>';
+
+    // SMS (great for mobile)
+    html += '<a href="sms:?body=' + shareText + ' - " class="share-btn share-btn-sms" id="share-sms">';
+    html += '<svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>';
+    html += '<span>Text</span></a>';
+
+    // Copy Link
+    html += '<button class="share-btn share-btn-copy" id="copy-link-btn">';
+    html += '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
+    html += '<span>Copy Link</span></button>';
+
+    html += '</div></div>';
+
+    // Copy toast
+    html += '<div class="copy-toast" id="copy-toast">Link copied to clipboard!</div>';
 
     // Gallery Section
     if (photos.length > 0) {
@@ -567,6 +650,33 @@
     html += 'document.getElementById("lightbox-prev").addEventListener("click", function() { currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length; document.getElementById("lightbox-img").src = galleryImages[currentIndex]; });';
     html += 'document.getElementById("lightbox-next").addEventListener("click", function() { currentIndex = (currentIndex + 1) % galleryImages.length; document.getElementById("lightbox-img").src = galleryImages[currentIndex]; });';
     html += 'document.getElementById("lightbox").addEventListener("click", function(e) { if (e.target === this) this.classList.remove("active"); });';
+
+    // Share buttons - update with current URL
+    html += '(function() {';
+    html += '  var pageUrl = encodeURIComponent(window.location.href);';
+    html += '  var fbBtn = document.getElementById("share-facebook");';
+    html += '  var twBtn = document.getElementById("share-twitter");';
+    html += '  var liBtn = document.getElementById("share-linkedin");';
+    html += '  var emBtn = document.getElementById("share-email");';
+    html += '  var smsBtn = document.getElementById("share-sms");';
+    html += '  if (fbBtn) fbBtn.href = fbBtn.href + pageUrl;';
+    html += '  if (twBtn) twBtn.href = twBtn.href + pageUrl;';
+    html += '  if (liBtn) liBtn.href = liBtn.href + pageUrl;';
+    html += '  if (emBtn) emBtn.href = emBtn.href + window.location.href;';
+    html += '  if (smsBtn) smsBtn.href = smsBtn.href + window.location.href;';
+
+    // Copy link button
+    html += '  var copyBtn = document.getElementById("copy-link-btn");';
+    html += '  var copyToast = document.getElementById("copy-toast");';
+    html += '  if (copyBtn) {';
+    html += '    copyBtn.addEventListener("click", function() {';
+    html += '      navigator.clipboard.writeText(window.location.href).then(function() {';
+    html += '        copyToast.classList.add("show");';
+    html += '        setTimeout(function() { copyToast.classList.remove("show"); }, 2000);';
+    html += '      });';
+    html += '    });';
+    html += '  }';
+    html += '})();';
 
     html += '</script></body></html>';
 
