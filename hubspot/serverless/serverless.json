@@ -3,13 +3,29 @@
   "version": "1.0",
   "environment": {
     "HUBSPOT_PORTAL_ID": "{{ secrets.HUBSPOT_PORTAL_ID }}",
-    "HUBSPOT_PRIVATE_APP_TOKEN": "{{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}"
+    "HUBSPOT_PRIVATE_APP_TOKEN": "{{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}",
+    "HUBDB_TABLE_ID": "{{ secrets.HUBDB_TABLE_ID }}"
   },
   "endpoints": {
     "upload-file": {
       "method": "POST",
       "file": "functions/upload-file.js",
       "path": "/upload-file"
+    },
+    "create-property": {
+      "method": "POST",
+      "file": "functions/create-property.js",
+      "path": "/create-property"
+    },
+    "list-properties": {
+      "method": "GET",
+      "file": "functions/list-properties.js",
+      "path": "/list-properties"
+    },
+    "delete-property": {
+      "method": "DELETE",
+      "file": "functions/delete-property.js",
+      "path": "/delete-property"
     },
     "create-page": {
       "method": "POST",
@@ -29,6 +45,7 @@
   },
   "secrets": [
     "HUBSPOT_PORTAL_ID",
-    "HUBSPOT_PRIVATE_APP_TOKEN"
+    "HUBSPOT_PRIVATE_APP_TOKEN",
+    "HUBDB_TABLE_ID"
   ]
 }

@@ -1,6 +1,17 @@
-<div class="property-generator" id="property-generator">
+{# Get current user info from HubSpot #}
+{% set user_email = request.contact.email|default(request.query_dict.email, '') %}
+{% set user_name = request.contact.firstname|default('', '') ~ ' ' ~ request.contact.lastname|default('', '') %}
+
+<div class="property-generator" id="property-generator"
+     data-user-email="{{ user_email }}"
+     data-user-name="{{ user_name|trim }}">
   <div class="pg-header">
-    <h1>🏠 Property Site Generator <span class="version">v2.0</span></h1>
+    <h1>Property Site Generator <span class="version">v3.0</span></h1>
+    {% if user_email %}
+    <p class="pg-user-info">Logged in as: {{ user_email }}</p>
+    {% else %}
+    <p class="pg-user-warning">Please log in to create properties</p>
+    {% endif %}
   </div>
 
   <div class="pg-container">
@@ -177,9 +188,9 @@
 
       <!-- Action Buttons -->
       <div class="pg-actions">
-        <button type="button" id="preview-btn" class="btn btn-secondary">👁️ Preview</button>
-        <button type="button" id="generate-btn" class="btn btn-primary">🚀 Generate & Publish</button>
-        <button type="button" id="clear-btn" class="btn btn-outline">🗑️ Clear Form</button>
+        <button type="button" id="preview-btn" class="btn btn-secondary">Preview</button>
+        <button type="button" id="generate-btn" class="btn btn-primary">Create Property Site</button>
+        <button type="button" id="clear-btn" class="btn btn-outline">Clear Form</button>
       </div>
     </form>
 
