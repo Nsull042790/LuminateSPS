@@ -9,38 +9,31 @@
   "endpoints": {
     "upload-file": {
       "method": "POST",
-      "file": "functions/upload-file.js",
-      "path": "/upload-file"
+      "file": "functions/upload-file.js"
     },
     "create-property": {
       "method": "POST",
-      "file": "functions/create-property.js",
-      "path": "/create-property"
+      "file": "functions/create-property.js"
     },
     "list-properties": {
       "method": "GET",
-      "file": "functions/list-properties.js",
-      "path": "/list-properties"
+      "file": "functions/list-properties.js"
     },
     "delete-property": {
       "method": "DELETE",
-      "file": "functions/delete-property.js",
-      "path": "/delete-property"
+      "file": "functions/delete-property.js"
     },
     "create-page": {
       "method": "POST",
-      "file": "functions/create-page.js",
-      "path": "/create-page"
+      "file": "functions/create-page.js"
     },
     "list-pages": {
       "method": "GET",
-      "file": "functions/list-pages.js",
-      "path": "/list-pages"
+      "file": "functions/list-pages.js"
     },
     "delete-page": {
       "method": "DELETE",
-      "file": "functions/delete-page.js",
-      "path": "/delete-page"
+      "file": "functions/delete-page.js"
     }
   },
   "secrets": [
