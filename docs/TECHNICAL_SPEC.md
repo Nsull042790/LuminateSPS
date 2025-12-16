@@ -1,7 +1,7 @@
 # Property Site Generator - Technical Specification
 
 **Version:** 3.0
-**Last Updated:** December 2024
+**Last Updated:** December 2025
 **Purpose:** Co-branded property marketing pages for Loan Officers and Realtors
 
 ---
