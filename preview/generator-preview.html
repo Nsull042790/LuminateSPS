@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Site Generator - Preview</title>
+  <style>
+    /* Reset */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #e2e8f0;
+      min-height: 100vh;
+    }
+
+    /* Generator Styles */
+    .property-generator {
+      --primary: #0d173c;
+      --primary-light: #1a2a5e;
+      --accent: #667eea;
+      --success: #10b981;
+      --error: #ef4444;
+      --gray-100: #f7fafc;
+      --gray-200: #edf2f7;
+      --gray-600: #718096;
+      max-width: 1400px;
+      margin: 20px auto;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+
+    .pg-header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 20px 30px;
+    }
+
+    .pg-header h1 {
+      margin: 0;
+      font-size: 1.5em;
+    }
+
+    .pg-header .version {
+      font-size: 0.5em;
+      opacity: 0.7;
+      margin-left: 10px;
+    }
+
+    .pg-user-info {
+      font-size: 0.85em;
+      opacity: 0.8;
+      margin-top: 5px;
+    }
+
+    .pg-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 30px;
+      padding: 30px;
+      background: var(--gray-100);
+    }
+
+    @media (max-width: 900px) {
+      .pg-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .pg-section {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .pg-section h2 {
+      color: var(--primary);
+      font-size: 1.1em;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pg-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .pg-field {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pg-field.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .pg-field label {
+      font-size: 0.85em;
+      font-weight: 600;
+      color: var(--gray-600);
+      margin-bottom: 5px;
+    }
+
+    .pg-field input,
+    .pg-field textarea,
+    .pg-field select {
+      padding: 10px 12px;
+      border: 2px solid var(--gray-200);
+      border-radius: 8px;
+      font-size: 0.95em;
+      transition: border-color 0.2s;
+    }
+
+    .pg-field input:focus,
+    .pg-field textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* Photo Upload */
+    .pg-upload-area {
+      border: 2px dashed var(--gray-200);
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pg-upload-area:hover {
+      border-color: var(--accent);
+      background: rgba(102, 126, 234, 0.05);
+    }
+
+    .pg-upload-area .upload-icon {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .pg-upload-area .upload-hint {
+      font-size: 0.8em;
+      color: var(--gray-600);
+    }
+
+    .pg-photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    /* Contact Cards */
+    .pg-contact-card {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .pg-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2em;
+      cursor: pointer;
+      flex-shrink: 0;
+      overflow: hidden;
+      position: relative;
+      color: white;
+    }
+
+    .pg-avatar.loan-officer {
+      background: linear-gradient(135deg, #11998e, #38ef7d);
+    }
+
+    .pg-avatar input {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .pg-contact-card .pg-grid {
+      flex: 1;
+    }
+
+    /* Toggle */
+    .pg-toggle {
+      position: relative;
+      width: 50px;
+      height: 26px;
+      margin-left: auto;
+    }
+
+    .pg-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--gray-200);
+      border-radius: 26px;
+      transition: 0.3s;
+    }
+
+    .toggle-slider:before {
+      content: "";
+      position: absolute;
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    .pg-toggle input:checked + .toggle-slider {
+      background: var(--accent);
+    }
+
+    .pg-toggle input:checked + .toggle-slider:before {
+      transform: translateX(24px);
+    }
+
+    /* Buttons */
+    .pg-actions {
+      display: flex;
+      gap: 15px;
+      padding: 20px 0;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #764ba2);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--gray-200);
+      color: var(--primary);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--gray-200);
+      color: var(--gray-600);
+    }
+
+    /* Sidebar */
+    .pg-sidebar {
+      position: sticky;
+      top: 20px;
+    }
+
+    .pg-sidebar-section {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .pg-sidebar-section h3 {
+      color: var(--primary);
+      margin-bottom: 15px;
+    }
+
+    .no-sites {
+      color: var(--gray-600);
+      font-size: 0.9em;
+    }
+
+    .site-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border-radius: 8px;
+      background: var(--gray-100);
+      margin-bottom: 8px;
+      gap: 10px;
+    }
+
+    .site-item .site-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .site-item .site-name {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.9em;
+      font-weight: 500;
+      display: block;
+    }
+
+    .site-item .site-price {
+      font-size: 0.8em;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .site-item .actions button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+      font-size: 1.1em;
+      opacity: 0.7;
+    }
+
+    /* Modal */
+    .pg-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pg-modal.active {
+      display: flex;
+    }
+
+    .pg-modal-content {
+      background: white;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow: auto;
+    }
+
+    .pg-modal-content.large {
+      max-width: 95%;
+      height: 90vh;
+    }
+
+    .pg-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .pg-modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: var(--gray-600);
+    }
+
+    .pg-modal-body {
+      padding: 20px;
+    }
+
+    .pg-modal-body.centered {
+      text-align: center;
+    }
+
+    .pg-modal-body iframe {
+      width: 100%;
+      height: calc(90vh - 140px);
+      border: none;
+    }
+
+    .pg-modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 20px;
+      border-top: 1px solid var(--gray-200);
+    }
+
+    .success-icon {
+      font-size: 4em;
+      margin-bottom: 20px;
+    }
+
+    .success-link {
+      display: block;
+      padding: 15px;
+      background: var(--gray-100);
+      border-radius: 8px;
+      color: var(--accent);
+      margin: 15px 0;
+      word-break: break-all;
+    }
+
+    /* Toast */
+    #toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1001;
+    }
+
+    .toast {
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-top: 10px;
+      color: white;
+      animation: slideIn 0.3s ease;
+    }
+
+    .toast.success { background: var(--success); }
+    .toast.error { background: var(--error); }
+    .toast.info { background: var(--accent); }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Preview Banner */
+    .preview-banner {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+      text-align: center;
+      padding: 12px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-banner">
+  PREVIEW MODE - This is a static preview. Buttons will not function until deployed to HubSpot.
+</div>
+
+<div class="property-generator" id="property-generator">
+  <div class="pg-header">
+    <h1>Property Site Generator <span class="version">v3.0</span></h1>
+    <p class="pg-user-info">Logged in as: demo@luminate.com</p>
+  </div>
+
+  <div class="pg-container">
+    <form id="property-form" class="pg-form">
+
+      <!-- Property Information -->
+      <section class="pg-section">
+        <h2>🏡 Property Information</h2>
+        <div class="pg-grid">
+          <div class="pg-field full-width">
+            <label>Street Address *</label>
+            <input type="text" name="address" placeholder="123 Main Street" value="1234 Sunset Boulevard">
+          </div>
+          <div class="pg-field">
+            <label>City *</label>
+            <input type="text" name="city" placeholder="City" value="Los Angeles">
+          </div>
+          <div class="pg-field">
+            <label>State *</label>
+            <input type="text" name="state" placeholder="State" value="CA">
+          </div>
+          <div class="pg-field">
+            <label>ZIP Code *</label>
+            <input type="text" name="zip" placeholder="12345" value="90028">
+          </div>
+          <div class="pg-field">
+            <label>Price *</label>
+            <input type="text" name="price" placeholder="$450,000" value="$1,250,000">
+          </div>
+          <div class="pg-field">
+            <label>Bedrooms</label>
+            <input type="number" name="bedrooms" placeholder="3" value="4">
+          </div>
+          <div class="pg-field">
+            <label>Bathrooms</label>
+            <input type="text" name="bathrooms" placeholder="2.5" value="3.5">
+          </div>
+          <div class="pg-field">
+            <label>Square Feet</label>
+            <input type="text" name="sqft" placeholder="2,500" value="3,200">
+          </div>
+          <div class="pg-field">
+            <label>Year Built</label>
+            <input type="number" name="yearBuilt" placeholder="2020" value="2019">
+          </div>
+          <div class="pg-field">
+            <label>MLS #</label>
+            <input type="text" name="mlsNumber" placeholder="MLS123456" value="MLS789012">
+          </div>
+          <div class="pg-field full-width">
+            <label>Property Description</label>
+            <textarea name="description" rows="4" placeholder="Describe this beautiful property...">Stunning modern home in the heart of Hollywood with panoramic city views. This meticulously designed residence features an open floor plan, gourmet kitchen with premium appliances, and a resort-style backyard with pool and spa.</textarea>
+          </div>
+          <div class="pg-field full-width">
+            <label>Key Features (comma separated)</label>
+            <input type="text" name="features" placeholder="Hardwood floors, Updated kitchen, Large backyard" value="Smart home technology, Wine cellar, Home theater, 3-car garage, Solar panels">
+          </div>
+        </div>
+      </section>
+
+      <!-- Photo Upload -->
+      <section class="pg-section">
+        <h2>📷 Property Photos</h2>
+        <div class="pg-upload-area" id="photo-upload-area">
+          <input type="file" id="photo-input" multiple accept="image/*" hidden>
+          <div class="upload-icon">📁</div>
+          <p>Drag & drop photos here or click to browse</p>
+          <p class="upload-hint">Max 20 photos, 10MB each</p>
+        </div>
+        <div class="pg-photo-grid" id="photo-preview">
+          <!-- Sample preview thumbnails -->
+          <div style="background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 8px; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; color: white;">Photo 1</div>
+          <div style="background: linear-gradient(135deg, #11998e, #38ef7d); border-radius: 8px; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; color: white;">Photo 2</div>
+          <div style="background: linear-gradient(135deg, #ee0979, #ff6a00); border-radius: 8px; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; color: white;">Photo 3</div>
+        </div>
+      </section>
+
+      <!-- Realtor Information -->
+      <section class="pg-section">
+        <h2>🏠 Realtor Information</h2>
+        <div class="pg-contact-card">
+          <div class="pg-avatar" id="realtor-avatar">
+            <span>👤</span>
+            <input type="file" accept="image/*" id="realtor-photo-input">
+          </div>
+          <div class="pg-grid">
+            <div class="pg-field">
+              <label>Name *</label>
+              <input type="text" name="realtorName" placeholder="Jane Smith" value="Sarah Johnson">
+            </div>
+            <div class="pg-field">
+              <label>Title</label>
+              <input type="text" name="realtorTitle" placeholder="Licensed Realtor" value="Senior Real Estate Agent">
+            </div>
+            <div class="pg-field">
+              <label>Company</label>
+              <input type="text" name="realtorCompany" value="Luminate Realty">
+            </div>
+            <div class="pg-field">
+              <label>Phone</label>
+              <input type="tel" name="realtorPhone" placeholder="(555) 123-4567" value="(310) 555-1234">
+            </div>
+            <div class="pg-field">
+              <label>Email</label>
+              <input type="email" name="realtorEmail" placeholder="jane@realty.com" value="sarah@luminaterealty.com">
+            </div>
+            <div class="pg-field">
+              <label>License #</label>
+              <input type="text" name="realtorLicense" placeholder="DRE# 12345678" value="DRE# 02145678">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Loan Officer Information -->
+      <section class="pg-section">
+        <h2>💰 Loan Officer Information</h2>
+        <div class="pg-contact-card">
+          <div class="pg-avatar loan-officer" id="lo-avatar">
+            <span>👤</span>
+            <input type="file" accept="image/*" id="lo-photo-input">
+          </div>
+          <div class="pg-grid">
+            <div class="pg-field">
+              <label>Name *</label>
+              <input type="text" name="loName" placeholder="John Doe" value="Michael Chen">
+            </div>
+            <div class="pg-field">
+              <label>Title</label>
+              <input type="text" name="loTitle" placeholder="Senior Loan Officer" value="VP of Mortgage Lending">
+            </div>
+            <div class="pg-field">
+              <label>Company</label>
+              <input type="text" name="loCompany" value="Luminate Mortgage">
+            </div>
+            <div class="pg-field">
+              <label>Phone</label>
+              <input type="tel" name="loPhone" placeholder="(555) 987-6543" value="(310) 555-5678">
+            </div>
+            <div class="pg-field">
+              <label>Email</label>
+              <input type="email" name="loEmail" placeholder="john@mortgage.com" value="michael@luminatemortgage.com">
+            </div>
+            <div class="pg-field">
+              <label>NMLS #</label>
+              <input type="text" name="loNmls" placeholder="NMLS# 123456" value="NMLS# 987654">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Neighborhood (Optional) -->
+      <section class="pg-section">
+        <h2>🏘️ Neighborhood Info
+          <label class="pg-toggle">
+            <input type="checkbox" id="show-neighborhood" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </h2>
+        <div id="neighborhood-fields" class="pg-grid">
+          <div class="pg-field">
+            <label>Walk Score</label>
+            <input type="number" name="walkScore" placeholder="85" min="0" max="100" value="92">
+          </div>
+          <div class="pg-field">
+            <label>Transit Score</label>
+            <input type="number" name="transitScore" placeholder="72" min="0" max="100" value="78">
+          </div>
+          <div class="pg-field">
+            <label>Bike Score</label>
+            <input type="number" name="bikeScore" placeholder="68" min="0" max="100" value="85">
+          </div>
+          <div class="pg-field full-width">
+            <label>Nearby Amenities (comma separated)</label>
+            <input type="text" name="amenities" placeholder="Whole Foods, Central Park, Metro Station" value="Runyon Canyon, Hollywood Bowl, Trader Joe's, Metro Red Line">
+          </div>
+        </div>
+      </section>
+
+      <!-- Action Buttons -->
+      <div class="pg-actions">
+        <button type="button" id="preview-btn" class="btn btn-secondary" onclick="showPreviewModal()">Preview</button>
+        <button type="button" id="generate-btn" class="btn btn-primary" onclick="showSuccessModal()">Create Property Site</button>
+        <button type="button" id="clear-btn" class="btn btn-outline">Clear Form</button>
+      </div>
+    </form>
+
+    <!-- Sidebar -->
+    <aside class="pg-sidebar">
+      <div class="pg-sidebar-section">
+        <h3>📄 My Properties</h3>
+        <div id="sites-list">
+          <div class="site-item">
+            <div class="site-info">
+              <a href="#" class="site-name">456 Oak Avenue, Beverly Hills</a>
+              <span class="site-price">$2,450,000</span>
+            </div>
+            <div class="actions">
+              <button title="Copy URL">📋</button>
+              <button title="Delete">🗑️</button>
+            </div>
+          </div>
+          <div class="site-item">
+            <div class="site-info">
+              <a href="#" class="site-name">789 Palm Drive, Malibu</a>
+              <span class="site-price">$3,800,000</span>
+            </div>
+            <div class="actions">
+              <button title="Copy URL">📋</button>
+              <button title="Delete">🗑️</button>
+            </div>
+          </div>
+          <div class="site-item">
+            <div class="site-info">
+              <a href="#" class="site-name">321 Vine Street, Hollywood</a>
+              <span class="site-price">$975,000</span>
+            </div>
+            <div class="actions">
+              <button title="Copy URL">📋</button>
+              <button title="Delete">🗑️</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Preview Modal -->
+  <div class="pg-modal" id="preview-modal">
+    <div class="pg-modal-content large">
+      <div class="pg-modal-header">
+        <h2>Preview</h2>
+        <button class="pg-modal-close" onclick="closeModal('preview-modal')">&times;</button>
+      </div>
+      <div class="pg-modal-body">
+        <iframe id="preview-iframe"></iframe>
+      </div>
+      <div class="pg-modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('preview-modal')">Close</button>
+        <button class="btn btn-primary" onclick="closeModal('preview-modal'); showSuccessModal();">✓ Publish This Site</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="pg-modal" id="success-modal">
+    <div class="pg-modal-content">
+      <div class="pg-modal-body centered">
+        <div class="success-icon">🎉</div>
+        <h2>Site Published!</h2>
+        <p>Your property site is now live:</p>
+        <a href="#" class="success-link">https://12345.hs-sites.com/properties/1234-sunset-boulevard-los-angeles</a>
+        <p style="color: #718096; font-size: 0.85em;">It may take a minute to appear.</p>
+      </div>
+      <div class="pg-modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('success-modal')">Close</button>
+        <button class="btn btn-primary" onclick="showToast('URL copied!', 'success')">📋 Copy URL</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+</div>
+
+<script>
+  // Simple preview functionality
+  function showPreviewModal() {
+    var modal = document.getElementById('preview-modal');
+    var iframe = document.getElementById('preview-iframe');
+
+    // Generate preview HTML
+    var previewHTML = generatePreviewHTML();
+    iframe.srcdoc = previewHTML;
+    modal.classList.add('active');
+  }
+
+  function showSuccessModal() {
+    document.getElementById('success-modal').classList.add('active');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+  }
+
+  function showToast(message, type) {
+    var container = document.getElementById('toast-container');
+    var toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    toast.textContent = message;
+    container.appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 3000);
+  }
+
+  function generatePreviewHTML() {
+    var form = document.getElementById('property-form');
+    var address = form.querySelector('[name="address"]').value;
+    var city = form.querySelector('[name="city"]').value;
+    var state = form.querySelector('[name="state"]').value;
+    var zip = form.querySelector('[name="zip"]').value;
+    var price = form.querySelector('[name="price"]').value;
+    var beds = form.querySelector('[name="bedrooms"]').value;
+    var baths = form.querySelector('[name="bathrooms"]').value;
+    var sqft = form.querySelector('[name="sqft"]').value;
+    var description = form.querySelector('[name="description"]').value;
+    var realtorName = form.querySelector('[name="realtorName"]').value;
+    var realtorTitle = form.querySelector('[name="realtorTitle"]').value;
+    var loName = form.querySelector('[name="loName"]').value;
+    var loTitle = form.querySelector('[name="loTitle"]').value;
+
+    return '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>' +
+      '* { margin: 0; padding: 0; box-sizing: border-box; }' +
+      'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.6; color: #333; }' +
+      '.hero { position: relative; height: 60vh; background: linear-gradient(135deg, #667eea, #764ba2); }' +
+      '.hero-overlay { position: absolute; inset: 0; background: linear-gradient(transparent 40%, rgba(0,0,0,0.85)); display: flex; align-items: flex-end; padding: 40px; }' +
+      '.hero-content { color: white; max-width: 900px; }' +
+      '.hero h1 { font-size: 2.5em; margin-bottom: 10px; }' +
+      '.hero .price { font-size: 2.2em; color: #667eea; font-weight: bold; margin-top: 15px; }' +
+      '.stats { display: flex; gap: 40px; margin-top: 20px; }' +
+      '.stat { text-align: center; }' +
+      '.stat-value { font-size: 1.6em; font-weight: bold; }' +
+      '.stat-label { font-size: 0.85em; opacity: 0.8; }' +
+      '.share-bar { background: white; padding: 15px 40px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }' +
+      '.share-btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; }' +
+      '.share-btn.fb { background: #1877f2; color: white; }' +
+      '.share-btn.tw { background: #000; color: white; }' +
+      '.share-btn.li { background: #0a66c2; color: white; }' +
+      '.section { padding: 50px 40px; max-width: 1200px; margin: 0 auto; }' +
+      '.section-dark { background: #f7fafc; }' +
+      '.section-title { font-size: 1.8em; color: #0d173c; margin-bottom: 25px; border-left: 4px solid #667eea; padding-left: 15px; }' +
+      '.description { font-size: 1.1em; line-height: 1.8; color: #4a5568; }' +
+      '.contacts { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }' +
+      '.contact-card { background: white; border-radius: 16px; padding: 25px; display: flex; gap: 20px; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }' +
+      '.contact-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 2em; color: white; }' +
+      '.contact-avatar.lo { background: linear-gradient(135deg, #11998e, #38ef7d); }' +
+      '.contact-info h3 { color: #0d173c; }' +
+      '.contact-info .title { color: #667eea; font-weight: 600; }' +
+      '.contact-info p { color: #718096; font-size: 0.9em; margin: 3px 0; }' +
+      '.footer { background: #0d173c; color: white; padding: 40px; text-align: center; }' +
+      '</style></head><body>' +
+      '<section class="hero"><div class="hero-overlay"><div class="hero-content">' +
+      '<h1>' + address + '</h1>' +
+      '<p style="opacity:0.9;">' + city + ', ' + state + ' ' + zip + '</p>' +
+      '<div class="price">' + price + '</div>' +
+      '<div class="stats">' +
+      '<div class="stat"><div class="stat-value">' + beds + '</div><div class="stat-label">Bedrooms</div></div>' +
+      '<div class="stat"><div class="stat-value">' + baths + '</div><div class="stat-label">Bathrooms</div></div>' +
+      '<div class="stat"><div class="stat-value">' + sqft + '</div><div class="stat-label">Sq Ft</div></div>' +
+      '</div></div></div></section>' +
+      '<div class="share-bar"><span style="font-weight:600;color:#4a5568;">Share:</span>' +
+      '<button class="share-btn fb">Facebook</button>' +
+      '<button class="share-btn tw">Tweet</button>' +
+      '<button class="share-btn li">LinkedIn</button></div>' +
+      '<section class="section"><h2 class="section-title">About This Property</h2>' +
+      '<p class="description">' + description + '</p></section>' +
+      '<section class="section section-dark"><h2 class="section-title">Contact Us</h2>' +
+      '<div class="contacts">' +
+      '<div class="contact-card"><div class="contact-avatar">👤</div><div class="contact-info"><h3>' + realtorName + '</h3><p class="title">' + realtorTitle + '</p><p>📞 (310) 555-1234</p><p>✉️ email@example.com</p></div></div>' +
+      '<div class="contact-card"><div class="contact-avatar lo">👤</div><div class="contact-info"><h3>' + loName + '</h3><p class="title" style="color:#11998e;">' + loTitle + '</p><p>📞 (310) 555-5678</p><p>✉️ email@example.com</p></div></div>' +
+      '</div></section>' +
+      '<footer class="footer"><p>© 2024 Luminate Realty & Luminate Mortgage</p><p style="opacity:0.7;font-size:0.85em;margin-top:15px;">Equal Housing Opportunity</p></footer>' +
+      '</body></html>';
+  }
+
+  // Toggle neighborhood section
+  document.getElementById('show-neighborhood').addEventListener('change', function() {
+    var fields = document.getElementById('neighborhood-fields');
+    if (this.checked) {
+      fields.classList.remove('hidden');
+    } else {
+      fields.classList.add('hidden');
+    }
+  });
+</script>
+
+</body>
+</html>
