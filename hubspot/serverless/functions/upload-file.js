@@ -1,6 +1,6 @@
 // HubSpot Serverless Function - Upload File to File Manager
-const https = require('https');
-const FormData = require('form-data');
+// Uses @hubspot/api-client which is available in serverless environment
+const hubspot = require('@hubspot/api-client');
 
 exports.main = async (context, sendResponse) => {
   const { file, fileName, folderPath } = context.body;
@@ -15,11 +15,32 @@ exports.main = async (context, sendResponse) => {
   try {
     const accessToken = process.env.HUBSPOT_PRIVATE_APP_TOKEN;
 
+    // Initialize HubSpot client
+    const hubspotClient = new hubspot.Client({ accessToken });
+
     // Convert base64 file to buffer
     const fileBuffer = Buffer.from(file, 'base64');
 
-    // Upload to HubSpot File Manager
-    const response = await uploadToHubSpot(accessToken, fileBuffer, fileName, folderPath || '/property-generator');
+    // Create file upload options
+    const options = {
+      access: 'PUBLIC_INDEXABLE',
+      overwrite: false,
+      duplicateValidationStrategy: 'NONE',
+      duplicateValidationScope: 'ENTIRE_PORTAL'
+    };
+
+    // Upload file using HubSpot API client
+    const response = await hubspotClient.files.filesApi.upload(
+      {
+        data: fileBuffer,
+        name: fileName
+      },
+      folderPath || '/property-generator',
+      undefined, // folderId
+      fileName,
+      undefined, // charsetHunch
+      JSON.stringify(options)
+    );
 
     sendResponse({
       statusCode: 200,
@@ -33,50 +54,7 @@ exports.main = async (context, sendResponse) => {
     console.error('Upload error:', error);
     sendResponse({
       statusCode: 500,
-      body: { error: error.message }
+      body: { error: error.message || 'Upload failed' }
     });
   }
 };
-
-async function uploadToHubSpot(accessToken, fileBuffer, fileName, folderPath) {
-  return new Promise((resolve, reject) => {
-    const options = {
-      hostname: 'api.hubapi.com',
-      path: '/files/v3/files',
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`
-      }
-    };
-
-    const form = new FormData();
-    form.append('file', fileBuffer, { filename: fileName });
-    form.append('options', JSON.stringify({
-      access: 'PUBLIC_INDEXABLE',
-      overwrite: false
-    }));
-    form.append('folderPath', folderPath);
-
-    Object.assign(options.headers, form.getHeaders());
-
-    const req = https.request(options, (res) => {
-      let data = '';
-      res.on('data', (chunk) => data += chunk);
-      res.on('end', () => {
-        try {
-          const result = JSON.parse(data);
-          if (result.url) {
-            resolve(result);
-          } else {
-            reject(new Error(result.message || 'Upload failed'));
-          }
-        } catch (e) {
-          reject(e);
-        }
-      });
-    });
-
-    req.on('error', reject);
-    form.pipe(req);
-  });
-}
