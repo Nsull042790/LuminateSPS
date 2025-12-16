@@ -1,0 +1,233 @@
+<div class="property-generator" id="property-generator">
+  <div class="pg-header">
+    <h1>🏠 Property Site Generator <span class="version">v2.0</span></h1>
+  </div>
+
+  <div class="pg-container">
+    <form id="property-form" class="pg-form">
+
+      <!-- Property Information -->
+      <section class="pg-section">
+        <h2>🏡 Property Information</h2>
+        <div class="pg-grid">
+          <div class="pg-field full-width">
+            <label>Street Address *</label>
+            <input type="text" name="address" required placeholder="123 Main Street">
+          </div>
+          <div class="pg-field">
+            <label>City *</label>
+            <input type="text" name="city" required placeholder="City">
+          </div>
+          <div class="pg-field">
+            <label>State *</label>
+            <input type="text" name="state" required placeholder="State">
+          </div>
+          <div class="pg-field">
+            <label>ZIP Code *</label>
+            <input type="text" name="zip" required placeholder="12345">
+          </div>
+          <div class="pg-field">
+            <label>Price *</label>
+            <input type="text" name="price" required placeholder="$450,000">
+          </div>
+          <div class="pg-field">
+            <label>Bedrooms</label>
+            <input type="number" name="bedrooms" placeholder="3">
+          </div>
+          <div class="pg-field">
+            <label>Bathrooms</label>
+            <input type="text" name="bathrooms" placeholder="2.5">
+          </div>
+          <div class="pg-field">
+            <label>Square Feet</label>
+            <input type="text" name="sqft" placeholder="2,500">
+          </div>
+          <div class="pg-field">
+            <label>Year Built</label>
+            <input type="number" name="yearBuilt" placeholder="2020">
+          </div>
+          <div class="pg-field">
+            <label>MLS #</label>
+            <input type="text" name="mlsNumber" placeholder="MLS123456">
+          </div>
+          <div class="pg-field full-width">
+            <label>Property Description</label>
+            <textarea name="description" rows="4" placeholder="Describe this beautiful property..."></textarea>
+          </div>
+          <div class="pg-field full-width">
+            <label>Key Features (comma separated)</label>
+            <input type="text" name="features" placeholder="Hardwood floors, Updated kitchen, Large backyard">
+          </div>
+        </div>
+      </section>
+
+      <!-- Photo Upload -->
+      <section class="pg-section">
+        <h2>📷 Property Photos</h2>
+        <div class="pg-upload-area" id="photo-upload-area">
+          <input type="file" id="photo-input" multiple accept="image/*" hidden>
+          <div class="upload-icon">📁</div>
+          <p>Drag & drop photos here or click to browse</p>
+          <p class="upload-hint">Max 20 photos, 10MB each</p>
+        </div>
+        <div class="pg-photo-grid" id="photo-preview"></div>
+      </section>
+
+      <!-- Realtor Information -->
+      <section class="pg-section">
+        <h2>🏠 Realtor Information</h2>
+        <div class="pg-contact-card">
+          <div class="pg-avatar" id="realtor-avatar">
+            <span>👤</span>
+            <input type="file" accept="image/*" id="realtor-photo-input">
+          </div>
+          <div class="pg-grid">
+            <div class="pg-field">
+              <label>Name *</label>
+              <input type="text" name="realtorName" required placeholder="Jane Smith">
+            </div>
+            <div class="pg-field">
+              <label>Title</label>
+              <input type="text" name="realtorTitle" placeholder="Licensed Realtor">
+            </div>
+            <div class="pg-field">
+              <label>Company</label>
+              <input type="text" name="realtorCompany" value="{{ module.default_realtor_company }}">
+            </div>
+            <div class="pg-field">
+              <label>Phone</label>
+              <input type="tel" name="realtorPhone" placeholder="(555) 123-4567">
+            </div>
+            <div class="pg-field">
+              <label>Email</label>
+              <input type="email" name="realtorEmail" placeholder="jane@realty.com">
+            </div>
+            <div class="pg-field">
+              <label>License #</label>
+              <input type="text" name="realtorLicense" placeholder="DRE# 12345678">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Loan Officer Information -->
+      <section class="pg-section">
+        <h2>💰 Loan Officer Information</h2>
+        <div class="pg-contact-card">
+          <div class="pg-avatar loan-officer" id="lo-avatar">
+            <span>👤</span>
+            <input type="file" accept="image/*" id="lo-photo-input">
+          </div>
+          <div class="pg-grid">
+            <div class="pg-field">
+              <label>Name *</label>
+              <input type="text" name="loName" required placeholder="John Doe">
+            </div>
+            <div class="pg-field">
+              <label>Title</label>
+              <input type="text" name="loTitle" placeholder="Senior Loan Officer">
+            </div>
+            <div class="pg-field">
+              <label>Company</label>
+              <input type="text" name="loCompany" value="{{ module.default_lo_company }}">
+            </div>
+            <div class="pg-field">
+              <label>Phone</label>
+              <input type="tel" name="loPhone" placeholder="(555) 987-6543">
+            </div>
+            <div class="pg-field">
+              <label>Email</label>
+              <input type="email" name="loEmail" placeholder="john@mortgage.com">
+            </div>
+            <div class="pg-field">
+              <label>NMLS #</label>
+              <input type="text" name="loNmls" placeholder="NMLS# 123456">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Neighborhood (Optional) -->
+      <section class="pg-section">
+        <h2>🏘️ Neighborhood Info
+          <label class="pg-toggle">
+            <input type="checkbox" id="show-neighborhood" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </h2>
+        <div id="neighborhood-fields" class="pg-grid">
+          <div class="pg-field">
+            <label>Walk Score</label>
+            <input type="number" name="walkScore" placeholder="85" min="0" max="100">
+          </div>
+          <div class="pg-field">
+            <label>Transit Score</label>
+            <input type="number" name="transitScore" placeholder="72" min="0" max="100">
+          </div>
+          <div class="pg-field">
+            <label>Bike Score</label>
+            <input type="number" name="bikeScore" placeholder="68" min="0" max="100">
+          </div>
+          <div class="pg-field full-width">
+            <label>Nearby Amenities (comma separated)</label>
+            <input type="text" name="amenities" placeholder="Whole Foods, Central Park, Metro Station">
+          </div>
+        </div>
+      </section>
+
+      <!-- Action Buttons -->
+      <div class="pg-actions">
+        <button type="button" id="preview-btn" class="btn btn-secondary">👁️ Preview</button>
+        <button type="button" id="generate-btn" class="btn btn-primary">🚀 Generate & Publish</button>
+        <button type="button" id="clear-btn" class="btn btn-outline">🗑️ Clear Form</button>
+      </div>
+    </form>
+
+    <!-- Sidebar -->
+    <aside class="pg-sidebar">
+      <div class="pg-sidebar-section">
+        <h3>📄 Generated Sites</h3>
+        <div id="sites-list">
+          <p class="no-sites">No sites generated yet</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Preview Modal -->
+  <div class="pg-modal" id="preview-modal">
+    <div class="pg-modal-content large">
+      <div class="pg-modal-header">
+        <h2>Preview</h2>
+        <button class="pg-modal-close" id="preview-close">&times;</button>
+      </div>
+      <div class="pg-modal-body">
+        <iframe id="preview-iframe"></iframe>
+      </div>
+      <div class="pg-modal-footer">
+        <button class="btn btn-secondary" id="preview-close-btn">Close</button>
+        <button class="btn btn-primary" id="publish-from-preview">✓ Publish This Site</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="pg-modal" id="success-modal">
+    <div class="pg-modal-content">
+      <div class="pg-modal-body centered">
+        <div class="success-icon">🎉</div>
+        <h2>Site Published!</h2>
+        <p>Your property site is now live:</p>
+        <a href="#" id="success-url" target="_blank" class="success-link"></a>
+        <p class="note">It may take a minute to appear.</p>
+      </div>
+      <div class="pg-modal-footer">
+        <button class="btn btn-secondary" id="success-close">Close</button>
+        <button class="btn btn-primary" id="copy-url">📋 Copy URL</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+</div>
