@@ -1,9 +1,10 @@
-// Property Generator Module JavaScript v3.0 - HubDB Version
+// Property Generator Module JavaScript v3.2 - HubDB Version
 // Uses HubDB for data storage with dynamic pages
 (function() {
   var uploadedPhotos = [];
   var realtorPhoto = null;
   var loanOfficerPhoto = null;
+  var draggedPhotoIndex = null;
 
   // User context - populated from HubL in module.html
   var currentUserEmail = '';
@@ -14,7 +15,7 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v3.0 (HubDB) initialized');
+    console.log('Property Generator v3.2 (HubDB) initialized');
 
     // Get user context from data attributes
     var container = document.getElementById('property-generator');
@@ -119,21 +120,95 @@
     var html = '';
     for (var i = 0; i < uploadedPhotos.length; i++) {
       var photoUrl = uploadedPhotos[i];
-      html += '<div class="pg-photo-item">';
+      var isHero = (i === 0);
+      html += '<div class="pg-photo-item' + (isHero ? ' hero-photo' : '') + '" draggable="true" data-index="' + i + '">';
+      if (isHero) {
+        html += '<span class="hero-badge">HERO</span>';
+      }
+      html += '<span class="photo-number">' + (i + 1) + '</span>';
       html += '<img src="' + photoUrl + '" alt="Photo ' + (i + 1) + '">';
-      html += '<button type="button" class="remove-btn" data-index="' + i + '">&times;</button>';
+      html += '<div class="photo-actions">';
+      html += '<button type="button" class="move-btn move-left" data-index="' + i + '" title="Move left">&larr;</button>';
+      html += '<button type="button" class="move-btn move-right" data-index="' + i + '" title="Move right">&rarr;</button>';
+      html += '<button type="button" class="remove-btn" data-index="' + i + '" title="Remove">&times;</button>';
+      html += '</div>';
       html += '</div>';
     }
     grid.innerHTML = html;
 
-    var removeBtns = grid.querySelectorAll('.remove-btn');
-    for (var j = 0; j < removeBtns.length; j++) {
-      removeBtns[j].addEventListener('click', function() {
+    // Setup drag and drop
+    var photoItems = grid.querySelectorAll('.pg-photo-item');
+    photoItems.forEach(function(item) {
+      item.addEventListener('dragstart', function(e) {
+        draggedPhotoIndex = parseInt(this.getAttribute('data-index'));
+        this.classList.add('dragging');
+      });
+
+      item.addEventListener('dragend', function() {
+        this.classList.remove('dragging');
+        draggedPhotoIndex = null;
+      });
+
+      item.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('drag-over');
+      });
+
+      item.addEventListener('dragleave', function() {
+        this.classList.remove('drag-over');
+      });
+
+      item.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('drag-over');
+        var dropIndex = parseInt(this.getAttribute('data-index'));
+        if (draggedPhotoIndex !== null && draggedPhotoIndex !== dropIndex) {
+          // Reorder the array
+          var draggedPhoto = uploadedPhotos[draggedPhotoIndex];
+          uploadedPhotos.splice(draggedPhotoIndex, 1);
+          uploadedPhotos.splice(dropIndex, 0, draggedPhoto);
+          renderPhotoPreview();
+          showToast('Photos reordered', 'success');
+        }
+      });
+    });
+
+    // Move left/right buttons
+    grid.querySelectorAll('.move-left').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var index = parseInt(this.getAttribute('data-index'));
+        if (index > 0) {
+          var temp = uploadedPhotos[index];
+          uploadedPhotos[index] = uploadedPhotos[index - 1];
+          uploadedPhotos[index - 1] = temp;
+          renderPhotoPreview();
+        }
+      });
+    });
+
+    grid.querySelectorAll('.move-right').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var index = parseInt(this.getAttribute('data-index'));
+        if (index < uploadedPhotos.length - 1) {
+          var temp = uploadedPhotos[index];
+          uploadedPhotos[index] = uploadedPhotos[index + 1];
+          uploadedPhotos[index + 1] = temp;
+          renderPhotoPreview();
+        }
+      });
+    });
+
+    // Remove buttons
+    grid.querySelectorAll('.remove-btn').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
         var index = parseInt(this.getAttribute('data-index'));
         uploadedPhotos.splice(index, 1);
         renderPhotoPreview();
       });
-    }
+    });
   }
 
   // Contact Photo Uploads
