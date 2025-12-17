@@ -589,7 +589,7 @@
 
   function deleteProperty(rowId) {
     fetch(API_BASE + '/deleteprop', {
-      method: 'DELETE',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         rowId: rowId,

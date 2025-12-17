@@ -19,7 +19,6 @@ exports.main = async (context, sendResponse) => {
   const rowData = {
     name: prop.address + ', ' + prop.city,
     hs_path: slugVal,
-    hs_name: prop.address + ', ' + prop.city + ' - $' + (prop.price || ''),
     slug: slugVal,
     address: prop.address,
     city: prop.city,

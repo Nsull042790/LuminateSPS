@@ -23,7 +23,7 @@
       "file": "uploadfile.js"
     },
     "deleteprop": {
-      "method": "DELETE",
+      "method": "POST",
       "file": "deleteprop.js"
     }
   }
