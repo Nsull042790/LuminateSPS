@@ -18,7 +18,6 @@ exports.main = async (context, sendResponse) => {
 
   const rowData = {
     name: prop.address + ', ' + prop.city,
-    hs_path: slugVal,
     slug: slugVal,
     address: prop.address,
     city: prop.city,
@@ -47,11 +46,6 @@ exports.main = async (context, sendResponse) => {
     lo_email: body.loanOfficer ? body.loanOfficer.email || '' : '',
     lo_nmls: body.loanOfficer ? body.loanOfficer.nmls || '' : '',
     lo_photo: body.loanOfficer ? body.loanOfficer.photo || '' : '',
-    show_neighborhood: body.showNeighborhood || false,
-    walk_score: body.neighborhood ? parseInt(body.neighborhood.walkScore) || 0 : 0,
-    transit_score: body.neighborhood ? parseInt(body.neighborhood.transitScore) || 0 : 0,
-    bike_score: body.neighborhood ? parseInt(body.neighborhood.bikeScore) || 0 : 0,
-    amenities: body.neighborhood ? body.neighborhood.amenities || '' : '',
     created_by_email: body.userEmail,
     created_by_name: body.userName || ''
   };
