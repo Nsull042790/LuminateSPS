@@ -1,0 +1,30 @@
+{
+  "runtime": "nodejs18.x",
+  "version": "1.0",
+  "environment": {
+    "HUBDB_TABLE_ID": "820635359",
+    "HUBSPOT_PRIVATE_APP_TOKEN": "YOUR_PRIVATE_APP_TOKEN_HERE"
+  },
+  "endpoints": {
+    "test": {
+      "method": "GET",
+      "file": "test.js"
+    },
+    "createprop": {
+      "method": "POST",
+      "file": "createprop.js"
+    },
+    "listprops": {
+      "method": "GET",
+      "file": "listprops.js"
+    },
+    "uploadfile": {
+      "method": "POST",
+      "file": "uploadfile.js"
+    },
+    "deleteprop": {
+      "method": "DELETE",
+      "file": "deleteprop.js"
+    }
+  }
+}

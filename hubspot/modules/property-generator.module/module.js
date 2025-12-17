@@ -84,7 +84,7 @@
     reader.onload = function(e) {
       var base64 = e.target.result.split(',')[1];
 
-      fetch(API_BASE + '/upload-file', {
+      fetch(API_BASE + '/uploadfile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -304,7 +304,7 @@
     btn.textContent = 'Creating...';
 
     // Send data to HubDB via serverless function
-    fetch(API_BASE + '/create-property', {
+    fetch(API_BASE + '/createprop', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -316,9 +316,11 @@
       btn.disabled = false;
       btn.textContent = 'Create Property Site';
 
-      if (result.success && result.url) {
-        document.getElementById('success-url').textContent = result.url;
-        document.getElementById('success-url').href = result.url;
+      if (result.success && result.slug) {
+        // Build URL from slug - adjust domain as needed for your HubSpot portal
+        var propertyUrl = '/properties/' + result.slug;
+        document.getElementById('success-url').textContent = propertyUrl;
+        document.getElementById('success-url').href = propertyUrl;
         document.getElementById('success-modal').classList.add('active');
         loadExistingProperties();
         showToast('Property site created!', 'success');
@@ -534,7 +536,7 @@
       return;
     }
 
-    fetch(API_BASE + '/list-properties?email=' + encodeURIComponent(currentUserEmail))
+    fetch(API_BASE + '/listprops?email=' + encodeURIComponent(currentUserEmail))
       .then(function(res) { return res.json(); })
       .then(function(data) {
         var list = document.getElementById('sites-list');
@@ -544,13 +546,18 @@
           var html = '';
           for (var i = 0; i < data.properties.length; i++) {
             var prop = data.properties[i];
+            // HubDB rows have values in a nested 'values' object
+            var vals = prop.values || prop;
+            var propUrl = '/properties/' + (vals.slug || '');
+            var propName = vals.name || vals.address || 'Property';
+            var propPrice = vals.price || 0;
             html += '<div class="site-item" data-id="' + prop.id + '">';
             html += '<div class="site-info">';
-            html += '<a href="' + prop.url + '" target="_blank" class="site-name">' + prop.name + '</a>';
-            html += '<span class="site-price">$' + (prop.price || 0).toLocaleString() + '</span>';
+            html += '<a href="' + propUrl + '" target="_blank" class="site-name">' + propName + '</a>';
+            html += '<span class="site-price">$' + propPrice.toLocaleString() + '</span>';
             html += '</div>';
             html += '<div class="actions">';
-            html += '<button type="button" class="copy-site-url" data-url="' + prop.url + '" title="Copy URL">&#128203;</button>';
+            html += '<button type="button" class="copy-site-url" data-url="' + propUrl + '" title="Copy URL">&#128203;</button>';
             html += '<button type="button" class="delete-site" data-id="' + prop.id + '" title="Delete">&#128465;</button>';
             html += '</div></div>';
           }
@@ -581,7 +588,7 @@
   }
 
   function deleteProperty(rowId) {
-    fetch(API_BASE + '/delete-property', {
+    fetch(API_BASE + '/deleteprop', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
