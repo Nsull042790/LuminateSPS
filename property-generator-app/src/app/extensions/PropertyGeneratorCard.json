@@ -1,0 +1,13 @@
+{
+  "type": "crm-card",
+  "data": {
+    "title": "Property Generator",
+    "location": "crm.record.sidebar",
+    "module": {
+      "file": "PropertyGeneratorCard.jsx"
+    },
+    "objectTypes": [
+      { "name": "contacts" }
+    ]
+  }
+}
