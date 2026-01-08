@@ -10,7 +10,9 @@ const PropertyGenerator = ({ context, actions }) => {
 
   // Get user info from HubSpot context
   const userEmail = context?.user?.email || '';
-  const userName = context?.user?.firstName + ' ' + context?.user?.lastName || '';
+  const firstName = context?.user?.firstName || '';
+  const lastName = context?.user?.lastName || '';
+  const userName = (firstName + ' ' + lastName).trim();
 
   // URL with user params for auto-detection
   const generatorWithUser = `${generatorUrl}?email=${encodeURIComponent(userEmail)}&name=${encodeURIComponent(userName)}`;
@@ -20,7 +22,7 @@ const PropertyGenerator = ({ context, actions }) => {
       <Tile>
         <Flex direction="column" gap="small">
           <Text format={{ fontWeight: 'bold' }}>
-            Property Site Generator v3.2
+            Property Site Generator v3.4
           </Text>
           <Text>
             Create property listing pages with photo uploads, drag-and-drop reordering, and contact profiles.
