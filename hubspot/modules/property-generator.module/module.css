@@ -42,6 +42,16 @@ body {
   color: white;
   padding: 20px 30px;
   border-radius: 12px 12px 0 0;
+  text-align: center;
+}
+
+.pg-logo {
+  margin-bottom: 15px;
+}
+
+.pg-logo img {
+  max-width: 200px;
+  height: auto;
 }
 
 .pg-header h1 {
