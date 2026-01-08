@@ -1,3 +1,30 @@
+/* Hide site navigation when loaded in iframe (from HubSpot CRM) */
+header,
+.header,
+.site-header,
+.hs-menu-wrapper,
+nav:not(.pg-nav),
+.navigation,
+.main-nav,
+.top-nav,
+[data-hs-cos-type="navigation"],
+.hs_cos_wrapper_type_menu {
+  display: none !important;
+}
+
+/* Hide footer too for cleaner iframe experience */
+footer,
+.footer,
+.site-footer {
+  display: none !important;
+}
+
+/* Make the property generator full width without site margins */
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 .property-generator {
   --primary: #0d173c;
   --primary-light: #1a2a5e;
