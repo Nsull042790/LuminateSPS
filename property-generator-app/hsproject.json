@@ -1,15 +1,5 @@
 {
   "name": "property-generator",
   "srcDir": "src",
-  "platformVersion": "2025.2",
-  "app": {
-    "name": "Property Generator",
-    "description": "Create property listing pages for real estate",
-    "scopes": [
-      "crm.objects.contacts.read",
-      "files",
-      "hubdb"
-    ],
-    "public": false
-  }
+  "platformVersion": "2025.2"
 }

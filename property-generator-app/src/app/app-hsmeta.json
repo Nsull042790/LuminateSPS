@@ -1,3 +1,14 @@
 {
-  "type": "private-app"
+  "type": "app",
+  "uid": "property-generator",
+  "config": {
+    "name": "Property Generator",
+    "description": "Create property listing pages for real estate",
+    "scopes": [
+      "crm.objects.contacts.read",
+      "files",
+      "hubdb"
+    ],
+    "public": false
+  }
 }
