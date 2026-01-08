@@ -68,7 +68,53 @@
       if (loEmailInput && !loEmailInput.value) {
         loEmailInput.value = currentUserEmail;
       }
+
+      // Load saved LO profile from localStorage (phone, NMLS, title)
+      var savedProfile = localStorage.getItem('lo_profile_' + currentUserEmail);
+      if (savedProfile) {
+        try {
+          var profile = JSON.parse(savedProfile);
+          var loPhoneInput = document.querySelector('input[name="loPhone"]');
+          var loNmlsInput = document.querySelector('input[name="loNmls"]');
+          var loTitleInput = document.querySelector('input[name="loTitle"]');
+
+          if (loPhoneInput && !loPhoneInput.value && profile.phone) {
+            loPhoneInput.value = profile.phone;
+          }
+          if (loNmlsInput && !loNmlsInput.value && profile.nmls) {
+            loNmlsInput.value = profile.nmls;
+          }
+          if (loTitleInput && profile.title) {
+            loTitleInput.value = profile.title;
+          }
+        } catch (e) {
+          console.log('Could not load LO profile');
+        }
+      }
+
+      // Save LO profile when fields change
+      setupLOProfileSaving();
     }
+  }
+
+  function setupLOProfileSaving() {
+    var loPhoneInput = document.querySelector('input[name="loPhone"]');
+    var loNmlsInput = document.querySelector('input[name="loNmls"]');
+    var loTitleInput = document.querySelector('input[name="loTitle"]');
+
+    function saveLOProfile() {
+      if (!currentUserEmail) return;
+      var profile = {
+        phone: loPhoneInput ? loPhoneInput.value : '',
+        nmls: loNmlsInput ? loNmlsInput.value : '',
+        title: loTitleInput ? loTitleInput.value : ''
+      };
+      localStorage.setItem('lo_profile_' + currentUserEmail, JSON.stringify(profile));
+    }
+
+    if (loPhoneInput) loPhoneInput.addEventListener('blur', saveLOProfile);
+    if (loNmlsInput) loNmlsInput.addEventListener('blur', saveLOProfile);
+    if (loTitleInput) loTitleInput.addEventListener('blur', saveLOProfile);
   }
 
   function setupRealtorLogoUpload() {
