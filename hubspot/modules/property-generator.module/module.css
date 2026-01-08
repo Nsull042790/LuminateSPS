@@ -25,9 +25,21 @@ body {
   padding: 0 !important;
 }
 
+/* Remove top gap from page wrappers */
+.body-container,
+.body-wrapper,
+main,
+.main-content,
+.content-wrapper,
+.hs-content-wrapper {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
 .property-generator {
   --primary: #0d173c;
   --primary-light: #1a2a5e;
+  margin-top: 0 !important;
   --accent: #667eea;
   --success: #10b981;
   --error: #ef4444;
