@@ -15,15 +15,29 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v3.2 (HubDB) initialized');
+    console.log('Property Generator v3.3 (HubDB) initialized');
 
-    // Get user context from data attributes
+    // Check for URL query parameters first (from HubSpot CRM integration)
+    var urlParams = new URLSearchParams(window.location.search);
+    var urlEmail = urlParams.get('email');
+    var urlName = urlParams.get('name');
+
+    // Get user context from URL params or data attributes
     var container = document.getElementById('property-generator');
-    if (container) {
+    if (urlEmail) {
+      // From HubSpot CRM card - use URL params
+      currentUserEmail = urlEmail;
+      currentUserName = urlName || '';
+      console.log('User from HubSpot:', currentUserEmail);
+    } else if (container) {
+      // From HubL context - use data attributes
       currentUserEmail = container.getAttribute('data-user-email') || '';
       currentUserName = container.getAttribute('data-user-name') || '';
-      console.log('User:', currentUserEmail);
+      console.log('User from HubL:', currentUserEmail);
     }
+
+    // Update user info display if present
+    updateUserInfoDisplay();
 
     setupPhotoUpload();
     setupContactPhotoUploads();
@@ -32,6 +46,30 @@
     setupNeighborhoodToggle();
     loadExistingProperties();
   });
+
+  function updateUserInfoDisplay() {
+    // Update the user info display in the header if present
+    var userInfo = document.querySelector('.pg-user-info');
+    var userWarning = document.querySelector('.pg-user-warning');
+
+    if (currentUserEmail) {
+      if (userInfo) {
+        userInfo.textContent = 'Logged in as: ' + currentUserEmail;
+        userInfo.style.display = 'block';
+      }
+      if (userWarning) {
+        userWarning.style.display = 'none';
+      }
+    } else {
+      if (userInfo) {
+        userInfo.style.display = 'none';
+      }
+      if (userWarning) {
+        userWarning.textContent = 'Not logged in - Please access via HubSpot';
+        userWarning.style.display = 'block';
+      }
+    }
+  }
 
   // Photo Upload Setup
   function setupPhotoUpload() {
@@ -393,7 +431,7 @@
 
       if (result.success && result.slug) {
         // Build URL from slug - adjust domain as needed for your HubSpot portal
-        var propertyUrl = '/properties/' + result.slug;
+        var propertyUrl = '/properties-1/' + result.slug;
         document.getElementById('success-url').textContent = propertyUrl;
         document.getElementById('success-url').href = propertyUrl;
         document.getElementById('success-modal').classList.add('active');
@@ -623,7 +661,7 @@
             var prop = data.properties[i];
             // HubDB rows have values in a nested 'values' object
             var vals = prop.values || prop;
-            var propUrl = '/properties/' + (vals.slug || '');
+            var propUrl = '/properties-1/' + (vals.slug || '');
             var propName = vals.name || vals.address || 'Property';
             var propPrice = vals.price || 0;
             html += '<div class="site-item" data-id="' + prop.id + '">';
