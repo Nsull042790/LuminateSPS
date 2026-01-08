@@ -1,0 +1,12 @@
+{
+  "type": "app",
+  "name": "Property Generator",
+  "description": "Create property listing pages for real estate",
+  "uid": "property-generator",
+  "scopes": [
+    "crm.objects.contacts.read",
+    "files",
+    "hubdb"
+  ],
+  "public": false
+}
