@@ -1,10 +1,14 @@
-// Property Generator Module JavaScript v3.2 - HubDB Version
+// Property Generator Module JavaScript v3.4 - HubDB Version
 // Uses HubDB for data storage with dynamic pages
 (function() {
   var uploadedPhotos = [];
   var realtorPhoto = null;
+  var realtorLogo = null;
   var loanOfficerPhoto = null;
   var draggedPhotoIndex = null;
+
+  // LO Company Logo - always Luminate Bank
+  var LO_COMPANY_LOGO = 'https://lirp.cdn-website.com/e49062f7/dms3rep/multi/opt/LuminateBank_SecondaryLogo_Color-1920w.png';
 
   // User context - populated from HubL in module.html
   var currentUserEmail = '';
@@ -39,13 +43,56 @@
     // Update user info display if present
     updateUserInfoDisplay();
 
+    // Pre-fill LO info from HubSpot user
+    prefillLoanOfficerInfo();
+
     setupPhotoUpload();
     setupContactPhotoUploads();
+    setupRealtorLogoUpload();
     setupFormHandlers();
     setupModalHandlers();
     setupNeighborhoodToggle();
     loadExistingProperties();
   });
+
+  function prefillLoanOfficerInfo() {
+    // Pre-fill LO name and email from logged-in HubSpot user
+    if (currentUserName) {
+      var loNameInput = document.getElementById('lo-name-input');
+      if (loNameInput && !loNameInput.value) {
+        loNameInput.value = currentUserName;
+      }
+    }
+    if (currentUserEmail) {
+      var loEmailInput = document.getElementById('lo-email-input');
+      if (loEmailInput && !loEmailInput.value) {
+        loEmailInput.value = currentUserEmail;
+      }
+    }
+  }
+
+  function setupRealtorLogoUpload() {
+    var logoArea = document.getElementById('realtor-logo-area');
+    var logoInput = document.getElementById('realtor-logo-input');
+    var logoPreview = document.getElementById('realtor-logo-preview');
+
+    if (!logoArea || !logoInput) return;
+
+    logoArea.addEventListener('click', function() {
+      logoInput.click();
+    });
+
+    logoInput.addEventListener('change', function(e) {
+      var file = e.target.files[0];
+      if (file) {
+        uploadFile(file, function(url) {
+          realtorLogo = url;
+          logoPreview.innerHTML = '<img src="' + url + '" alt="Company Logo">';
+          showToast('Logo uploaded!', 'success');
+        });
+      }
+    });
+  }
 
   function updateUserInfoDisplay() {
     // Update the user info display in the header if present
@@ -369,16 +416,18 @@
         phone: getValue('realtorPhone') || '',
         email: getValue('realtorEmail') || '',
         license: getValue('realtorLicense') || '',
-        photo: realtorPhoto
+        photo: realtorPhoto,
+        logo: realtorLogo
       },
       loanOfficer: {
         name: getValue('loName'),
         title: getValue('loTitle') || 'Loan Officer',
-        company: getValue('loCompany') || '',
+        company: getValue('loCompany') || 'Luminate Bank',
         phone: getValue('loPhone') || '',
         email: getValue('loEmail') || '',
         nmls: getValue('loNmls') || '',
-        photo: loanOfficerPhoto
+        photo: loanOfficerPhoto,
+        logo: LO_COMPANY_LOGO
       },
       photos: uploadedPhotos,
       showNeighborhood: document.getElementById('show-neighborhood') ? document.getElementById('show-neighborhood').checked : false,
@@ -600,6 +649,7 @@
     if (r.phone) html += '<p>&#128222; ' + r.phone + '</p>';
     if (r.email) html += '<p>&#9993; ' + r.email + '</p>';
     if (r.license) html += '<p style="font-size:0.85em;color:#a0aec0;">' + r.license + '</p>';
+    if (r.logo) html += '<img src="' + r.logo + '" class="company-logo" style="max-width:120px;max-height:40px;margin-top:10px;object-fit:contain;">';
     html += '</div></div>';
 
     // Loan Officer Card
@@ -614,6 +664,7 @@
     if (lo.phone) html += '<p>&#128222; ' + lo.phone + '</p>';
     if (lo.email) html += '<p>&#9993; ' + lo.email + '</p>';
     if (lo.nmls) html += '<p style="font-size:0.85em;color:#a0aec0;">NMLS# ' + lo.nmls + '</p>';
+    if (lo.logo) html += '<img src="' + lo.logo + '" class="company-logo" style="max-width:120px;max-height:40px;margin-top:10px;object-fit:contain;">';
     html += '</div></div></div></section>';
 
     // Footer
@@ -745,11 +796,16 @@
     document.getElementById('property-form').reset();
     uploadedPhotos = [];
     realtorPhoto = null;
+    realtorLogo = null;
     loanOfficerPhoto = null;
     renderPhotoPreview();
     document.getElementById('realtor-avatar').innerHTML = '<span>&#128100;</span><input type="file" accept="image/*" id="realtor-photo-input">';
     document.getElementById('lo-avatar').innerHTML = '<span>&#128100;</span><input type="file" accept="image/*" id="lo-photo-input">';
+    document.getElementById('realtor-logo-preview').innerHTML = '<span class="logo-placeholder">Click to upload company logo</span>';
     setupContactPhotoUploads();
+    setupRealtorLogoUpload();
+    // Re-fill LO info from user context
+    prefillLoanOfficerInfo();
     showToast('Form cleared', 'info');
   }
 

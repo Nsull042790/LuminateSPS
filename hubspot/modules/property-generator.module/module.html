@@ -20,7 +20,7 @@
     <div class="pg-logo">
       <img src="https://lirp.cdn-website.com/e49062f7/dms3rep/multi/opt/Luminatebank_PrimaryLogo_White_Gradient-62f357ba-1920w.png" alt="Luminate Bank">
     </div>
-    <h1>Property Site Generator <span class="version">v3.3</span></h1>
+    <h1>Property Site Generator <span class="version">v3.4</span></h1>
     {% if user_email %}
     <p class="pg-user-info">Logged in as: {{ user_email }}</p>
     {% else %}
@@ -131,6 +131,15 @@
               <label>License #</label>
               <input type="text" name="realtorLicense" placeholder="DRE# 12345678">
             </div>
+            <div class="pg-field full-width">
+              <label>Company Logo</label>
+              <div class="pg-logo-upload" id="realtor-logo-area">
+                <input type="file" accept="image/*" id="realtor-logo-input" hidden>
+                <div class="logo-preview" id="realtor-logo-preview">
+                  <span class="logo-placeholder">Click to upload company logo</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -138,6 +147,7 @@
       <!-- Loan Officer Information -->
       <section class="pg-section">
         <h2>💰 Loan Officer Information</h2>
+        <p class="pg-section-note">Auto-filled from your HubSpot account</p>
         <div class="pg-contact-card">
           <div class="pg-avatar loan-officer" id="lo-avatar">
             <span>👤</span>
@@ -146,15 +156,15 @@
           <div class="pg-grid">
             <div class="pg-field">
               <label>Name *</label>
-              <input type="text" name="loName" required placeholder="John Doe">
+              <input type="text" name="loName" id="lo-name-input" required placeholder="John Doe">
             </div>
             <div class="pg-field">
               <label>Title</label>
-              <input type="text" name="loTitle" placeholder="Senior Loan Officer">
+              <input type="text" name="loTitle" placeholder="Senior Loan Officer" value="Loan Officer">
             </div>
             <div class="pg-field">
               <label>Company</label>
-              <input type="text" name="loCompany" value="{{ module.default_lo_company }}">
+              <input type="text" name="loCompany" value="Luminate Bank" readonly>
             </div>
             <div class="pg-field">
               <label>Phone</label>
@@ -162,11 +172,17 @@
             </div>
             <div class="pg-field">
               <label>Email</label>
-              <input type="email" name="loEmail" placeholder="john@mortgage.com">
+              <input type="email" name="loEmail" id="lo-email-input" placeholder="john@luminate.bank">
             </div>
             <div class="pg-field">
               <label>NMLS #</label>
               <input type="text" name="loNmls" placeholder="NMLS# 123456">
+            </div>
+            <div class="pg-field full-width">
+              <label>Company Logo</label>
+              <div class="pg-logo-display">
+                <img src="https://lirp.cdn-website.com/e49062f7/dms3rep/multi/opt/LuminateBank_SecondaryLogo_Color-1920w.png" alt="Luminate Bank" class="lo-company-logo">
+              </div>
             </div>
           </div>
         </div>
