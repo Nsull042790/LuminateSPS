@@ -690,9 +690,8 @@
           list.querySelectorAll('.delete-site').forEach(function(btn) {
             btn.addEventListener('click', function() {
               var rowId = this.getAttribute('data-id');
-              if (confirm('Delete this property site?')) {
-                deleteProperty(rowId);
-              }
+              // Direct delete - confirm() doesn't work in sandboxed iframes
+              deleteProperty(rowId);
             });
           });
         } else {
@@ -742,17 +741,16 @@
   }
 
   function clearForm() {
-    if (confirm('Clear all form data?')) {
-      document.getElementById('property-form').reset();
-      uploadedPhotos = [];
-      realtorPhoto = null;
-      loanOfficerPhoto = null;
-      renderPhotoPreview();
-      document.getElementById('realtor-avatar').innerHTML = '<span>&#128100;</span><input type="file" accept="image/*" id="realtor-photo-input">';
-      document.getElementById('lo-avatar').innerHTML = '<span>&#128100;</span><input type="file" accept="image/*" id="lo-photo-input">';
-      setupContactPhotoUploads();
-      showToast('Form cleared', 'info');
-    }
+    // Direct clear - confirm() doesn't work in sandboxed iframes
+    document.getElementById('property-form').reset();
+    uploadedPhotos = [];
+    realtorPhoto = null;
+    loanOfficerPhoto = null;
+    renderPhotoPreview();
+    document.getElementById('realtor-avatar').innerHTML = '<span>&#128100;</span><input type="file" accept="image/*" id="realtor-photo-input">';
+    document.getElementById('lo-avatar').innerHTML = '<span>&#128100;</span><input type="file" accept="image/*" id="lo-photo-input">';
+    setupContactPhotoUploads();
+    showToast('Form cleared', 'info');
   }
 
   function showToast(message, type) {
