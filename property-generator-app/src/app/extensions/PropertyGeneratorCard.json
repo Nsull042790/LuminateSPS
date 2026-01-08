@@ -2,7 +2,7 @@
   "type": "crm-card",
   "data": {
     "title": "Property Generator",
-    "location": "crm.record.tab",
+    "location": "crm.record.sidebar",
     "module": {
       "file": "PropertyGeneratorCard.jsx"
     },
