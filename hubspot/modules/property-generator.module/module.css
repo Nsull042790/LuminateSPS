@@ -40,13 +40,22 @@ main,
   --primary: #0d173c;
   --primary-light: #1a2a5e;
   margin-top: 0 !important;
-  --accent: #667eea;
+  --accent: #96daf8;
   --success: #10b981;
   --error: #ef4444;
   --gray-100: #f7fafc;
   --gray-200: #edf2f7;
   --gray-600: #718096;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Josefin Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Headings use Poppins Bold */
+.property-generator h1,
+.property-generator h2,
+.property-generator h3,
+.property-generator .btn {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 700;
 }
 
 .pg-header {

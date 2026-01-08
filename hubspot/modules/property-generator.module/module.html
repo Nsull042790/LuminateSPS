@@ -1,3 +1,8 @@
+{# Load brand fonts from Google Fonts #}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+
 {# Get current user info from HubSpot or URL parameter #}
 {% if request.contact.email %}
   {% set user_email = request.contact.email %}
