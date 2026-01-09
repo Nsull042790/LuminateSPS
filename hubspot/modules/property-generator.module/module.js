@@ -124,7 +124,12 @@
 
     if (!logoArea || !logoInput) return;
 
-    logoArea.addEventListener('click', function() {
+    // Prevent duplicate event listeners
+    if (logoArea.hasAttribute('data-listener-attached')) return;
+    logoArea.setAttribute('data-listener-attached', 'true');
+
+    logoArea.addEventListener('click', function(e) {
+      e.stopPropagation();
       logoInput.click();
     });
 
@@ -171,7 +176,12 @@
 
     if (!uploadArea || !photoInput) return;
 
-    uploadArea.addEventListener('click', function() {
+    // Prevent duplicate event listeners
+    if (uploadArea.hasAttribute('data-listener-attached')) return;
+    uploadArea.setAttribute('data-listener-attached', 'true');
+
+    uploadArea.addEventListener('click', function(e) {
+      e.stopPropagation();
       photoInput.click();
     });
 
@@ -358,7 +368,12 @@
 
     if (!input || !avatar) return;
 
-    avatar.addEventListener('click', function() {
+    // Prevent duplicate event listeners
+    if (avatar.hasAttribute('data-listener-attached')) return;
+    avatar.setAttribute('data-listener-attached', 'true');
+
+    avatar.addEventListener('click', function(e) {
+      e.stopPropagation();
       input.click();
     });
 
@@ -845,9 +860,25 @@
     realtorLogo = null;
     loanOfficerPhoto = null;
     renderPhotoPreview();
-    document.getElementById('realtor-avatar').innerHTML = '<span>&#128100;</span><input type="file" accept="image/*" id="realtor-photo-input">';
-    document.getElementById('lo-avatar').innerHTML = '<span>&#128100;</span><input type="file" accept="image/*" id="lo-photo-input">';
-    document.getElementById('realtor-logo-preview').innerHTML = '<span class="logo-placeholder">Click to upload company logo</span>';
+
+    // Reset avatar elements and remove listener flags so they can be reattached
+    var realtorAvatar = document.getElementById('realtor-avatar');
+    var loAvatar = document.getElementById('lo-avatar');
+    var logoArea = document.getElementById('realtor-logo-area');
+
+    if (realtorAvatar) {
+      realtorAvatar.removeAttribute('data-listener-attached');
+      realtorAvatar.innerHTML = '<span>&#128100;</span><input type="file" accept="image/*" id="realtor-photo-input">';
+    }
+    if (loAvatar) {
+      loAvatar.removeAttribute('data-listener-attached');
+      loAvatar.innerHTML = '<span>&#128100;</span><input type="file" accept="image/*" id="lo-photo-input">';
+    }
+    if (logoArea) {
+      logoArea.removeAttribute('data-listener-attached');
+      document.getElementById('realtor-logo-preview').innerHTML = '<span class="logo-placeholder">Click to upload company logo</span>';
+    }
+
     setupContactPhotoUploads();
     setupRealtorLogoUpload();
     // Re-fill LO info from user context
