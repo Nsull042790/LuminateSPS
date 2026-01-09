@@ -57,7 +57,25 @@
     .hero {
       position: relative;
       height: 70vh;
+      {% if hero_image %}
       background: url("{{ hero_image }}") center/cover;
+      {% else %}
+      background: linear-gradient(135deg, #0d173c 0%, #1a365d 50%, #2c5282 100%);
+      {% endif %}
+    }
+    .hero.no-photo .hero-overlay {
+      background: linear-gradient(transparent 20%, rgba(0,0,0,0.7));
+    }
+    .hero-placeholder-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -80%);
+      color: rgba(255,255,255,0.3);
+      font-size: 4em;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
     }
     .hero-overlay {
       position: absolute;
@@ -255,7 +273,10 @@
 <body>
 
   <!-- Hero Section -->
-  <section class="hero">
+  <section class="hero{% if not hero_image %} no-photo{% endif %}">
+    {% if not hero_image %}
+    <div class="hero-placeholder-text">No Photos</div>
+    {% endif %}
     <div class="hero-overlay">
       <div class="hero-content">
         <h1>{{ row.address }}</h1>
@@ -324,9 +345,9 @@
   <div class="copy-toast" id="copy-toast">Link copied to clipboard!</div>
 
   <!-- Photo Gallery -->
-  {% if photos|length > 0 %}
   <section class="section">
     <h2 class="section-title">Photo Gallery</h2>
+    {% if photos|length > 0 %}
     <div class="gallery">
       {% for photo in photos %}
       <div class="gallery-item" data-index="{{ loop.index0 }}">
@@ -334,8 +355,14 @@
       </div>
       {% endfor %}
     </div>
+    {% else %}
+    <div class="no-photos-message" style="text-align:center;padding:60px 20px;background:#f7fafc;border-radius:12px;color:#718096;">
+      <div style="font-size:3em;margin-bottom:15px;">📷</div>
+      <p style="font-size:1.2em;">No photos available for this property yet.</p>
+      <p style="font-size:0.95em;margin-top:10px;">Contact the listing agent for more information.</p>
+    </div>
+    {% endif %}
   </section>
-  {% endif %}
 
   <!-- Description Section -->
   {% if row.description or row.features %}
@@ -442,6 +469,7 @@
     // Gallery images array
     var galleryImages = [{% for photo in photos %}"{{ photo }}"{% if not loop.last %},{% endif %}{% endfor %}];
     var currentIndex = 0;
+    var hasPhotos = galleryImages.length > 0;
 
     // Mortgage Calculator
     function calculate() {
@@ -460,31 +488,33 @@
     });
     calculate();
 
-    // Lightbox
-    function openLightbox(index) {
-      currentIndex = index;
-      document.getElementById('lightbox-img').src = galleryImages[index];
-      document.getElementById('lightbox').classList.add('active');
-    }
-    document.querySelectorAll('.gallery-item').forEach(function(item) {
-      item.addEventListener('click', function() {
-        openLightbox(parseInt(this.getAttribute('data-index')));
+    // Lightbox (only if photos exist)
+    if (hasPhotos) {
+      function openLightbox(index) {
+        currentIndex = index;
+        document.getElementById('lightbox-img').src = galleryImages[index];
+        document.getElementById('lightbox').classList.add('active');
+      }
+      document.querySelectorAll('.gallery-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+          openLightbox(parseInt(this.getAttribute('data-index')));
+        });
       });
-    });
-    document.getElementById('lightbox-close').addEventListener('click', function() {
-      document.getElementById('lightbox').classList.remove('active');
-    });
-    document.getElementById('lightbox-prev').addEventListener('click', function() {
-      currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
-      document.getElementById('lightbox-img').src = galleryImages[currentIndex];
-    });
-    document.getElementById('lightbox-next').addEventListener('click', function() {
-      currentIndex = (currentIndex + 1) % galleryImages.length;
-      document.getElementById('lightbox-img').src = galleryImages[currentIndex];
-    });
-    document.getElementById('lightbox').addEventListener('click', function(e) {
-      if (e.target === this) this.classList.remove('active');
-    });
+      document.getElementById('lightbox-close').addEventListener('click', function() {
+        document.getElementById('lightbox').classList.remove('active');
+      });
+      document.getElementById('lightbox-prev').addEventListener('click', function() {
+        currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+        document.getElementById('lightbox-img').src = galleryImages[currentIndex];
+      });
+      document.getElementById('lightbox-next').addEventListener('click', function() {
+        currentIndex = (currentIndex + 1) % galleryImages.length;
+        document.getElementById('lightbox-img').src = galleryImages[currentIndex];
+      });
+      document.getElementById('lightbox').addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('active');
+      });
+    }
 
     // Copy link button
     document.getElementById('copy-link-btn').addEventListener('click', function() {
