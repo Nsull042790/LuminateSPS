@@ -14,10 +14,16 @@
   {% set row = dynamic_page_hubdb_row %}
 
   {# Parse photos - the photos column should be a JSON array of URLs #}
-  {% if row.photos and row.photos starts with '[' %}
-    {% set photos = row.photos|fromjson %}
-  {% else %}
-    {% set photos = [] %}
+  {% set photos = [] %}
+  {% if row.photos %}
+    {% set photos_str = row.photos|string %}
+    {% if photos_str and photos_str != 'None' and photos_str != '' %}
+      {% if photos_str[0:1] == '[' %}
+        {% set photos = photos_str|fromjson %}
+      {% elif photos_str[0:4] == 'http' %}
+        {% set photos = [photos_str] %}
+      {% endif %}
+    {% endif %}
   {% endif %}
   {% set hero_image = photos[0] if photos|length > 0 else '' %}
 
