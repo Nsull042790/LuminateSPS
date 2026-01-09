@@ -104,7 +104,7 @@ function createRow(token, tableId, data) {
 }
 
 function publishTable(token, tableId) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const req = https.request({
       hostname: 'api.hubapi.com',
       path: '/cms/v3/hubdb/tables/' + tableId + '/draft/publish',
@@ -112,8 +112,22 @@ function publishTable(token, tableId) {
       headers: {
         'Authorization': 'Bearer ' + token
       }
-    }, () => resolve());
-    req.on('error', () => resolve());
+    }, (res) => {
+      let d = '';
+      res.on('data', c => d += c);
+      res.on('end', () => {
+        console.log('Publish response:', res.statusCode, d);
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve();
+        } else {
+          reject(new Error('Publish failed: ' + d));
+        }
+      });
+    });
+    req.on('error', (e) => {
+      console.error('Publish error:', e);
+      reject(e);
+    });
     req.end();
   });
 }
