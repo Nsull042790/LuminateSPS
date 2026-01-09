@@ -1,10 +1,11 @@
 {
   "runtime": "nodejs18.x",
   "version": "1.0",
-  "secrets": ["HUBSPOT_PRIVATE_APP_TOKEN"],
   "environment": {
+    "HUBSPOT_PRIVATE_APP_TOKEN": "{{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}",
     "HUBDB_TABLE_ID": "820635359"
   },
+  "secrets": ["HUBSPOT_PRIVATE_APP_TOKEN"],
   "endpoints": {
     "test": {
       "method": "GET",

@@ -1,4 +1,4 @@
-// Property Generator Module JavaScript v3.7 - HubDB Version
+// Property Generator Module JavaScript v3.8 - HubDB Version
 // Uses HubDB for data storage with dynamic pages
 (function() {
   var uploadedPhotos = [];
