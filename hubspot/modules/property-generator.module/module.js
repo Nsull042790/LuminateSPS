@@ -1,4 +1,4 @@
-// Property Generator Module JavaScript v4.6 - HubDB Version
+// Property Generator Module JavaScript v4.7 - HubDB Version
 // Uses HubDB for data storage with dynamic pages
 (function() {
   var uploadedPhotos = [];
@@ -15,8 +15,8 @@
   var currentUserEmail = '';
   var currentUserName = '';
 
-  // Serverless function endpoints
-  var API_BASE = '/_hcms/api';
+  // Serverless function endpoints - explicitly use fresh.functions folder
+  var API_BASE = '/_hcms/api/fresh';
 
   // Safe file input trigger - prevents multiple dialogs
   var lastFileDialogTime = 0;
@@ -43,7 +43,7 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v4.6 (HubDB) initialized');
+    console.log('Property Generator v4.7 (HubDB) initialized');
 
     // Check for URL query parameters first (from HubSpot CRM integration)
     var urlParams = new URLSearchParams(window.location.search);
