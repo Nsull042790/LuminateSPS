@@ -12,7 +12,13 @@
   {{ standard_header_includes }}
 
   {% set row = dynamic_page_hubdb_row %}
-  {% set photos = row.photos|fromjson if row.photos else [] %}
+
+  {# Parse photos - the photos column should be a JSON array of URLs #}
+  {% if row.photos and row.photos starts with '[' %}
+    {% set photos = row.photos|fromjson %}
+  {% else %}
+    {% set photos = [] %}
+  {% endif %}
   {% set hero_image = photos[0] if photos|length > 0 else '' %}
 
   <title>{{ row.address }}, {{ row.city }}, {{ row.state }} - ${{ row.price|format_number }}</title>
