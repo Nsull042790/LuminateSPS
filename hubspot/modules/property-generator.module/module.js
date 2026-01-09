@@ -19,14 +19,26 @@
   var API_BASE = '/_hcms/api';
 
   // Safe file input trigger - prevents multiple dialogs
+  var lastFileDialogTime = 0;
   function triggerFileInput(input) {
-    if (fileDialogOpen) return;
+    var now = Date.now();
+    // Prevent triggers within 1.5 seconds of each other
+    if (fileDialogOpen || (now - lastFileDialogTime) < 1500) {
+      console.log('Blocked duplicate file dialog');
+      return;
+    }
     fileDialogOpen = true;
-    input.click();
-    // Reset flag after a delay (dialog closed)
+    lastFileDialogTime = now;
+
+    // Small delay before clicking to let any pending events settle
+    setTimeout(function() {
+      input.click();
+    }, 50);
+
+    // Reset flag after dialog closes (longer timeout)
     setTimeout(function() {
       fileDialogOpen = false;
-    }, 500);
+    }, 2000);
   }
 
   // Initialize when DOM is ready
@@ -71,48 +83,64 @@
   });
 
   function prefillLoanOfficerInfo() {
-    // Pre-fill LO name and email from logged-in HubSpot user
-    if (currentUserName) {
-      var loNameInput = document.getElementById('lo-name-input');
-      if (loNameInput && !loNameInput.value) {
-        loNameInput.value = currentUserName;
-      }
-    }
+    var loNameInput = document.getElementById('lo-name-input');
+    var loEmailInput = document.getElementById('lo-email-input');
+    var loPhoneInput = document.querySelector('input[name="loPhone"]');
+    var loNmlsInput = document.querySelector('input[name="loNmls"]');
+    var loTitleInput = document.querySelector('input[name="loTitle"]');
+
+    // Load saved LO profile from localStorage first
+    var savedProfile = null;
     if (currentUserEmail) {
-      var loEmailInput = document.getElementById('lo-email-input');
-      if (loEmailInput && !loEmailInput.value) {
-        loEmailInput.value = currentUserEmail;
-      }
-
-      // Load saved LO profile from localStorage (phone, NMLS, title)
-      var savedProfile = localStorage.getItem('lo_profile_' + currentUserEmail);
-      if (savedProfile) {
+      var saved = localStorage.getItem('lo_profile_' + currentUserEmail);
+      if (saved) {
         try {
-          var profile = JSON.parse(savedProfile);
-          var loPhoneInput = document.querySelector('input[name="loPhone"]');
-          var loNmlsInput = document.querySelector('input[name="loNmls"]');
-          var loTitleInput = document.querySelector('input[name="loTitle"]');
-
-          if (loPhoneInput && !loPhoneInput.value && profile.phone) {
-            loPhoneInput.value = profile.phone;
-          }
-          if (loNmlsInput && !loNmlsInput.value && profile.nmls) {
-            loNmlsInput.value = profile.nmls;
-          }
-          if (loTitleInput && profile.title) {
-            loTitleInput.value = profile.title;
-          }
+          savedProfile = JSON.parse(saved);
         } catch (e) {
-          console.log('Could not load LO profile');
+          console.log('Could not parse LO profile');
         }
       }
+    }
 
-      // Save LO profile when fields change
+    // Pre-fill LO name - priority: HubSpot context > localStorage > empty
+    if (loNameInput) {
+      if (currentUserName) {
+        loNameInput.value = currentUserName;
+        console.log('Set LO name from HubSpot:', currentUserName);
+      } else if (savedProfile && savedProfile.name && !loNameInput.value) {
+        loNameInput.value = savedProfile.name;
+        console.log('Set LO name from localStorage:', savedProfile.name);
+      }
+    }
+
+    // Pre-fill LO email
+    if (loEmailInput) {
+      if (currentUserEmail) {
+        loEmailInput.value = currentUserEmail;
+      }
+    }
+
+    // Fill other fields from localStorage
+    if (savedProfile) {
+      if (loPhoneInput && !loPhoneInput.value && savedProfile.phone) {
+        loPhoneInput.value = savedProfile.phone;
+      }
+      if (loNmlsInput && !loNmlsInput.value && savedProfile.nmls) {
+        loNmlsInput.value = savedProfile.nmls;
+      }
+      if (loTitleInput && savedProfile.title) {
+        loTitleInput.value = savedProfile.title;
+      }
+    }
+
+    // Setup saving for all LO fields
+    if (currentUserEmail) {
       setupLOProfileSaving();
     }
   }
 
   function setupLOProfileSaving() {
+    var loNameInput = document.getElementById('lo-name-input');
     var loPhoneInput = document.querySelector('input[name="loPhone"]');
     var loNmlsInput = document.querySelector('input[name="loNmls"]');
     var loTitleInput = document.querySelector('input[name="loTitle"]');
@@ -120,13 +148,16 @@
     function saveLOProfile() {
       if (!currentUserEmail) return;
       var profile = {
+        name: loNameInput ? loNameInput.value : '',
         phone: loPhoneInput ? loPhoneInput.value : '',
         nmls: loNmlsInput ? loNmlsInput.value : '',
         title: loTitleInput ? loTitleInput.value : ''
       };
       localStorage.setItem('lo_profile_' + currentUserEmail, JSON.stringify(profile));
+      console.log('Saved LO profile:', profile);
     }
 
+    if (loNameInput) loNameInput.addEventListener('blur', saveLOProfile);
     if (loPhoneInput) loPhoneInput.addEventListener('blur', saveLOProfile);
     if (loNmlsInput) loNmlsInput.addEventListener('blur', saveLOProfile);
     if (loTitleInput) loTitleInput.addEventListener('blur', saveLOProfile);
@@ -862,9 +893,45 @@
   }
 
   function copyUrl() {
-    var url = document.getElementById('success-url').href;
-    navigator.clipboard.writeText(url);
-    showToast('URL copied!', 'success');
+    var urlElement = document.getElementById('success-url');
+    var url = urlElement.href;
+
+    // Try modern clipboard API first, then fallback for sandboxed iframes
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(function() {
+        showToast('URL copied!', 'success');
+      }).catch(function() {
+        // Fallback for sandboxed iframes
+        fallbackCopy(url);
+      });
+    } else {
+      fallbackCopy(url);
+    }
+  }
+
+  function fallbackCopy(text) {
+    // Create a temporary input element
+    var tempInput = document.createElement('input');
+    tempInput.style.position = 'fixed';
+    tempInput.style.left = '-9999px';
+    tempInput.value = text;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    tempInput.setSelectionRange(0, 99999); // For mobile
+
+    try {
+      var success = document.execCommand('copy');
+      if (success) {
+        showToast('URL copied!', 'success');
+      } else {
+        // If copy still fails, show the URL for manual copy
+        showToast('Copy failed - URL: ' + text, 'info');
+      }
+    } catch (err) {
+      showToast('Copy failed - URL: ' + text, 'info');
+    }
+
+    document.body.removeChild(tempInput);
   }
 
   function clearForm() {
