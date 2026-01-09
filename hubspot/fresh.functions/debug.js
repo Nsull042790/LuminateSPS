@@ -1,9 +1,10 @@
-// Debug endpoint - shows HubDB table schema
+// Debug endpoint - shows HubDB table schema and specific row
 const https = require('https');
 
 exports.main = async (context, sendResponse) => {
   const token = process.env.HUBSPOT_PRIVATE_APP_TOKEN;
   const tableId = process.env.HUBDB_TABLE_ID;
+  const rowId = context.params.rowId ? context.params.rowId[0] : null;
 
   if (!token || !tableId) {
     return sendResponse({
@@ -14,21 +15,30 @@ exports.main = async (context, sendResponse) => {
 
   try {
     const schema = await getTableSchema(token, tableId);
-    const sampleRows = await getSampleRows(token, tableId);
+
+    // If rowId provided, get that specific row
+    let specificRow = null;
+    if (rowId) {
+      specificRow = await getRowById(token, tableId, rowId);
+    }
+
+    // Get recent rows to see slugs
+    const recentRows = await getRecentRows(token, tableId);
 
     sendResponse({
       statusCode: 200,
       body: {
         tableId: tableId,
         tableName: schema.name,
-        columns: schema.columns.map(c => ({
-          name: c.name,
-          label: c.label,
-          type: c.type,
-          isPathColumn: c.name === schema.dynamicMetaTag?.pathColumnId || c.id === schema.dynamicMetaTag?.pathColumnId
-        })),
-        dynamicMetaTag: schema.dynamicMetaTag,
-        sampleRow: sampleRows[0] ? sampleRows[0].values : null
+        dynamicMetaTag: schema.dynamicMetaTag || 'NOT SET',
+        specificRow: specificRow,
+        recentRows: recentRows.map(r => ({
+          id: r.id,
+          name: r.values.name,
+          slug: r.values.slug,
+          address: r.values.address,
+          city: r.values.city
+        }))
       }
     });
   } catch (error) {
@@ -62,11 +72,34 @@ function getTableSchema(token, tableId) {
   });
 }
 
-function getSampleRows(token, tableId) {
+function getRowById(token, tableId, rowId) {
   return new Promise((resolve, reject) => {
     const req = https.request({
       hostname: 'api.hubapi.com',
-      path: '/cms/v3/hubdb/tables/' + tableId + '/rows?limit=1',
+      path: '/cms/v3/hubdb/tables/' + tableId + '/rows/' + rowId,
+      method: 'GET',
+      headers: { 'Authorization': 'Bearer ' + token }
+    }, (res) => {
+      let d = '';
+      res.on('data', c => d += c);
+      res.on('end', () => {
+        try {
+          resolve(JSON.parse(d));
+        } catch (e) {
+          reject(new Error('Parse error: ' + d));
+        }
+      });
+    });
+    req.on('error', reject);
+    req.end();
+  });
+}
+
+function getRecentRows(token, tableId) {
+  return new Promise((resolve, reject) => {
+    const req = https.request({
+      hostname: 'api.hubapi.com',
+      path: '/cms/v3/hubdb/tables/' + tableId + '/rows?limit=5&sort=-hs_created_at',
       method: 'GET',
       headers: { 'Authorization': 'Bearer ' + token }
     }, (res) => {
