@@ -15,8 +15,8 @@
   var currentUserEmail = '';
   var currentUserName = '';
 
-  // Serverless function endpoints - explicitly use fresh.functions folder
-  var API_BASE = '/_hcms/api/fresh';
+  // Serverless function endpoints
+  var API_BASE = '/_hcms/api';
 
   // Safe file input trigger - prevents multiple dialogs
   var lastFileDialogTime = 0;
