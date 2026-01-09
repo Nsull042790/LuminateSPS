@@ -31,12 +31,15 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v3.3 (HubDB) initialized');
+    console.log('Property Generator v3.5 (HubDB) initialized');
 
     // Check for URL query parameters first (from HubSpot CRM integration)
     var urlParams = new URLSearchParams(window.location.search);
     var urlEmail = urlParams.get('email');
     var urlName = urlParams.get('name');
+
+    // Debug: log what we received
+    console.log('URL params - email:', urlEmail, 'name:', urlName);
 
     // Get user context from URL params or data attributes
     var container = document.getElementById('property-generator');
@@ -44,12 +47,12 @@
       // From HubSpot CRM card - use URL params
       currentUserEmail = urlEmail;
       currentUserName = urlName || '';
-      console.log('User from HubSpot:', currentUserEmail);
+      console.log('User from HubSpot:', currentUserEmail, currentUserName);
     } else if (container) {
       // From HubL context - use data attributes
       currentUserEmail = container.getAttribute('data-user-email') || '';
       currentUserName = container.getAttribute('data-user-name') || '';
-      console.log('User from HubL:', currentUserEmail);
+      console.log('User from HubL:', currentUserEmail, currentUserName);
     }
 
     // Update user info display if present

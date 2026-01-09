@@ -8,11 +8,16 @@ hubspot.extend(({ context, actions }) => (
 const PropertyGenerator = ({ context, actions }) => {
   const generatorUrl = 'https://244637957.hs-sites-na2.com/listing-generator';
 
-  // Get user info from HubSpot context
+  // Get user info from HubSpot context - try multiple possible field names
   const userEmail = context?.user?.email || '';
-  const firstName = context?.user?.firstName || '';
-  const lastName = context?.user?.lastName || '';
-  const userName = (firstName + ' ' + lastName).trim();
+  const firstName = context?.user?.firstName || context?.user?.first_name || '';
+  const lastName = context?.user?.lastName || context?.user?.last_name || '';
+  // Also check for a combined name field
+  const fullName = context?.user?.name || context?.user?.fullName || '';
+  const userName = fullName || (firstName + ' ' + lastName).trim();
+
+  // Debug: log what we have
+  console.log('HubSpot user context:', JSON.stringify(context?.user, null, 2));
 
   // URL with user params for auto-detection
   const generatorWithUser = `${generatorUrl}?email=${encodeURIComponent(userEmail)}&name=${encodeURIComponent(userName)}`;
