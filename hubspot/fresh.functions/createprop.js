@@ -46,6 +46,7 @@ exports.main = async (context, sendResponse) => {
   console.log('Generated slug:', slugVal);
 
   const rowData = {
+    path: slugVal,  // Required for HubDB dynamic pages - sets the URL path
     name: prop.address + ', ' + prop.city,
     slug: slugVal,
     address: prop.address,
