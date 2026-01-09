@@ -880,11 +880,11 @@
 
     if (realtorAvatar) {
       realtorAvatar.removeAttribute('data-listener-attached');
-      realtorAvatar.innerHTML = '<span>&#128100;</span><input type="file" accept="image/*" id="realtor-photo-input">';
+      realtorAvatar.innerHTML = '<span>&#128100;</span><input type="file" accept="image/*" id="realtor-photo-input" hidden>';
     }
     if (loAvatar) {
       loAvatar.removeAttribute('data-listener-attached');
-      loAvatar.innerHTML = '<span>&#128100;</span><input type="file" accept="image/*" id="lo-photo-input">';
+      loAvatar.innerHTML = '<span>&#128100;</span><input type="file" accept="image/*" id="lo-photo-input" hidden>';
     }
     if (logoArea) {
       logoArea.removeAttribute('data-listener-attached');
