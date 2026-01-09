@@ -46,7 +46,6 @@ exports.main = async (context, sendResponse) => {
   console.log('Generated slug:', slugVal);
 
   const rowData = {
-    path: slugVal,  // Required for HubDB dynamic pages - sets the URL path
     name: prop.address + ', ' + prop.city,
     slug: slugVal,
     address: prop.address,
@@ -83,7 +82,7 @@ exports.main = async (context, sendResponse) => {
   try {
     // STEP 1: Create the row (goes to draft)
     console.log('STEP 1: Creating row in HubDB draft...');
-    const createResult = await createRow(token, tableId, rowData);
+    const createResult = await createRow(token, tableId, rowData, slugVal);
     console.log('Row created - ID:', createResult.id);
 
     // STEP 2: Publish the table
@@ -149,10 +148,15 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function createRow(token, tableId, data) {
+function createRow(token, tableId, data, path) {
   return new Promise((resolve, reject) => {
-    const postBody = JSON.stringify({ values: data });
-    console.log('Creating row with', Object.keys(data).length, 'fields');
+    // path goes at root level for HubDB dynamic pages, values contains the column data
+    const requestBody = { values: data };
+    if (path) {
+      requestBody.path = path;
+    }
+    const postBody = JSON.stringify(requestBody);
+    console.log('Creating row with', Object.keys(data).length, 'fields, path:', path);
 
     const req = https.request({
       hostname: 'api.hubapi.com',
