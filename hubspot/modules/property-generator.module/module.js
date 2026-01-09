@@ -1,4 +1,4 @@
-// Property Generator Module JavaScript v4.0 - HubDB Version
+// Property Generator Module JavaScript v4.1 - HubDB Version
 // Uses HubDB for data storage with dynamic pages
 (function() {
   var uploadedPhotos = [];
@@ -43,7 +43,7 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v4.0 (HubDB) initialized');
+    console.log('Property Generator v4.1 (HubDB) initialized');
 
     // Check for URL query parameters first (from HubSpot CRM integration)
     var urlParams = new URLSearchParams(window.location.search);
