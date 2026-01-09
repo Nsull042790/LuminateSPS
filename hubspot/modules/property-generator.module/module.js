@@ -835,7 +835,13 @@
             var prop = data.properties[i];
             // HubDB rows have values in a nested 'values' object
             var vals = prop.values || prop;
-            var propUrl = '/properties-1/' + (vals.slug || '');
+            // Use path first (HubDB dynamic page path), then slug, then generate from name
+            var pathVal = prop.path || vals.path || vals.slug || '';
+            if (!pathVal && vals.name) {
+              // Generate slug from name as fallback
+              pathVal = vals.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            }
+            var propUrl = '/properties-1/' + pathVal;
             var propName = vals.name || vals.address || 'Property';
             var propPrice = vals.price || 0;
             html += '<div class="site-item" data-id="' + prop.id + '">';
