@@ -1,4 +1,4 @@
-// Property Generator Module JavaScript v4.2 - HubDB Version
+// Property Generator Module JavaScript v4.3 - HubDB Version
 // Uses HubDB for data storage with dynamic pages
 (function() {
   var uploadedPhotos = [];
@@ -43,7 +43,7 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v4.2 (HubDB) initialized');
+    console.log('Property Generator v4.3 (HubDB) initialized');
 
     // Check for URL query parameters first (from HubSpot CRM integration)
     var urlParams = new URLSearchParams(window.location.search);
@@ -272,7 +272,7 @@
     reader.onload = function(e) {
       var base64 = e.target.result.split(',')[1];
 
-      fetch(API_BASE + '/uploadfile', {
+      fetch(API_BASE + '/upload-file', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -573,7 +573,7 @@
     btn.textContent = 'Creating...';
 
     // Send data to HubDB via serverless function
-    fetch(API_BASE + '/createprop', {
+    fetch(API_BASE + '/create-property', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -811,7 +811,7 @@
       return;
     }
 
-    fetch(API_BASE + '/listprops?email=' + encodeURIComponent(currentUserEmail))
+    fetch(API_BASE + '/list-properties?email=' + encodeURIComponent(currentUserEmail))
       .then(function(res) { return res.json(); })
       .then(function(data) {
         var list = document.getElementById('sites-list');
@@ -862,7 +862,7 @@
   }
 
   function deleteProperty(rowId) {
-    fetch(API_BASE + '/deleteprop', {
+    fetch(API_BASE + '/delete-property', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
