@@ -1,4 +1,4 @@
-// Property Generator Module JavaScript v3.4 - HubDB Version
+// Property Generator Module JavaScript v3.5 - HubDB Version
 // Uses HubDB for data storage with dynamic pages
 (function() {
   var uploadedPhotos = [];
@@ -6,6 +6,7 @@
   var realtorLogo = null;
   var loanOfficerPhoto = null;
   var draggedPhotoIndex = null;
+  var fileDialogOpen = false; // Prevent multiple file dialogs
 
   // LO Company Logo - always Luminate Bank
   var LO_COMPANY_LOGO = 'https://lirp.cdn-website.com/e49062f7/dms3rep/multi/opt/LuminateBank_SecondaryLogo_Color-1920w.png';
@@ -16,6 +17,17 @@
 
   // Serverless function endpoints
   var API_BASE = '/_hcms/api';
+
+  // Safe file input trigger - prevents multiple dialogs
+  function triggerFileInput(input) {
+    if (fileDialogOpen) return;
+    fileDialogOpen = true;
+    input.click();
+    // Reset flag after a delay (dialog closed)
+    setTimeout(function() {
+      fileDialogOpen = false;
+    }, 500);
+  }
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
@@ -130,7 +142,7 @@
 
     logoArea.addEventListener('click', function(e) {
       e.stopPropagation();
-      logoInput.click();
+      triggerFileInput(logoInput);
     });
 
     logoInput.addEventListener('change', function(e) {
@@ -182,7 +194,7 @@
 
     uploadArea.addEventListener('click', function(e) {
       e.stopPropagation();
-      photoInput.click();
+      triggerFileInput(photoInput);
     });
 
     uploadArea.addEventListener('dragover', function(e) {
@@ -374,7 +386,7 @@
 
     avatar.addEventListener('click', function(e) {
       e.stopPropagation();
-      input.click();
+      triggerFileInput(input);
     });
 
     input.addEventListener('change', function(e) {
