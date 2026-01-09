@@ -1,11 +1,13 @@
-// Create Property in HubDB - v5.0
+// Create Property in HubDB - v5.1
+// Fixed: Added delay between publish and verification for propagation
 const https = require('https');
 
 exports.main = async (context, sendResponse) => {
-  console.log('createprop v5.0 - Starting property creation');
+  console.log('=== createprop v5.1 START ===');
   const body = context.body;
 
   if (!body || !body.property || !body.userEmail) {
+    console.log('ERROR: Missing required fields');
     return sendResponse({
       statusCode: 400,
       body: { error: 'Missing required fields: property, userEmail' }
@@ -16,7 +18,7 @@ exports.main = async (context, sendResponse) => {
   const tableId = process.env.HUBDB_TABLE_ID;
 
   if (!token) {
-    console.error('ERROR: HUBSPOT_PRIVATE_APP_TOKEN not available');
+    console.error('FATAL: HUBSPOT_PRIVATE_APP_TOKEN not available');
     return sendResponse({
       statusCode: 500,
       body: { error: 'Server configuration error: missing API token' }
@@ -24,17 +26,23 @@ exports.main = async (context, sendResponse) => {
   }
 
   if (!tableId) {
-    console.error('ERROR: HUBDB_TABLE_ID not available');
+    console.error('FATAL: HUBDB_TABLE_ID not available');
     return sendResponse({
       statusCode: 500,
       body: { error: 'Server configuration error: missing table ID' }
     });
   }
 
-  console.log('Using tableId:', tableId);
+  console.log('Config OK - tableId:', tableId, 'token length:', token.length);
 
   const prop = body.property;
-  const slugVal = (prop.address + '-' + prop.city).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+  // Generate slug from address and city
+  const slugVal = (prop.address + '-' + prop.city)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+
   console.log('Generated slug:', slugVal);
 
   const rowData = {
@@ -72,46 +80,63 @@ exports.main = async (context, sendResponse) => {
   };
 
   try {
-    // Step 1: Create the row (goes to draft)
-    console.log('Step 1: Creating row in draft table...');
-    const result = await createRow(token, tableId, rowData);
-    console.log('Row created with ID:', result.id);
+    // STEP 1: Create the row (goes to draft)
+    console.log('STEP 1: Creating row in HubDB draft...');
+    const createResult = await createRow(token, tableId, rowData);
+    console.log('Row created - ID:', createResult.id);
 
-    // Step 2: Publish the table
-    console.log('Step 2: Publishing table...');
+    // STEP 2: Publish the table
+    console.log('STEP 2: Publishing table...');
     const publishResult = await publishTable(token, tableId);
-    console.log('Table published successfully');
+    console.log('Publish complete - status:', publishResult.status);
 
-    // Step 3: Verify the row exists in published table
-    console.log('Step 3: Verifying row in published table...');
-    const verified = await verifyPublishedRow(token, tableId, result.id);
-
-    if (!verified) {
-      console.error('WARNING: Row created but not found in published table');
-      // Still return success since row was created, but flag the issue
-      sendResponse({
-        statusCode: 200,
+    if (!publishResult.success) {
+      console.error('PUBLISH FAILED:', publishResult.error);
+      return sendResponse({
+        statusCode: 500,
         body: {
-          success: true,
-          rowId: result.id,
+          error: 'Failed to publish: ' + publishResult.error,
+          rowId: createResult.id,
           slug: slugVal,
-          warning: 'Row created but publish verification pending. Page may take a moment to appear.'
-        }
-      });
-    } else {
-      console.log('Row verified in published table - SUCCESS');
-      sendResponse({
-        statusCode: 200,
-        body: {
-          success: true,
-          rowId: result.id,
-          slug: slugVal,
-          verified: true
+          published: false
         }
       });
     }
+
+    // STEP 3: Wait for propagation (1.5 seconds)
+    console.log('STEP 3: Waiting 1.5s for propagation...');
+    await sleep(1500);
+
+    // STEP 4: Verify row exists in published table
+    console.log('STEP 4: Verifying row in published table...');
+    const verified = await verifyPublishedRow(token, tableId, createResult.id);
+    console.log('Verification result:', verified);
+
+    // Return full status
+    const response = {
+      success: true,
+      rowId: createResult.id,
+      slug: slugVal,
+      published: publishResult.success,
+      verified: verified,
+      version: '5.1'
+    };
+
+    if (!verified) {
+      response.warning = 'Row created but verification pending. Page may take up to 60 seconds to appear.';
+    }
+
+    console.log('=== createprop v5.1 COMPLETE ===');
+    console.log('Response:', JSON.stringify(response));
+
+    sendResponse({
+      statusCode: 200,
+      body: response
+    });
+
   } catch (error) {
-    console.error('Create property error:', error.message);
+    console.error('=== createprop v5.1 ERROR ===');
+    console.error('Error:', error.message);
     sendResponse({
       statusCode: 500,
       body: { error: error.message }
@@ -119,42 +144,56 @@ exports.main = async (context, sendResponse) => {
   }
 };
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function createRow(token, tableId, data) {
   return new Promise((resolve, reject) => {
     const postBody = JSON.stringify({ values: data });
+    console.log('Creating row with', Object.keys(data).length, 'fields');
+
     const req = https.request({
       hostname: 'api.hubapi.com',
       path: '/cms/v3/hubdb/tables/' + tableId + '/rows',
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + token,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(postBody)
       }
     }, (res) => {
       let d = '';
       res.on('data', c => d += c);
       res.on('end', () => {
+        console.log('CreateRow response status:', res.statusCode);
         try {
           const r = JSON.parse(d);
           if (r.id) {
             resolve(r);
           } else {
-            reject(new Error(r.message || JSON.stringify(r)));
+            console.error('CreateRow failed:', d);
+            reject(new Error(r.message || 'Failed to create row: ' + d));
           }
         } catch (e) {
-          reject(new Error('Parse error: ' + d));
+          console.error('CreateRow parse error:', d);
+          reject(new Error('Parse error: ' + d.substring(0, 200)));
         }
       });
     });
-    req.on('error', reject);
+    req.on('error', (e) => {
+      console.error('CreateRow network error:', e.message);
+      reject(e);
+    });
     req.write(postBody);
     req.end();
   });
 }
 
 function publishTable(token, tableId) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     console.log('Publishing table:', tableId);
+
     const req = https.request({
       hostname: 'api.hubapi.com',
       path: '/cms/v3/hubdb/tables/' + tableId + '/draft/publish',
@@ -167,27 +206,27 @@ function publishTable(token, tableId) {
       let d = '';
       res.on('data', c => d += c);
       res.on('end', () => {
-        console.log('Publish response status:', res.statusCode);
-        console.log('Publish response body:', d);
+        console.log('Publish response - status:', res.statusCode, 'body:', d.substring(0, 200));
+
         if (res.statusCode >= 200 && res.statusCode < 300) {
-          resolve(d);
+          resolve({ success: true, status: res.statusCode, body: d });
         } else {
-          reject(new Error('Publish failed (HTTP ' + res.statusCode + '): ' + d));
+          resolve({ success: false, status: res.statusCode, error: d });
         }
       });
     });
     req.on('error', (e) => {
       console.error('Publish network error:', e.message);
-      reject(e);
+      resolve({ success: false, status: 0, error: e.message });
     });
     req.end();
   });
 }
 
-// Verify that a row exists in the PUBLISHED table (not draft)
 function verifyPublishedRow(token, tableId, rowId) {
   return new Promise((resolve) => {
-    console.log('Verifying row', rowId, 'in published table', tableId);
+    console.log('Verifying row', rowId, 'exists in published table');
+
     const req = https.request({
       hostname: 'api.hubapi.com',
       path: '/cms/v3/hubdb/tables/' + tableId + '/rows/' + rowId,
@@ -199,18 +238,24 @@ function verifyPublishedRow(token, tableId, rowId) {
       let d = '';
       res.on('data', c => d += c);
       res.on('end', () => {
-        console.log('Verify response status:', res.statusCode);
+        console.log('Verify response - status:', res.statusCode);
+
         if (res.statusCode === 200) {
           try {
             const row = JSON.parse(d);
-            console.log('Row found in published table:', row.id);
-            resolve(true);
+            if (row.id) {
+              console.log('Row VERIFIED in published table');
+              resolve(true);
+            } else {
+              console.log('Row response missing id');
+              resolve(false);
+            }
           } catch (e) {
-            console.error('Verify parse error:', e.message);
+            console.error('Verify parse error');
             resolve(false);
           }
         } else {
-          console.log('Row not found in published table, status:', res.statusCode);
+          console.log('Row NOT found in published table');
           resolve(false);
         }
       });

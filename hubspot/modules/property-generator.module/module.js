@@ -1,4 +1,4 @@
-// Property Generator Module JavaScript v4.9 - HubDB Version
+// Property Generator Module JavaScript v5.1 - HubDB Version
 // Uses HubDB for data storage with dynamic pages
 (function() {
   var uploadedPhotos = [];
@@ -43,7 +43,7 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v4.9 (HubDB) initialized');
+    console.log('Property Generator v5.1 (HubDB) initialized');
 
     // Check for URL query parameters first (from HubSpot CRM integration)
     var urlParams = new URLSearchParams(window.location.search);
@@ -585,14 +585,26 @@
       btn.disabled = false;
       btn.textContent = 'Create Property Site';
 
+      console.log('createprop response:', JSON.stringify(result));
+
       if (result.success && result.slug) {
-        // Build URL from slug - adjust domain as needed for your HubSpot portal
+        // Build URL from slug
         var propertyUrl = '/properties-1/' + result.slug;
         document.getElementById('success-url').textContent = propertyUrl;
         document.getElementById('success-url').href = propertyUrl;
         document.getElementById('success-modal').classList.add('active');
         loadExistingProperties();
-        showToast('Property site created!', 'success');
+
+        // Check verification status and show appropriate message
+        if (result.verified === true) {
+          showToast('Property site created and verified!', 'success');
+        } else if (result.warning) {
+          showToast('Property created - page may take up to 60 seconds to appear', 'info');
+        } else if (result.published === false) {
+          showToast('Warning: Property saved but publish may have failed. Check in a minute.', 'error');
+        } else {
+          showToast('Property site created!', 'success');
+        }
       } else {
         showToast('Error: ' + (result.error || 'Could not create property'), 'error');
       }
