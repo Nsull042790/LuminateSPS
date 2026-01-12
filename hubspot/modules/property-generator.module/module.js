@@ -310,7 +310,7 @@
       var isHero = (i === 0);
       html += '<div class="pg-photo-item' + (isHero ? ' hero-photo' : '') + '" draggable="true" data-index="' + i + '">';
       if (isHero) {
-        html += '<span class="hero-badge">HERO</span>';
+        html += '<span class="hero-badge">FEATURED</span>';
       }
       html += '<span class="photo-number">' + (i + 1) + '</span>';
       html += '<img src="' + photoUrl + '" alt="Photo ' + (i + 1) + '">';
@@ -504,6 +504,7 @@
     var data = {
       property: {
         address: getValue('address'),
+        address2: getValue('address2') || '',
         city: getValue('city'),
         state: getValue('state'),
         zip: getValue('zip'),

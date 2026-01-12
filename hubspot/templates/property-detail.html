@@ -279,7 +279,7 @@
     {% endif %}
     <div class="hero-overlay">
       <div class="hero-content">
-        <h1>{{ row.address }}</h1>
+        <h1>{{ row.address }}{% if row.address2 %} {{ row.address2 }}{% endif %}</h1>
         <p class="location">{{ row.city }}, {{ row.state }} {{ row.zip }}</p>
         <div class="price">${{ row.price|format_number }}</div>
         <div class="stats">

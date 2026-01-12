@@ -46,9 +46,10 @@ exports.main = async (context, sendResponse) => {
   console.log('Generated slug:', slugVal);
 
   const rowData = {
-    name: prop.address + ', ' + prop.city,
+    name: prop.address + (prop.address2 ? ' ' + prop.address2 : '') + ', ' + prop.city,
     slug: slugVal,
     address: prop.address,
+    address2: prop.address2 || '',
     city: prop.city,
     state: prop.state || '',
     zip: prop.zip || '',
