@@ -25,6 +25,14 @@
     "deleteprop": {
       "method": "POST",
       "file": "deleteprop.js"
+    },
+    "getprop": {
+      "method": "GET",
+      "file": "getprop.js"
+    },
+    "updateprop": {
+      "method": "POST",
+      "file": "updateprop.js"
     }
   }
 }

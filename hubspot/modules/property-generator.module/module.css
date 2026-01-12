@@ -602,6 +602,47 @@ main,
   display: none !important;
 }
 
+/* Edit Mode Banner */
+.pg-edit-banner {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  grid-column: 1 / -1;
+  font-weight: 500;
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+}
+
+.edit-banner-icon {
+  font-size: 1.3em;
+}
+
+.edit-banner-text {
+  flex: 1;
+}
+
+/* Edit mode button styling */
+.btn-primary.edit-mode {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.btn-primary.edit-mode:hover {
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+}
+
+/* Edit button in sidebar */
+.site-item .edit-site {
+  color: var(--accent);
+}
+
+.site-item .edit-site:hover {
+  color: var(--primary);
+}
+
 /* Photo Reorder Features */
 .pg-photo-item {
   cursor: grab;

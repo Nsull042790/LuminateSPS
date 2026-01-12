@@ -8,6 +8,11 @@
   var draggedPhotoIndex = null;
   var fileDialogOpen = false; // Prevent multiple file dialogs
 
+  // Edit mode tracking
+  var editMode = false;
+  var currentEditRowId = null;
+  var currentEditSlug = null;
+
   // LO Company Logo - always Luminate Bank
   var LO_COMPANY_LOGO = 'https://lirp.cdn-website.com/e49062f7/dms3rep/multi/opt/LuminateBank_SecondaryLogo_Color-1920w.png';
 
@@ -571,51 +576,94 @@
 
     var btn = document.getElementById('generate-btn');
     btn.disabled = true;
-    btn.textContent = 'Creating...';
 
-    // Send data to HubDB via serverless function
-    fetch(API_BASE + '/createprop', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-    .then(function(res) { return res.json(); })
-    .then(function(result) {
-      btn.disabled = false;
-      btn.textContent = 'Create Property Site';
+    // Check if we're in edit mode
+    if (editMode && currentEditRowId) {
+      btn.textContent = 'Updating...';
+      data.rowId = currentEditRowId;
 
-      console.log('createprop response:', JSON.stringify(result));
+      // Send update request
+      fetch(API_BASE + '/updateprop', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(result) {
+        btn.disabled = false;
+        updateEditModeUI();
 
-      if (result.success && result.slug) {
-        // Build URL from slug
-        var propertyUrl = '/properties-1/' + result.slug;
-        document.getElementById('success-url').textContent = propertyUrl;
-        document.getElementById('success-url').href = propertyUrl;
-        document.getElementById('success-modal').classList.add('active');
-        loadExistingProperties();
+        console.log('updateprop response:', JSON.stringify(result));
 
-        // Check verification status and show appropriate message
-        if (result.verified === true) {
-          showToast('Property site created and verified!', 'success');
-        } else if (result.warning) {
-          showToast('Property created - page may take up to 60 seconds to appear', 'info');
-        } else if (result.published === false) {
-          showToast('Warning: Property saved but publish may have failed. Check in a minute.', 'error');
+        if (result.success) {
+          var propertyUrl = '/properties-1/' + (result.slug || currentEditSlug);
+          document.getElementById('success-url').textContent = propertyUrl;
+          document.getElementById('success-url').href = propertyUrl;
+          document.getElementById('success-modal').classList.add('active');
+          loadExistingProperties();
+          showToast('Property updated successfully!', 'success');
+
+          // Exit edit mode after successful update
+          cancelEdit(true); // silent cancel
         } else {
-          showToast('Property site created!', 'success');
+          showToast('Error: ' + (result.error || 'Could not update property'), 'error');
         }
-      } else {
-        showToast('Error: ' + (result.error || 'Could not create property'), 'error');
-      }
-    })
-    .catch(function(err) {
-      btn.disabled = false;
-      btn.textContent = 'Create Property Site';
-      showToast('Error creating property', 'error');
-      console.error(err);
-    });
+      })
+      .catch(function(err) {
+        btn.disabled = false;
+        updateEditModeUI();
+        showToast('Error updating property', 'error');
+        console.error(err);
+      });
+    } else {
+      // Create new property
+      btn.textContent = 'Creating...';
+
+      fetch(API_BASE + '/createprop', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(result) {
+        btn.disabled = false;
+        btn.textContent = 'Create Property Site';
+
+        console.log('createprop response:', JSON.stringify(result));
+
+        if (result.success && result.slug) {
+          // Build URL from slug
+          var propertyUrl = '/properties-1/' + result.slug;
+          document.getElementById('success-url').textContent = propertyUrl;
+          document.getElementById('success-url').href = propertyUrl;
+          document.getElementById('success-modal').classList.add('active');
+          loadExistingProperties();
+
+          // Check verification status and show appropriate message
+          if (result.verified === true) {
+            showToast('Property site created and verified!', 'success');
+          } else if (result.warning) {
+            showToast('Property created - page may take up to 60 seconds to appear', 'info');
+          } else if (result.published === false) {
+            showToast('Warning: Property saved but publish may have failed. Check in a minute.', 'error');
+          } else {
+            showToast('Property site created!', 'success');
+          }
+        } else {
+          showToast('Error: ' + (result.error || 'Could not create property'), 'error');
+        }
+      })
+      .catch(function(err) {
+        btn.disabled = false;
+        btn.textContent = 'Create Property Site';
+        showToast('Error creating property', 'error');
+        console.error(err);
+      });
+    }
   }
 
   function previewProperty() {
@@ -851,6 +899,7 @@
             html += '<span class="site-price">$' + propPrice.toLocaleString() + '</span>';
             html += '</div>';
             html += '<div class="actions">';
+            html += '<button type="button" class="edit-site" data-id="' + prop.id + '" title="Edit">&#9998;</button>';
             html += '<button type="button" class="copy-site-url" data-url="' + propUrl + '" title="Copy URL">&#128203;</button>';
             html += '<button type="button" class="delete-site" data-id="' + prop.id + '" title="Delete">&#128465;</button>';
             html += '</div></div>';
@@ -858,6 +907,12 @@
           list.innerHTML = html;
 
           // Add handlers
+          list.querySelectorAll('.edit-site').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+              var rowId = this.getAttribute('data-id');
+              loadPropertyForEdit(rowId);
+            });
+          });
           list.querySelectorAll('.copy-site-url').forEach(function(btn) {
             btn.addEventListener('click', function() {
               navigator.clipboard.writeText(this.getAttribute('data-url'));
@@ -954,6 +1009,14 @@
   }
 
   function clearForm() {
+    // If in edit mode, this acts as cancel
+    if (editMode) {
+      editMode = false;
+      currentEditRowId = null;
+      currentEditSlug = null;
+      updateEditModeUI();
+    }
+
     // Direct clear - confirm() doesn't work in sandboxed iframes
     document.getElementById('property-form').reset();
     uploadedPhotos = [];
@@ -999,5 +1062,173 @@
     setTimeout(function() {
       toast.remove();
     }, 3000);
+  }
+
+  // ===== EDIT MODE FUNCTIONS =====
+
+  function loadPropertyForEdit(rowId) {
+    showToast('Loading property...', 'info');
+
+    fetch(API_BASE + '/getprop?id=' + rowId + '&email=' + encodeURIComponent(currentUserEmail))
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data.success && data.property) {
+          populateFormFromProperty(data.property);
+          editMode = true;
+          currentEditRowId = rowId;
+          currentEditSlug = data.property.values.slug || data.property.path;
+          updateEditModeUI();
+          showToast('Property loaded for editing', 'success');
+
+          // Scroll to top of form
+          var form = document.getElementById('property-form');
+          if (form) {
+            form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        } else {
+          showToast('Error: ' + (data.error || 'Could not load property'), 'error');
+        }
+      })
+      .catch(function(err) {
+        console.error('Error loading property:', err);
+        showToast('Error loading property', 'error');
+      });
+  }
+
+  function populateFormFromProperty(prop) {
+    var vals = prop.values || prop;
+    var form = document.getElementById('property-form');
+
+    function setValue(name, value) {
+      var el = form.querySelector('[name="' + name + '"]');
+      if (el && value !== undefined && value !== null) {
+        el.value = value;
+      }
+    }
+
+    // Property info
+    setValue('address', vals.address);
+    setValue('address2', vals.address2);
+    setValue('city', vals.city);
+    setValue('state', vals.state);
+    setValue('zip', vals.zip);
+    setValue('price', vals.price ? '$' + parseInt(vals.price).toLocaleString() : '');
+    setValue('bedrooms', vals.bedrooms);
+    setValue('bathrooms', vals.bathrooms);
+    setValue('sqft', vals.sqft ? parseInt(vals.sqft).toLocaleString() : '');
+    setValue('yearBuilt', vals.year_built);
+    setValue('mlsNumber', vals.mls_number);
+    setValue('description', vals.description);
+    setValue('features', vals.features);
+
+    // Realtor info
+    setValue('realtorName', vals.realtor_name);
+    setValue('realtorTitle', vals.realtor_title);
+    setValue('realtorCompany', vals.realtor_company);
+    setValue('realtorPhone', vals.realtor_phone);
+    setValue('realtorEmail', vals.realtor_email);
+    setValue('realtorLicense', vals.realtor_license);
+
+    // Load realtor photo
+    if (vals.realtor_photo) {
+      realtorPhoto = vals.realtor_photo;
+      var realtorAvatar = document.getElementById('realtor-avatar');
+      if (realtorAvatar) {
+        realtorAvatar.innerHTML = '<img src="' + vals.realtor_photo + '" alt="Photo"><input type="file" accept="image/*" id="realtor-photo-input" hidden>';
+        realtorAvatar.removeAttribute('data-listener-attached');
+        setupContactPhotoUploads();
+      }
+    }
+
+    // LO info
+    setValue('loName', vals.lo_name);
+    setValue('loTitle', vals.lo_title);
+    setValue('loCompany', vals.lo_company);
+    setValue('loPhone', vals.lo_phone);
+    setValue('loEmail', vals.lo_email);
+    setValue('loNmls', vals.lo_nmls);
+
+    // Load LO photo
+    if (vals.lo_photo) {
+      loanOfficerPhoto = vals.lo_photo;
+      var loAvatar = document.getElementById('lo-avatar');
+      if (loAvatar) {
+        loAvatar.innerHTML = '<img src="' + vals.lo_photo + '" alt="Photo"><input type="file" accept="image/*" id="lo-photo-input" hidden>';
+        loAvatar.removeAttribute('data-listener-attached');
+        setupContactPhotoUploads();
+      }
+    }
+
+    // Neighborhood
+    var showNeighborhood = document.getElementById('show-neighborhood');
+    var neighborhoodFields = document.getElementById('neighborhood-fields');
+    if (showNeighborhood && neighborhoodFields) {
+      showNeighborhood.checked = vals.show_neighborhood || false;
+      if (vals.show_neighborhood) {
+        neighborhoodFields.classList.remove('hidden');
+      } else {
+        neighborhoodFields.classList.add('hidden');
+      }
+    }
+    setValue('walkScore', vals.walk_score);
+    setValue('transitScore', vals.transit_score);
+    setValue('bikeScore', vals.bike_score);
+    setValue('amenities', vals.amenities);
+
+    // Photos - parse JSON string
+    uploadedPhotos = [];
+    if (vals.photos) {
+      try {
+        var photosArray = typeof vals.photos === 'string' ? JSON.parse(vals.photos) : vals.photos;
+        if (Array.isArray(photosArray)) {
+          uploadedPhotos = photosArray;
+        }
+      } catch (e) {
+        console.error('Error parsing photos:', e);
+      }
+    }
+    renderPhotoPreview();
+  }
+
+  function updateEditModeUI() {
+    var btn = document.getElementById('generate-btn');
+    var editBanner = document.getElementById('edit-mode-banner');
+    var clearBtn = document.getElementById('clear-btn');
+
+    if (editMode) {
+      if (btn) {
+        btn.textContent = 'Update Property Site';
+        btn.classList.add('edit-mode');
+      }
+      if (editBanner) {
+        editBanner.style.display = 'flex';
+      }
+      if (clearBtn) {
+        clearBtn.textContent = 'Cancel Edit';
+      }
+    } else {
+      if (btn) {
+        btn.textContent = 'Create Property Site';
+        btn.classList.remove('edit-mode');
+      }
+      if (editBanner) {
+        editBanner.style.display = 'none';
+      }
+      if (clearBtn) {
+        clearBtn.textContent = 'Clear Form';
+      }
+    }
+  }
+
+  function cancelEdit(silent) {
+    editMode = false;
+    currentEditRowId = null;
+    currentEditSlug = null;
+    updateEditModeUI();
+
+    if (!silent) {
+      clearForm();
+      showToast('Edit cancelled', 'info');
+    }
   }
 })();
