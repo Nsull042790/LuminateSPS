@@ -10,10 +10,6 @@
       "method": "GET",
       "file": "test.js"
     },
-    "debug": {
-      "method": "GET",
-      "file": "debug.js"
-    },
     "uploadfile": {
       "method": "POST",
       "file": "uploadfile.js"

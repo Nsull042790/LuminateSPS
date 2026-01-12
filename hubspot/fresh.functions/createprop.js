@@ -14,6 +14,26 @@ exports.main = async (context, sendResponse) => {
     });
   }
 
+  // Server-side validation
+  const MAX_DESCRIPTION_LENGTH = 5000;
+  const MAX_PHOTOS = 20;
+
+  if (body.property.description && body.property.description.length > MAX_DESCRIPTION_LENGTH) {
+    console.log('ERROR: Description too long:', body.property.description.length);
+    return sendResponse({
+      statusCode: 400,
+      body: { error: 'Description exceeds maximum length of ' + MAX_DESCRIPTION_LENGTH + ' characters' }
+    });
+  }
+
+  if (body.photos && body.photos.length > MAX_PHOTOS) {
+    console.log('ERROR: Too many photos:', body.photos.length);
+    return sendResponse({
+      statusCode: 400,
+      body: { error: 'Maximum ' + MAX_PHOTOS + ' photos allowed' }
+    });
+  }
+
   const token = process.env.HUBSPOT_PRIVATE_APP_TOKEN;
   const tableId = process.env.HUBDB_TABLE_ID;
 
