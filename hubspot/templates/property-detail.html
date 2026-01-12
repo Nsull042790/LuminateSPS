@@ -383,6 +383,39 @@
   </section>
   {% endif %}
 
+  <!-- Neighborhood Info -->
+  {% if row.show_neighborhood and (row.walk_score or row.transit_score or row.bike_score or row.amenities) %}
+  <section class="section">
+    <h2 class="section-title">Neighborhood</h2>
+    <div style="display: flex; gap: 30px; flex-wrap: wrap; margin-bottom: 30px;">
+      {% if row.walk_score %}
+      <div style="text-align: center; padding: 20px 30px; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
+        <div style="font-size: 2.5em; font-weight: bold; color: #0d173c;">{{ row.walk_score }}</div>
+        <div style="color: #718096; font-size: 0.9em;">Walk Score</div>
+      </div>
+      {% endif %}
+      {% if row.transit_score %}
+      <div style="text-align: center; padding: 20px 30px; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
+        <div style="font-size: 2.5em; font-weight: bold; color: #0d173c;">{{ row.transit_score }}</div>
+        <div style="color: #718096; font-size: 0.9em;">Transit Score</div>
+      </div>
+      {% endif %}
+      {% if row.bike_score %}
+      <div style="text-align: center; padding: 20px 30px; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
+        <div style="font-size: 2.5em; font-weight: bold; color: #0d173c;">{{ row.bike_score }}</div>
+        <div style="color: #718096; font-size: 0.9em;">Bike Score</div>
+      </div>
+      {% endif %}
+    </div>
+    {% if row.amenities %}
+    <div>
+      <h3 style="color: #0d173c; margin-bottom: 15px;">Nearby Amenities</h3>
+      <p style="color: #4a5568; line-height: 1.8;">{{ row.amenities }}</p>
+    </div>
+    {% endif %}
+  </section>
+  {% endif %}
+
   <!-- Mortgage Calculator -->
   <section class="section">
     <h2 class="section-title">Mortgage Calculator</h2>
