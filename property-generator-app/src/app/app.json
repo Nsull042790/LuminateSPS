@@ -1,0 +1,15 @@
+{
+  "name": "Property Generator",
+  "description": "Create property listing pages for real estate",
+  "scopes": ["crm.objects.contacts.read", "files", "hubdb"],
+  "public": false,
+  "extensions": {
+    "crm": {
+      "cards": [
+        {
+          "file": "extensions/PropertyGeneratorCard.json"
+        }
+      ]
+    }
+  }
+}

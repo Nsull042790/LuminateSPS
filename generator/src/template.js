@@ -1,9 +1,84 @@
-<!DOCTYPE html>
+/**
+ * HTML Template Generator for Property Websites
+ */
+
+function generatePropertyHTML(data) {
+  const {
+    property,
+    realtor,
+    loanOfficer,
+    photos,
+    testimonials = [],
+    showNeighborhood = true
+  } = data;
+
+  // Format price with commas
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(price);
+  };
+
+  // Format number with commas
+  const formatNumber = (num) => {
+    return new Intl.NumberFormat('en-US').format(num);
+  };
+
+  // Generate photo gallery items
+  const galleryItems = photos.map((photo, index) => `
+                <div class="gallery-item" data-index="${index}">
+                    <img src="${photo.url}" alt="${photo.label || 'Property Photo'}" loading="lazy">
+                    <span class="gallery-label">${photo.label || 'Photo ' + (index + 1)}</span>
+                </div>`).join('\n');
+
+  // Generate gallery images array for JavaScript
+  const galleryImagesJS = photos.map(p => `'${p.url}'`).join(',\n            ');
+
+  // Generate testimonials
+  const testimonialCards = testimonials.length > 0 ? testimonials.map(t => `
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">${'★'.repeat(t.rating || 5)}${'☆'.repeat(5 - (t.rating || 5))}</div>
+                    <p class="testimonial-text">"${t.text}"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">${t.initials || t.name.split(' ').map(n => n[0]).join('')}</div>
+                        <div class="testimonial-info">
+                            <h4>${t.name}</h4>
+                            <p>${t.title || 'Homeowner'}</p>
+                        </div>
+                    </div>
+                </div>`).join('\n') : `
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">"${realtor.name} and ${loanOfficer.name} made our home buying experience seamless! We couldn't be happier with our new home!"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">JD</div>
+                        <div class="testimonial-info">
+                            <h4>Happy Homebuyer</h4>
+                            <p>First-Time Homebuyer</p>
+                        </div>
+                    </div>
+                </div>`;
+
+  // Realtor photo or placeholder
+  const realtorPhoto = realtor.photo
+    ? `<img src="${realtor.photo}" alt="${realtor.name}" class="contact-photo">`
+    : `<div class="contact-photo-placeholder"><span class="photo-icon">👤</span></div>`;
+
+  // Loan officer photo or placeholder
+  const loanOfficerPhoto = loanOfficer.photo
+    ? `<img src="${loanOfficer.photo}" alt="${loanOfficer.name}" class="contact-photo">`
+    : `<div class="contact-photo-placeholder"><span class="photo-icon">👤</span></div>`;
+
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>123 Main St, City, State - Property Website</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' https:; connect-src 'self';">
+    <title>${property.address}, ${property.city}, ${property.state} - Property Website</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -17,7 +92,7 @@
         .header-logo { height: 40px; background: white; padding: 5px 15px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85em; color: #0d173c; }
 
         /* Hero Section */
-        .hero { background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1200'); background-size: cover; background-position: center; min-height: 500px; display: flex; align-items: center; justify-content: center; color: white; text-align: center; padding: 60px 20px; }
+        .hero { background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('${photos[0]?.url || ''}'); background-size: cover; background-position: center; min-height: 500px; display: flex; align-items: center; justify-content: center; color: white; text-align: center; padding: 60px 20px; }
         .hero-content h1 { font-size: clamp(2em, 5vw, 3.5em); margin-bottom: 20px; text-shadow: 2px 2px 8px rgba(0,0,0,0.7); }
         .hero-content p { font-size: 1.3em; margin-bottom: 30px; text-shadow: 1px 1px 4px rgba(0,0,0,0.7); }
         .price-tag { background: #0d173c; color: white; padding: 20px 50px; font-size: clamp(2em, 4vw, 3em); font-weight: bold; border-radius: 10px; display: inline-block; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
@@ -163,7 +238,7 @@
         /* QR Code Section */
         .qr-section { text-align: center; padding: 30px; background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); max-width: 300px; margin: 50px auto 0; }
         .qr-code { width: 200px; height: 200px; margin: 0 auto 20px; background: white; padding: 10px; border-radius: 10px; }
-        .qr-code svg { width: 100%; height: 100%; }
+        .qr-code img { width: 100%; height: 100%; }
         .qr-section p { color: #666; font-size: 0.95em; }
 
         /* Footer */
@@ -215,8 +290,8 @@
         <div class="header-content">
             <div class="header-title">🏠 Premium Property Listing</div>
             <div class="header-logos">
-                <div class="header-logo">🏢 Premier Realty Group</div>
-                <div class="header-logo">🏦 Luminate Home Loans</div>
+                <div class="header-logo">🏢 ${realtor.company}</div>
+                <div class="header-logo">🏦 ${loanOfficer.company}</div>
             </div>
         </div>
     </div>
@@ -224,9 +299,9 @@
     <!-- Hero Section -->
     <div class="hero">
         <div class="hero-content">
-            <h1>Your Dream Home Awaits!</h1>
-            <p>123 Main St, City, State 00000</p>
-            <div class="price-tag">$500,000</div>
+            <h1>${property.headline || 'Your Dream Home Awaits!'}</h1>
+            <p>${property.address}, ${property.city}, ${property.state} ${property.zip}</p>
+            <div class="price-tag">${formatPrice(property.price)}</div>
             <div class="quick-actions">
                 <a href="#contact" class="quick-btn btn-schedule">📅 Schedule a Showing</a>
                 <a href="#calculator" class="quick-btn btn-preapproved">💰 Get Pre-Approved</a>
@@ -239,16 +314,16 @@
         <div class="container">
             <div class="section-title">
                 <h2>Property Overview</h2>
-                <p>123 Main St, City, State 00000</p>
+                <p>${property.address}, ${property.city}, ${property.state} ${property.zip}</p>
                 <div class="underline"></div>
             </div>
             <div class="features">
-                <div class="feature-card"><div class="feature-icon">🛏️</div><h3>Bedrooms</h3><h4>3</h4></div>
-                <div class="feature-card"><div class="feature-icon">🚿</div><h3>Bathrooms</h3><h4>2</h4></div>
-                <div class="feature-card"><div class="feature-icon">📐</div><h3>Square Feet</h3><h4>2,000</h4></div>
-                <div class="feature-card"><div class="feature-icon">📅</div><h3>Year Built</h3><h4>2000</h4></div>
-                <div class="feature-card"><div class="feature-icon">🚗</div><h3>Garage</h3><h4>2 Car</h4></div>
-                <div class="feature-card"><div class="feature-icon">🏞️</div><h3>Lot Size</h3><h4>0.25 Acres</h4></div>
+                <div class="feature-card"><div class="feature-icon">🛏️</div><h3>Bedrooms</h3><h4>${property.bedrooms}</h4></div>
+                <div class="feature-card"><div class="feature-icon">🚿</div><h3>Bathrooms</h3><h4>${property.bathrooms}</h4></div>
+                <div class="feature-card"><div class="feature-icon">📐</div><h3>Square Feet</h3><h4>${formatNumber(property.sqft)}</h4></div>
+                <div class="feature-card"><div class="feature-icon">📅</div><h3>Year Built</h3><h4>${property.yearBuilt}</h4></div>
+                ${property.garage ? `<div class="feature-card"><div class="feature-icon">🚗</div><h3>Garage</h3><h4>${property.garage}</h4></div>` : ''}
+                ${property.lotSize ? `<div class="feature-card"><div class="feature-icon">🏞️</div><h3>Lot Size</h3><h4>${property.lotSize}</h4></div>` : ''}
             </div>
         </div>
     </section>
@@ -262,40 +337,17 @@
                 <div class="underline"></div>
             </div>
             <div class="gallery-grid">
-                <div class="gallery-item" onclick="openLightbox(0)">
-                    <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800" alt="Front Exterior">
-                    <span class="gallery-label">Front Exterior</span>
-                </div>
-                <div class="gallery-item" onclick="openLightbox(1)">
-                    <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800" alt="Back Yard">
-                    <span class="gallery-label">Back Yard</span>
-                </div>
-                <div class="gallery-item" onclick="openLightbox(2)">
-                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800" alt="Living Room">
-                    <span class="gallery-label">Living Room</span>
-                </div>
-                <div class="gallery-item" onclick="openLightbox(3)">
-                    <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800" alt="Kitchen">
-                    <span class="gallery-label">Kitchen</span>
-                </div>
-                <div class="gallery-item" onclick="openLightbox(4)">
-                    <img src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=800" alt="Master Bedroom">
-                    <span class="gallery-label">Master Bedroom</span>
-                </div>
-                <div class="gallery-item" onclick="openLightbox(5)">
-                    <img src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=800" alt="Bathroom">
-                    <span class="gallery-label">Bathroom</span>
-                </div>
+${galleryItems}
             </div>
         </div>
     </section>
 
     <!-- Lightbox -->
     <div class="lightbox" id="lightbox">
-        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
-        <span class="lightbox-nav lightbox-prev" onclick="changeSlide(-1)">&#10094;</span>
+        <span class="lightbox-close" id="lightbox-close">&times;</span>
+        <span class="lightbox-nav lightbox-prev" id="lightbox-prev">&#10094;</span>
         <img src="" alt="Gallery Image" id="lightbox-img">
-        <span class="lightbox-nav lightbox-next" onclick="changeSlide(1)">&#10095;</span>
+        <span class="lightbox-nav lightbox-next" id="lightbox-next">&#10095;</span>
     </div>
 
     <!-- Property Description -->
@@ -303,15 +355,7 @@
         <div class="container">
             <div class="section-title"><h2>About This Home</h2><div class="underline"></div></div>
             <div style="background: white; padding: 50px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08);">
-                <p style="font-size: 1.15em; color: #555; line-height: 1.9;">
-                    Welcome to this stunning 3-bedroom, 2-bathroom home nestled in a highly sought-after neighborhood. This beautifully maintained property offers the perfect blend of comfort and style, featuring an open-concept living area bathed in natural light.
-                </p>
-                <p style="font-size: 1.15em; color: #555; line-height: 1.9; margin-top: 20px;">
-                    The gourmet kitchen boasts granite countertops, stainless steel appliances, and ample cabinet space. The spacious master suite includes a walk-in closet and en-suite bathroom. Step outside to your private backyard oasis, perfect for entertaining or relaxing.
-                </p>
-                <p style="font-size: 1.15em; color: #555; line-height: 1.9; margin-top: 20px;">
-                    Located minutes from top-rated schools, shopping, dining, and major highways, this home offers both convenience and tranquility. Don't miss this opportunity to make this house your home!
-                </p>
+                ${property.description.split('\n').map(p => `<p style="font-size: 1.15em; color: #555; line-height: 1.9; margin-bottom: 20px;">${p}</p>`).join('\n                ')}
             </div>
         </div>
     </section>
@@ -324,60 +368,57 @@
                 <div class="details-card">
                     <h3>🏠 Interior Features</h3>
                     <ul class="details-list">
-                        <li><span class="details-label">Bedrooms</span><span class="details-value">3</span></li>
-                        <li><span class="details-label">Bathrooms</span><span class="details-value">2 Full</span></li>
-                        <li><span class="details-label">Living Area</span><span class="details-value">2,000 sq ft</span></li>
-                        <li><span class="details-label">Flooring</span><span class="details-value">Hardwood, Tile</span></li>
-                        <li><span class="details-label">Heating</span><span class="details-value">Central Forced Air</span></li>
-                        <li><span class="details-label">Cooling</span><span class="details-value">Central A/C</span></li>
-                        <li><span class="details-label">Fireplace</span><span class="details-value">Yes (1)</span></li>
+                        <li><span class="details-label">Bedrooms</span><span class="details-value">${property.bedrooms}</span></li>
+                        <li><span class="details-label">Bathrooms</span><span class="details-value">${property.bathrooms}</span></li>
+                        <li><span class="details-label">Living Area</span><span class="details-value">${formatNumber(property.sqft)} sq ft</span></li>
+                        ${property.flooring ? `<li><span class="details-label">Flooring</span><span class="details-value">${property.flooring}</span></li>` : ''}
+                        ${property.heating ? `<li><span class="details-label">Heating</span><span class="details-value">${property.heating}</span></li>` : ''}
+                        ${property.cooling ? `<li><span class="details-label">Cooling</span><span class="details-value">${property.cooling}</span></li>` : ''}
+                        ${property.fireplace ? `<li><span class="details-label">Fireplace</span><span class="details-value">${property.fireplace}</span></li>` : ''}
                     </ul>
                 </div>
                 <div class="details-card">
                     <h3>🏡 Exterior Features</h3>
                     <ul class="details-list">
-                        <li><span class="details-label">Lot Size</span><span class="details-value">0.25 Acres</span></li>
-                        <li><span class="details-label">Garage</span><span class="details-value">2 Car Attached</span></li>
-                        <li><span class="details-label">Parking</span><span class="details-value">4 Spaces</span></li>
-                        <li><span class="details-label">Roof</span><span class="details-value">Composition Shingle</span></li>
-                        <li><span class="details-label">Pool</span><span class="details-value">No</span></li>
-                        <li><span class="details-label">Fencing</span><span class="details-value">Wood Privacy</span></li>
-                        <li><span class="details-label">Landscaping</span><span class="details-value">Professional</span></li>
+                        ${property.lotSize ? `<li><span class="details-label">Lot Size</span><span class="details-value">${property.lotSize}</span></li>` : ''}
+                        ${property.garage ? `<li><span class="details-label">Garage</span><span class="details-value">${property.garage}</span></li>` : ''}
+                        ${property.parking ? `<li><span class="details-label">Parking</span><span class="details-value">${property.parking}</span></li>` : ''}
+                        ${property.roof ? `<li><span class="details-label">Roof</span><span class="details-value">${property.roof}</span></li>` : ''}
+                        ${property.pool ? `<li><span class="details-label">Pool</span><span class="details-value">${property.pool}</span></li>` : ''}
+                        ${property.fencing ? `<li><span class="details-label">Fencing</span><span class="details-value">${property.fencing}</span></li>` : ''}
                     </ul>
                 </div>
                 <div class="details-card">
                     <h3>💰 Financial Details</h3>
                     <ul class="details-list">
-                        <li><span class="details-label">List Price</span><span class="details-value">$500,000</span></li>
-                        <li><span class="details-label">Price/Sq Ft</span><span class="details-value">$250</span></li>
-                        <li><span class="details-label">HOA Fees</span><span class="details-value">$150/month</span></li>
-                        <li><span class="details-label">Property Tax</span><span class="details-value">$5,200/year</span></li>
-                        <li><span class="details-label">Year Built</span><span class="details-value">2000</span></li>
-                        <li><span class="details-label">MLS #</span><span class="details-value">MLS12345678</span></li>
-                        <li><span class="details-label">Status</span><span class="details-value" style="color: #28a745;">Active</span></li>
+                        <li><span class="details-label">List Price</span><span class="details-value">${formatPrice(property.price)}</span></li>
+                        <li><span class="details-label">Price/Sq Ft</span><span class="details-value">${formatPrice(Math.round(property.price / property.sqft))}</span></li>
+                        ${property.hoa ? `<li><span class="details-label">HOA Fees</span><span class="details-value">${property.hoa}</span></li>` : ''}
+                        ${property.taxes ? `<li><span class="details-label">Property Tax</span><span class="details-value">${property.taxes}</span></li>` : ''}
+                        <li><span class="details-label">Year Built</span><span class="details-value">${property.yearBuilt}</span></li>
+                        ${property.mls ? `<li><span class="details-label">MLS #</span><span class="details-value">${property.mls}</span></li>` : ''}
+                        <li><span class="details-label">Status</span><span class="details-value" style="color: #28a745;">${property.status || 'Active'}</span></li>
                     </ul>
                 </div>
             </div>
         </div>
     </section>
 
+    ${property.virtualTourUrl ? `
     <!-- Virtual Tour -->
     <section class="section">
         <div class="container">
             <div class="section-title"><h2>Virtual Tour</h2><div class="underline"></div></div>
             <div class="virtual-tour-container">
-                <div class="virtual-tour-placeholder">
-                    <div class="tour-icon">🎥</div>
-                    <h3>3D Virtual Tour Available</h3>
-                    <p>Experience this home from anywhere with our immersive virtual walkthrough</p>
-                    <a href="#" class="tour-btn">▶️ Start Virtual Tour</a>
-                </div>
+                <iframe src="${property.virtualTourUrl}" width="100%" style="aspect-ratio: 16/9; border: none; border-radius: 15px;" allowfullscreen></iframe>
             </div>
         </div>
     </section>
+    ` : ''}
 
+    ${showNeighborhood ? `
     <!-- Neighborhood -->
-    <section class="section section-dark">
+    <section class="section ${property.virtualTourUrl ? 'section-dark' : ''}">
         <div class="container">
             <div class="section-title">
                 <h2>Neighborhood Highlights</h2>
@@ -387,34 +428,35 @@
             <div class="neighborhood-grid">
                 <div class="neighborhood-card">
                     <div class="neighborhood-icon">🎓</div>
-                    <h3>Top-Rated Schools</h3>
-                    <p>Excellent public and private schools nearby</p>
-                    <div class="neighborhood-score">A+</div>
+                    <h3>Schools</h3>
+                    <p>${property.schoolsDesc || 'Excellent public and private schools nearby'}</p>
+                    <div class="neighborhood-score">${property.schoolsScore || 'A'}</div>
                 </div>
                 <div class="neighborhood-card">
                     <div class="neighborhood-icon">🚶</div>
                     <h3>Walk Score</h3>
-                    <p>Walkable to shops, restaurants, and parks</p>
-                    <div class="neighborhood-score">78</div>
+                    <p>${property.walkScoreDesc || 'Walkable to shops, restaurants, and parks'}</p>
+                    <div class="neighborhood-score">${property.walkScore || '70'}</div>
                 </div>
                 <div class="neighborhood-card">
                     <div class="neighborhood-icon">🚗</div>
                     <h3>Commute</h3>
-                    <p>Easy access to major highways and transit</p>
-                    <div class="neighborhood-score">A</div>
+                    <p>${property.commuteDesc || 'Easy access to major highways and transit'}</p>
+                    <div class="neighborhood-score">${property.commuteScore || 'A'}</div>
                 </div>
                 <div class="neighborhood-card">
                     <div class="neighborhood-icon">🛒</div>
                     <h3>Shopping & Dining</h3>
-                    <p>Minutes from popular retail and restaurants</p>
-                    <div class="neighborhood-score">A+</div>
+                    <p>${property.shoppingDesc || 'Minutes from popular retail and restaurants'}</p>
+                    <div class="neighborhood-score">${property.shoppingScore || 'A'}</div>
                 </div>
             </div>
         </div>
     </section>
+    ` : ''}
 
     <!-- Mortgage Calculator -->
-    <section class="section" id="calculator">
+    <section class="section section-dark" id="calculator">
         <div class="container">
             <div class="section-title">
                 <h2>Mortgage Calculator</h2>
@@ -424,11 +466,11 @@
             <div class="calculator-container">
                 <div class="calc-input-group">
                     <label for="home-price">Home Price</label>
-                    <input type="text" id="home-price" value="$500,000" onchange="calculateMortgage()">
+                    <input type="text" id="home-price" value="${formatPrice(property.price)}" onchange="calculateMortgage()">
                 </div>
                 <div class="calc-input-group">
                     <label for="down-payment">Down Payment</label>
-                    <input type="text" id="down-payment" value="$100,000" onchange="calculateMortgage()">
+                    <input type="text" id="down-payment" value="${formatPrice(Math.round(property.price * 0.2))}" onchange="calculateMortgage()">
                 </div>
                 <div class="calc-row">
                     <div class="calc-input-group">
@@ -447,32 +489,32 @@
                 </div>
                 <div class="calc-result">
                     <h3>Estimated Monthly Payment</h3>
-                    <div class="monthly-payment" id="monthly-payment">$2,528</div>
+                    <div class="monthly-payment" id="monthly-payment">$0</div>
                     <p class="payment-note">Principal & Interest Only</p>
                     <div class="calc-breakdown">
                         <div class="breakdown-item">
                             <div class="label">Loan Amount</div>
-                            <div class="value" id="loan-amount">$400,000</div>
+                            <div class="value" id="loan-amount">$0</div>
                         </div>
                         <div class="breakdown-item">
                             <div class="label">Total Interest</div>
-                            <div class="value" id="total-interest">$510,177</div>
+                            <div class="value" id="total-interest">$0</div>
                         </div>
                         <div class="breakdown-item">
                             <div class="label">Total Cost</div>
-                            <div class="value" id="total-cost">$910,177</div>
+                            <div class="value" id="total-cost">$0</div>
                         </div>
                     </div>
                 </div>
                 <p style="text-align: center; margin-top: 25px; color: #666; font-size: 0.95em;">
-                    💡 Want a personalized rate quote? <a href="#contact" style="color: #f5576c; font-weight: 600;">Contact our loan officer below!</a>
+                    💡 Want a personalized rate quote? <a href="#contact" style="color: #f5576c; font-weight: 600;">Contact ${loanOfficer.name.split(' ')[0]} below!</a>
                 </p>
             </div>
         </div>
     </section>
 
     <!-- Real Estate Team -->
-    <section class="section section-dark" id="contact">
+    <section class="section" id="contact">
         <div class="container">
             <div class="section-title">
                 <h2>Your Real Estate Team</h2>
@@ -487,18 +529,16 @@
                         <h3>Your Realtor</h3>
                     </div>
                     <div class="contact-content">
-                        <div class="contact-photo-placeholder">
-                            <span class="photo-icon">👤</span>
-                        </div>
+                        ${realtorPhoto}
                         <div class="contact-info">
-                            <h4>Sarah Johnson</h4>
-                            <p class="title">Licensed Real Estate Agent</p>
-                            <p class="company">Premier Realty Group</p>
-                            <span class="license">License #RE12345678</span>
-                            <div class="contact-detail">📱 <a href="tel:+15551234567">(555) 123-4567</a></div>
-                            <div class="contact-detail">✉️ <a href="mailto:sarah@premierrealty.com">sarah@premierrealty.com</a></div>
+                            <h4>${realtor.name}</h4>
+                            <p class="title">${realtor.title || 'Licensed Real Estate Agent'}</p>
+                            <p class="company">${realtor.company}</p>
+                            <span class="license">License #${realtor.license}</span>
+                            <div class="contact-detail">📱 <a href="tel:${realtor.phone.replace(/\D/g, '')}">${realtor.phone}</a></div>
+                            <div class="contact-detail">✉️ <a href="mailto:${realtor.email}">${realtor.email}</a></div>
                         </div>
-                        <a href="tel:+15551234567" class="contact-btn realtor-btn">📞 Call Sarah</a>
+                        <a href="tel:${realtor.phone.replace(/\D/g, '')}" class="contact-btn realtor-btn">📞 Call ${realtor.name.split(' ')[0]}</a>
                     </div>
                 </div>
 
@@ -509,18 +549,16 @@
                         <h3>Your Loan Officer</h3>
                     </div>
                     <div class="contact-content">
-                        <div class="contact-photo-placeholder">
-                            <span class="photo-icon">👤</span>
-                        </div>
+                        ${loanOfficerPhoto}
                         <div class="contact-info">
-                            <h4>Michael Chen</h4>
-                            <p class="title">Senior Loan Officer</p>
-                            <p class="company">Luminate Home Loans</p>
-                            <span class="nmls">NMLS #987654</span>
-                            <div class="contact-detail">📱 <a href="tel:+15559876543">(555) 987-6543</a></div>
-                            <div class="contact-detail">✉️ <a href="mailto:mchen@luminateloans.com">mchen@luminateloans.com</a></div>
+                            <h4>${loanOfficer.name}</h4>
+                            <p class="title">${loanOfficer.title || 'Loan Officer'}</p>
+                            <p class="company">${loanOfficer.company}</p>
+                            <span class="nmls">NMLS #${loanOfficer.nmls}</span>
+                            <div class="contact-detail">📱 <a href="tel:${loanOfficer.phone.replace(/\D/g, '')}">${loanOfficer.phone}</a></div>
+                            <div class="contact-detail">✉️ <a href="mailto:${loanOfficer.email}">${loanOfficer.email}</a></div>
                         </div>
-                        <a href="tel:+15559876543" class="contact-btn loan-officer-btn">📞 Call Michael</a>
+                        <a href="tel:${loanOfficer.phone.replace(/\D/g, '')}" class="contact-btn loan-officer-btn">📞 Call ${loanOfficer.name.split(' ')[0]}</a>
                     </div>
                 </div>
             </div>
@@ -528,46 +566,14 @@
     </section>
 
     <!-- Testimonials -->
-    <section class="section">
+    <section class="section section-dark">
         <div class="container">
             <div class="section-title">
                 <h2>What Our Clients Say</h2>
                 <div class="underline"></div>
             </div>
             <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="testimonial-stars">★★★★★</div>
-                    <p class="testimonial-text">"Sarah and Michael made our home buying experience seamless! Sarah found us the perfect home, and Michael got us an amazing rate. We couldn't be happier with our new home!"</p>
-                    <div class="testimonial-author">
-                        <div class="testimonial-avatar">JD</div>
-                        <div class="testimonial-info">
-                            <h4>John & Diana M.</h4>
-                            <p>First-Time Homebuyers</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-stars">★★★★★</div>
-                    <p class="testimonial-text">"As a repeat client, I can confidently say this team is the best in the business. Professional, responsive, and always looking out for my best interests. Highly recommend!"</p>
-                    <div class="testimonial-author">
-                        <div class="testimonial-avatar">RK</div>
-                        <div class="testimonial-info">
-                            <h4>Robert K.</h4>
-                            <p>Real Estate Investor</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-stars">★★★★★</div>
-                    <p class="testimonial-text">"The mortgage process was so easy with Michael. He explained everything clearly and helped us understand our options. We closed on time with no surprises!"</p>
-                    <div class="testimonial-author">
-                        <div class="testimonial-avatar">AL</div>
-                        <div class="testimonial-info">
-                            <h4>Amanda L.</h4>
-                            <p>Homeowner</p>
-                        </div>
-                    </div>
-                </div>
+${testimonialCards}
             </div>
         </div>
     </section>
@@ -576,45 +582,18 @@
     <div class="share-section">
         <h3>📤 Share This Property</h3>
         <div class="share-buttons">
-            <a href="#" class="share-btn share-facebook" onclick="shareOnFacebook()" title="Share on Facebook">f</a>
-            <a href="#" class="share-btn share-twitter" onclick="shareOnTwitter()" title="Share on Twitter">𝕏</a>
-            <a href="#" class="share-btn share-linkedin" onclick="shareOnLinkedIn()" title="Share on LinkedIn">in</a>
-            <a href="#" class="share-btn share-email" onclick="shareViaEmail()" title="Share via Email">✉</a>
-            <a href="#" class="share-btn share-sms" onclick="shareViaSMS()" title="Share via Text">💬</a>
-            <button class="share-btn share-copy" onclick="copyLink()" title="Copy Link">🔗</button>
+            <a href="#" class="share-btn share-facebook" id="share-facebook" title="Share on Facebook">f</a>
+            <a href="#" class="share-btn share-twitter" id="share-twitter" title="Share on Twitter">𝕏</a>
+            <a href="#" class="share-btn share-linkedin" id="share-linkedin" title="Share on LinkedIn">in</a>
+            <a href="#" class="share-btn share-email" id="share-email" title="Share via Email">✉</a>
+            <a href="#" class="share-btn share-sms" id="share-sms" title="Share via Text">💬</a>
+            <button class="share-btn share-copy" id="share-copy" title="Copy Link">🔗</button>
         </div>
 
         <!-- QR Code -->
         <div class="qr-section">
             <div class="qr-code">
-                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Simplified QR code representation -->
-                    <rect fill="#000" x="10" y="10" width="25" height="25"/>
-                    <rect fill="#fff" x="15" y="15" width="15" height="15"/>
-                    <rect fill="#000" x="18" y="18" width="9" height="9"/>
-                    <rect fill="#000" x="65" y="10" width="25" height="25"/>
-                    <rect fill="#fff" x="70" y="15" width="15" height="15"/>
-                    <rect fill="#000" x="73" y="18" width="9" height="9"/>
-                    <rect fill="#000" x="10" y="65" width="25" height="25"/>
-                    <rect fill="#fff" x="15" y="70" width="15" height="15"/>
-                    <rect fill="#000" x="18" y="73" width="9" height="9"/>
-                    <rect fill="#000" x="40" y="10" width="5" height="5"/>
-                    <rect fill="#000" x="50" y="10" width="5" height="5"/>
-                    <rect fill="#000" x="40" y="20" width="5" height="5"/>
-                    <rect fill="#000" x="45" y="25" width="5" height="5"/>
-                    <rect fill="#000" x="40" y="40" width="20" height="20"/>
-                    <rect fill="#000" x="10" y="45" width="5" height="5"/>
-                    <rect fill="#000" x="20" y="45" width="5" height="5"/>
-                    <rect fill="#000" x="65" y="45" width="5" height="5"/>
-                    <rect fill="#000" x="75" y="45" width="5" height="5"/>
-                    <rect fill="#000" x="85" y="45" width="5" height="5"/>
-                    <rect fill="#000" x="45" y="65" width="5" height="5"/>
-                    <rect fill="#000" x="55" y="70" width="5" height="5"/>
-                    <rect fill="#000" x="65" y="65" width="10" height="10"/>
-                    <rect fill="#000" x="80" y="65" width="10" height="10"/>
-                    <rect fill="#000" x="65" y="80" width="5" height="10"/>
-                    <rect fill="#000" x="75" y="85" width="15" height="5"/>
-                </svg>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`https://${data.githubOwner || 'OWNER'}.github.io/${data.githubRepo || 'REPO'}/properties/${data.propertySlug}/`)}" alt="QR Code">
             </div>
             <p>Scan to view on mobile</p>
         </div>
@@ -627,26 +606,26 @@
             <div class="footer-grid">
                 <div class="footer-section">
                     <h4>Property Address</h4>
-                    <p>123 Main St<br>City, State 00000</p>
-                    <p style="margin-top: 15px;"><strong>MLS #:</strong> MLS12345678</p>
+                    <p>${property.address}<br>${property.city}, ${property.state} ${property.zip}</p>
+                    ${property.mls ? `<p style="margin-top: 15px;"><strong>MLS #:</strong> ${property.mls}</p>` : ''}
                 </div>
                 <div class="footer-section">
-                    <h4>Premier Realty Group</h4>
-                    <p>Sarah Johnson, Realtor<br>
-                    License #RE12345678<br>
-                    <a href="tel:+15551234567">(555) 123-4567</a><br>
-                    <a href="mailto:sarah@premierrealty.com">sarah@premierrealty.com</a></p>
+                    <h4>${realtor.company}</h4>
+                    <p>${realtor.name}, ${realtor.title || 'Realtor'}<br>
+                    License #${realtor.license}<br>
+                    <a href="tel:${realtor.phone.replace(/\D/g, '')}">${realtor.phone}</a><br>
+                    <a href="mailto:${realtor.email}">${realtor.email}</a></p>
                 </div>
                 <div class="footer-section">
-                    <h4>Luminate Home Loans</h4>
-                    <p>Michael Chen, Loan Officer<br>
-                    NMLS #987654<br>
-                    <a href="tel:+15559876543">(555) 987-6543</a><br>
-                    <a href="mailto:mchen@luminateloans.com">mchen@luminateloans.com</a></p>
+                    <h4>${loanOfficer.company}</h4>
+                    <p>${loanOfficer.name}, ${loanOfficer.title || 'Loan Officer'}<br>
+                    NMLS #${loanOfficer.nmls}<br>
+                    <a href="tel:${loanOfficer.phone.replace(/\D/g, '')}">${loanOfficer.phone}</a><br>
+                    <a href="mailto:${loanOfficer.email}">${loanOfficer.email}</a></p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 All rights reserved. Information deemed reliable but not guaranteed.</p>
+                <p>&copy; ${new Date().getFullYear()} All rights reserved. Information deemed reliable but not guaranteed.</p>
                 <p>This is not a commitment to lend. Programs, rates, terms, and conditions are subject to change without notice.</p>
                 <div class="equal-housing">
                     <span class="equal-housing-logo">🏠</span>
@@ -657,118 +636,139 @@
     </footer>
 
     <script>
-        // Gallery Images Array
-        const galleryImages = [
-            'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1200',
-            'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200',
-            'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200',
-            'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200',
-            'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=1200',
-            'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=1200'
-        ];
-        let currentSlide = 0;
+        (function() {
+            // Gallery Images Array
+            var galleryImages = [
+                ${galleryImagesJS}
+            ];
+            var currentSlide = 0;
 
-        // Lightbox Functions
-        function openLightbox(index) {
-            currentSlide = index;
-            document.getElementById('lightbox').classList.add('active');
-            document.getElementById('lightbox-img').src = galleryImages[index];
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeLightbox() {
-            document.getElementById('lightbox').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        function changeSlide(direction) {
-            currentSlide += direction;
-            if (currentSlide >= galleryImages.length) currentSlide = 0;
-            if (currentSlide < 0) currentSlide = galleryImages.length - 1;
-            document.getElementById('lightbox-img').src = galleryImages[currentSlide];
-        }
-
-        // Close lightbox on escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeLightbox();
-            if (e.key === 'ArrowRight') changeSlide(1);
-            if (e.key === 'ArrowLeft') changeSlide(-1);
-        });
-
-        // Mortgage Calculator
-        function calculateMortgage() {
-            const homePriceInput = document.getElementById('home-price').value;
-            const downPaymentInput = document.getElementById('down-payment').value;
-            const interestRate = parseFloat(document.getElementById('interest-rate').value) / 100 / 12;
-            const loanTerm = parseInt(document.getElementById('loan-term').value) * 12;
-
-            // Parse currency values
-            const homePrice = parseFloat(homePriceInput.replace(/[$,]/g, '')) || 0;
-            const downPayment = parseFloat(downPaymentInput.replace(/[$,]/g, '')) || 0;
-            const loanAmount = homePrice - downPayment;
-
-            if (loanAmount > 0 && interestRate > 0) {
-                // Monthly payment formula: M = P[r(1+r)^n]/[(1+r)^n-1]
-                const monthlyPayment = loanAmount * (interestRate * Math.pow(1 + interestRate, loanTerm)) / (Math.pow(1 + interestRate, loanTerm) - 1);
-                const totalPayment = monthlyPayment * loanTerm;
-                const totalInterest = totalPayment - loanAmount;
-
-                document.getElementById('monthly-payment').textContent = '$' + Math.round(monthlyPayment).toLocaleString();
-                document.getElementById('loan-amount').textContent = '$' + loanAmount.toLocaleString();
-                document.getElementById('total-interest').textContent = '$' + Math.round(totalInterest).toLocaleString();
-                document.getElementById('total-cost').textContent = '$' + Math.round(totalPayment).toLocaleString();
+            // Lightbox Functions
+            function openLightbox(index) {
+                currentSlide = index;
+                document.getElementById('lightbox').classList.add('active');
+                document.getElementById('lightbox-img').src = galleryImages[index];
+                document.body.style.overflow = 'hidden';
             }
-        }
 
-        // Format currency inputs
-        document.getElementById('home-price').addEventListener('blur', function() {
-            const value = parseFloat(this.value.replace(/[$,]/g, '')) || 0;
-            this.value = '$' + value.toLocaleString();
-            calculateMortgage();
-        });
+            function closeLightbox() {
+                document.getElementById('lightbox').classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
 
-        document.getElementById('down-payment').addEventListener('blur', function() {
-            const value = parseFloat(this.value.replace(/[$,]/g, '')) || 0;
-            this.value = '$' + value.toLocaleString();
-            calculateMortgage();
-        });
+            function changeSlide(direction) {
+                currentSlide += direction;
+                if (currentSlide >= galleryImages.length) currentSlide = 0;
+                if (currentSlide < 0) currentSlide = galleryImages.length - 1;
+                document.getElementById('lightbox-img').src = galleryImages[currentSlide];
+            }
 
-        // Share Functions
-        const pageUrl = encodeURIComponent(window.location.href);
-        const pageTitle = encodeURIComponent('Check out this property: 123 Main St - $500,000');
-
-        function shareOnFacebook() {
-            window.open('https://www.facebook.com/sharer/sharer.php?u=' + pageUrl, '_blank', 'width=600,height=400');
-        }
-
-        function shareOnTwitter() {
-            window.open('https://twitter.com/intent/tweet?url=' + pageUrl + '&text=' + pageTitle, '_blank', 'width=600,height=400');
-        }
-
-        function shareOnLinkedIn() {
-            window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + pageUrl, '_blank', 'width=600,height=400');
-        }
-
-        function shareViaEmail() {
-            window.location.href = 'mailto:?subject=' + pageTitle + '&body=I thought you might be interested in this property: ' + decodeURIComponent(pageUrl);
-        }
-
-        function shareViaSMS() {
-            window.location.href = 'sms:?body=' + decodeURIComponent(pageTitle) + ' ' + decodeURIComponent(pageUrl);
-        }
-
-        function copyLink() {
-            navigator.clipboard.writeText(window.location.href).then(function() {
-                const notification = document.getElementById('copy-notification');
-                notification.classList.add('show');
-                setTimeout(function() {
-                    notification.classList.remove('show');
-                }, 2000);
+            // Gallery item click handlers
+            var galleryItems = document.querySelectorAll('.gallery-item');
+            galleryItems.forEach(function(item) {
+                item.addEventListener('click', function() {
+                    var index = parseInt(this.getAttribute('data-index'));
+                    openLightbox(index);
+                });
             });
-        }
 
-        // Initialize calculator on page load
-        calculateMortgage();
+            // Lightbox controls
+            document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+            document.getElementById('lightbox-prev').addEventListener('click', function() { changeSlide(-1); });
+            document.getElementById('lightbox-next').addEventListener('click', function() { changeSlide(1); });
+
+            // Close lightbox on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowRight') changeSlide(1);
+                if (e.key === 'ArrowLeft') changeSlide(-1);
+            });
+
+            // Mortgage Calculator
+            function calculateMortgage() {
+                var homePriceInput = document.getElementById('home-price').value;
+                var downPaymentInput = document.getElementById('down-payment').value;
+                var interestRate = parseFloat(document.getElementById('interest-rate').value) / 100 / 12;
+                var loanTerm = parseInt(document.getElementById('loan-term').value) * 12;
+
+                var homePrice = parseFloat(homePriceInput.replace(/[$,]/g, '')) || 0;
+                var downPayment = parseFloat(downPaymentInput.replace(/[$,]/g, '')) || 0;
+                var loanAmount = homePrice - downPayment;
+
+                if (loanAmount > 0 && interestRate > 0) {
+                    var monthlyPayment = loanAmount * (interestRate * Math.pow(1 + interestRate, loanTerm)) / (Math.pow(1 + interestRate, loanTerm) - 1);
+                    var totalPayment = monthlyPayment * loanTerm;
+                    var totalInterest = totalPayment - loanAmount;
+
+                    document.getElementById('monthly-payment').textContent = '$' + Math.round(monthlyPayment).toLocaleString();
+                    document.getElementById('loan-amount').textContent = '$' + loanAmount.toLocaleString();
+                    document.getElementById('total-interest').textContent = '$' + Math.round(totalInterest).toLocaleString();
+                    document.getElementById('total-cost').textContent = '$' + Math.round(totalPayment).toLocaleString();
+                }
+            }
+
+            // Format currency inputs
+            document.getElementById('home-price').addEventListener('blur', function() {
+                var value = parseFloat(this.value.replace(/[$,]/g, '')) || 0;
+                this.value = '$' + value.toLocaleString();
+                calculateMortgage();
+            });
+
+            document.getElementById('down-payment').addEventListener('blur', function() {
+                var value = parseFloat(this.value.replace(/[$,]/g, '')) || 0;
+                this.value = '$' + value.toLocaleString();
+                calculateMortgage();
+            });
+
+            // Calculator input change handlers
+            document.getElementById('interest-rate').addEventListener('change', calculateMortgage);
+            document.getElementById('loan-term').addEventListener('change', calculateMortgage);
+
+            // Share Functions
+            var pageUrl = encodeURIComponent(window.location.href);
+            var pageTitle = encodeURIComponent('Check out this property: ${property.address} - ${formatPrice(property.price)}');
+
+            document.getElementById('share-facebook').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.open('https://www.facebook.com/sharer/sharer.php?u=' + pageUrl, '_blank', 'width=600,height=400');
+            });
+
+            document.getElementById('share-twitter').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.open('https://twitter.com/intent/tweet?url=' + pageUrl + '&text=' + pageTitle, '_blank', 'width=600,height=400');
+            });
+
+            document.getElementById('share-linkedin').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + pageUrl, '_blank', 'width=600,height=400');
+            });
+
+            document.getElementById('share-email').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'mailto:?subject=' + pageTitle + '&body=I thought you might be interested in this property: ' + decodeURIComponent(pageUrl);
+            });
+
+            document.getElementById('share-sms').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'sms:?body=' + decodeURIComponent(pageTitle) + ' ' + decodeURIComponent(pageUrl);
+            });
+
+            document.getElementById('share-copy').addEventListener('click', function() {
+                navigator.clipboard.writeText(window.location.href).then(function() {
+                    var notification = document.getElementById('copy-notification');
+                    notification.classList.add('show');
+                    setTimeout(function() {
+                        notification.classList.remove('show');
+                    }, 2000);
+                });
+            });
+
+            // Initialize calculator on page load
+            calculateMortgage();
+        })();
     </script>
 </body>
-</html>
+</html>`;
+}
+
+module.exports = { generatePropertyHTML };

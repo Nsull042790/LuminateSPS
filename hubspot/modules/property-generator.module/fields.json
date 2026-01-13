@@ -1,0 +1,36 @@
+[
+  {
+    "name": "company_name",
+    "label": "Company Name",
+    "type": "text",
+    "default": "Luminate"
+  },
+  {
+    "name": "default_realtor_company",
+    "label": "Default Realtor Company",
+    "type": "text",
+    "default": ""
+  },
+  {
+    "name": "default_lo_company",
+    "label": "Default Loan Officer Company",
+    "type": "text",
+    "default": ""
+  },
+  {
+    "name": "primary_color",
+    "label": "Primary Color",
+    "type": "color",
+    "default": {
+      "color": "#0d173c"
+    }
+  },
+  {
+    "name": "accent_color",
+    "label": "Accent Color",
+    "type": "color",
+    "default": {
+      "color": "#667eea"
+    }
+  }
+]
