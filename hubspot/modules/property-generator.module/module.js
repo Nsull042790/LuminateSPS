@@ -1,4 +1,4 @@
-// Property Generator Module JavaScript v5.7 - HubDB Version
+// Property Generator Module JavaScript v5.8 - HubDB Version
 // Uses HubDB for data storage with dynamic pages
 // Fixed: Proper aspect ratio for all images, embedded Luminate logo for compliance
 (function() {
@@ -53,7 +53,7 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v5.7 (HubDB) initialized');
+    console.log('Property Generator v5.8 (HubDB) initialized');
 
     // Check for URL query parameters first (from HubSpot CRM integration)
     var urlParams = new URLSearchParams(window.location.search);
@@ -736,14 +736,9 @@
       imagesToLoad.push({ key: 'photo' + i, url: photos[i] });
     }
 
-    // Add Luminate Bank logo (HubSpot-hosted for CORS compliance)
-    imagesToLoad.push({
-      key: 'luminateLogo',
-      url: 'https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/Luminatebank_PrimaryLogo_White_Gradient.png'
-    });
-
     // Add realtor logo if available
     if (data.realtor.logo) {
+      console.log('Loading realtor logo:', data.realtor.logo);
       imagesToLoad.push({ key: 'realtorLogo', url: data.realtor.logo });
     }
 
@@ -1103,63 +1098,23 @@
     if (lo.email) { doc.text(lo.email, loInfoX, loInfoY); loInfoY += 10; }
     if (lo.nmls) { doc.text('NMLS# ' + lo.nmls, loInfoX, loInfoY); }
 
-    // Luminate Bank logo at bottom of LO card (with white background for PNG transparency)
-    if (images.luminateLogo) {
-      try {
-        var loLogoDims = fitImageToBox(images.luminateLogo, 80, 20);
-        var loLogoX = loCardX + cardWidth - loLogoDims.width - 6;
-        var loLogoY = cardStartY + cardHeight - loLogoDims.height - 4;
-        // White background behind logo to fix PNG transparency
-        doc.setFillColor(255, 255, 255);
-        doc.roundedRect(loLogoX - 2, loLogoY - 2, loLogoDims.width + 4, loLogoDims.height + 4, 2, 2, 'F');
-        doc.addImage(images.luminateLogo.data, 'PNG', loLogoX, loLogoY, loLogoDims.width, loLogoDims.height, undefined, 'MEDIUM');
-      } catch (e) {
-        doc.setFontSize(9);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
-        doc.text('LUMINATE BANK', loCardX + cardWidth - 12, cardStartY + cardHeight - 10, { align: 'right' });
-      }
-    } else {
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
-      doc.text('LUMINATE BANK', loCardX + cardWidth - 12, cardStartY + cardHeight - 10, { align: 'right' });
-    }
+    // Luminate Bank text logo at bottom of LO card (text looks better on dark background)
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
+    doc.text('LUMINATE BANK', loCardX + cardWidth - 12, cardStartY + cardHeight - 10, { align: 'right' });
 
     // ===== FOOTER =====
     doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.rect(0, pageHeight - 60, pageWidth, 60, 'F');
+    doc.rect(0, pageHeight - 50, pageWidth, 50, 'F');
 
-    // Luminate Bank logo in footer (with white background for PNG transparency)
-    if (images.luminateLogo) {
-      try {
-        var footerLogoDims = fitImageToBox(images.luminateLogo, 130, 28);
-        var footerLogoX = margin;
-        var footerLogoY = pageHeight - 55;
-        // White background behind logo
-        doc.setFillColor(255, 255, 255);
-        doc.roundedRect(footerLogoX - 2, footerLogoY - 2, footerLogoDims.width + 4, footerLogoDims.height + 4, 2, 2, 'F');
-        doc.addImage(images.luminateLogo.data, 'PNG', footerLogoX, footerLogoY, footerLogoDims.width, footerLogoDims.height, undefined, 'MEDIUM');
-      } catch (e) {
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
-        doc.text('LUMINATE BANK', margin, pageHeight - 45);
-      }
-    } else {
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
-      doc.text('LUMINATE BANK', margin, pageHeight - 45);
-    }
-
-    // Full compliance disclaimer
+    // Full compliance disclaimer (no logo - text only)
     doc.setFontSize(5.5);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(255, 255, 255);
     var disclaimer = 'Luminate Bank NMLS 1281698 | Bank Headquarters: 2523 S. Wayzata Blvd., Suite 100, Minneapolis, MN 55405 | (952) 939-7200 | This is not an offer to enter into an agreement. Information, rates and programs are subject to change without prior notice and may not be available in all states. All loans are subject to credit and property approval. Luminate Bank is not affiliated with any government agency. 2026 Luminate Bank. All rights reserved. Member FDIC. Equal Housing Opportunity Lender.';
-    var disclaimerLines = doc.splitTextToSize(disclaimer, contentWidth - 140);
-    doc.text(disclaimerLines, margin + 140, pageHeight - 45);
+    var disclaimerLines = doc.splitTextToSize(disclaimer, contentWidth);
+    doc.text(disclaimerLines, margin, pageHeight - 38);
 
     // Save the PDF
     var filename = fullAddress.replace(/[^a-z0-9]/gi, '-').toLowerCase() + '-flyer.pdf';
