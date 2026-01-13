@@ -736,7 +736,11 @@
       imagesToLoad.push({ key: 'photo' + i, url: photos[i] });
     }
 
-    // Note: Luminate Bank logo is embedded as base64 to avoid CORS issues
+    // Add Luminate Bank logo (HubSpot-hosted for CORS compliance)
+    imagesToLoad.push({
+      key: 'luminateLogo',
+      url: 'https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/Luminatebank_PrimaryLogo_White_Gradient.png'
+    });
 
     // Add realtor logo if available (only if hosted on HubSpot)
     if (data.realtor.logo && data.realtor.logo.indexOf('hubspot') > -1) {
@@ -1091,11 +1095,19 @@
     if (lo.email) { doc.text(lo.email, loInfoX, loInfoY); loInfoY += 10; }
     if (lo.nmls) { doc.text('NMLS# ' + lo.nmls, loInfoX, loInfoY); }
 
-    // Luminate Bank logo at bottom of LO card (embedded base64)
-    try {
-      doc.addImage(LUMINATE_LOGO_BASE64, 'PNG', loCardX + cardWidth - 85, cardStartY + cardHeight - 22, 75, 16, undefined, 'MEDIUM');
-    } catch (e) {
-      // Fallback to text if image fails
+    // Luminate Bank logo at bottom of LO card
+    if (images.luminateLogo) {
+      try {
+        var loLogoDims = fitImageToBox(images.luminateLogo, 75, 18);
+        doc.addImage(images.luminateLogo.data, 'PNG', loCardX + cardWidth - loLogoDims.width - 8, cardStartY + cardHeight - loLogoDims.height - 5, loLogoDims.width, loLogoDims.height, undefined, 'MEDIUM');
+      } catch (e) {
+        // Fallback to text if image fails
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
+        doc.text('LUMINATE BANK', loCardX + cardWidth - 12, cardStartY + cardHeight - 10, { align: 'right' });
+      }
+    } else {
       doc.setFontSize(9);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
@@ -1106,10 +1118,18 @@
     doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.rect(0, pageHeight - 55, pageWidth, 55, 'F');
 
-    // Luminate Bank logo in footer (embedded base64)
-    try {
-      doc.addImage(LUMINATE_LOGO_BASE64, 'PNG', margin, pageHeight - 50, 100, 20, undefined, 'MEDIUM');
-    } catch (e) {
+    // Luminate Bank logo in footer
+    if (images.luminateLogo) {
+      try {
+        var footerLogoDims = fitImageToBox(images.luminateLogo, 120, 25);
+        doc.addImage(images.luminateLogo.data, 'PNG', margin, pageHeight - 48, footerLogoDims.width, footerLogoDims.height, undefined, 'MEDIUM');
+      } catch (e) {
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
+        doc.text('LUMINATE BANK', margin, pageHeight - 38);
+      }
+    } else {
       doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
