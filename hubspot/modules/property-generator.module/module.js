@@ -53,7 +53,7 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v5.8 (HubDB) initialized');
+    console.log('Property Generator v5.9 (HubDB) initialized');
 
     // Check for URL query parameters first (from HubSpot CRM integration)
     var urlParams = new URLSearchParams(window.location.search);
@@ -736,10 +736,16 @@
       imagesToLoad.push({ key: 'photo' + i, url: photos[i] });
     }
 
+    // Add Luminate Bank logo (colored version for PDF - works on any background)
+    imagesToLoad.push({
+      key: 'luminateLogo',
+      url: 'https://lirp.cdn-website.com/e49062f7/dms3rep/multi/opt/LuminateBank_SecondaryLogo_Color-1920w.png'
+    });
+
     // Add realtor logo if available
     if (data.realtor.logo) {
       console.log('Loading realtor logo:', data.realtor.logo);
-      imagesToLoad.push({ key: 'realtorLogo', url: data.realtor.logo });
+      imagesToLoad.push({ key: 'realtorLogo', url: data.realtor.logo, isLogo: true });
     }
 
     // Add contact photos if available
@@ -786,14 +792,20 @@
           canvas.width = img.width;
           canvas.height = img.height;
           var ctx = canvas.getContext('2d');
+          // Add white background for logos (handles PNG transparency)
+          if (item.isLogo || item.key === 'luminateLogo' || item.key === 'realtorLogo') {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+          }
           ctx.drawImage(img, 0, 0);
           // Store both the data URL and dimensions for aspect ratio calculations
           loaded[item.key] = {
-            data: canvas.toDataURL('image/jpeg', 0.85),
+            data: canvas.toDataURL('image/jpeg', 0.92),
             width: img.width,
             height: img.height,
             aspectRatio: img.width / img.height
           };
+          console.log('Loaded image:', item.key, img.width, 'x', img.height);
         } catch (e) {
           console.log('Could not load image:', item.key, e);
         }
@@ -801,7 +813,7 @@
         if (remaining === 0) callback(loaded);
       };
       img.onerror = function() {
-        console.log('Failed to load image:', item.key);
+        console.log('Failed to load image:', item.key, item.url);
         remaining--;
         if (remaining === 0) callback(loaded);
       };
@@ -1098,23 +1110,62 @@
     if (lo.email) { doc.text(lo.email, loInfoX, loInfoY); loInfoY += 10; }
     if (lo.nmls) { doc.text('NMLS# ' + lo.nmls, loInfoX, loInfoY); }
 
-    // Luminate Bank text logo at bottom of LO card (text looks better on dark background)
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
-    doc.text('LUMINATE BANK', loCardX + cardWidth - 12, cardStartY + cardHeight - 10, { align: 'right' });
+    // Luminate Bank logo at bottom of LO card (with white badge background)
+    if (images.luminateLogo) {
+      try {
+        var loLogoDims = fitImageToBox(images.luminateLogo, 90, 22);
+        var loLogoX = loCardX + cardWidth - loLogoDims.width - 8;
+        var loLogoY = cardStartY + cardHeight - loLogoDims.height - 6;
+        // White rounded badge behind logo
+        doc.setFillColor(255, 255, 255);
+        doc.roundedRect(loLogoX - 4, loLogoY - 3, loLogoDims.width + 8, loLogoDims.height + 6, 3, 3, 'F');
+        doc.addImage(images.luminateLogo.data, 'JPEG', loLogoX, loLogoY, loLogoDims.width, loLogoDims.height, undefined, 'MEDIUM');
+      } catch (e) {
+        console.log('LO logo error:', e);
+        // Fallback to text
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
+        doc.text('LUMINATE BANK', loCardX + cardWidth - 12, cardStartY + cardHeight - 10, { align: 'right' });
+      }
+    } else {
+      // Fallback to text if logo didn't load
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
+      doc.text('LUMINATE BANK', loCardX + cardWidth - 12, cardStartY + cardHeight - 10, { align: 'right' });
+    }
 
     // ===== FOOTER =====
     doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.rect(0, pageHeight - 50, pageWidth, 50, 'F');
+    doc.rect(0, pageHeight - 55, pageWidth, 55, 'F');
 
-    // Full compliance disclaimer (no logo - text only)
+    // Luminate Bank logo in footer (with white badge)
+    var footerLogoWidth = 0;
+    if (images.luminateLogo) {
+      try {
+        var footerLogoDims = fitImageToBox(images.luminateLogo, 120, 26);
+        var footerLogoX = margin;
+        var footerLogoY = pageHeight - 50;
+        // White rounded badge behind logo
+        doc.setFillColor(255, 255, 255);
+        doc.roundedRect(footerLogoX - 3, footerLogoY - 2, footerLogoDims.width + 6, footerLogoDims.height + 4, 3, 3, 'F');
+        doc.addImage(images.luminateLogo.data, 'JPEG', footerLogoX, footerLogoY, footerLogoDims.width, footerLogoDims.height, undefined, 'MEDIUM');
+        footerLogoWidth = footerLogoDims.width + 20;
+      } catch (e) {
+        console.log('Footer logo error:', e);
+      }
+    }
+
+    // Full compliance disclaimer
     doc.setFontSize(5.5);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(255, 255, 255);
     var disclaimer = 'Luminate Bank NMLS 1281698 | Bank Headquarters: 2523 S. Wayzata Blvd., Suite 100, Minneapolis, MN 55405 | (952) 939-7200 | This is not an offer to enter into an agreement. Information, rates and programs are subject to change without prior notice and may not be available in all states. All loans are subject to credit and property approval. Luminate Bank is not affiliated with any government agency. 2026 Luminate Bank. All rights reserved. Member FDIC. Equal Housing Opportunity Lender.';
-    var disclaimerLines = doc.splitTextToSize(disclaimer, contentWidth);
-    doc.text(disclaimerLines, margin, pageHeight - 38);
+    var disclaimerX = margin + footerLogoWidth;
+    var disclaimerWidth = contentWidth - footerLogoWidth;
+    var disclaimerLines = doc.splitTextToSize(disclaimer, disclaimerWidth > 200 ? disclaimerWidth : contentWidth);
+    doc.text(disclaimerLines, disclaimerX > margin ? disclaimerX : margin, pageHeight - 43);
 
     // Save the PDF
     var filename = fullAddress.replace(/[^a-z0-9]/gi, '-').toLowerCase() + '-flyer.pdf';
