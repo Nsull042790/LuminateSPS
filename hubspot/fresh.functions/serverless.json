@@ -6,10 +6,6 @@
   },
   "secrets": ["HUBSPOT_PRIVATE_APP_TOKEN"],
   "endpoints": {
-    "test": {
-      "method": "GET",
-      "file": "test.js"
-    },
     "uploadfile": {
       "method": "POST",
       "file": "uploadfile.js"
