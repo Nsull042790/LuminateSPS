@@ -1,9 +1,9 @@
-// Create Property in HubDB - v5.1
+// Create Property in HubDB - v5.2
 // Fixed: Added delay between publish and verification for propagation
 const https = require('https');
 
 exports.main = async (context, sendResponse) => {
-  console.log('=== createprop v5.1 START ===');
+  console.log('=== createprop v5.2 START ===');
   const body = context.body;
 
   if (!body || !body.property || !body.userEmail) {
@@ -145,14 +145,14 @@ exports.main = async (context, sendResponse) => {
       slug: slugVal,
       published: publishResult.success,
       verified: verified,
-      version: '5.1'
+      version: '5.2'
     };
 
     if (!verified) {
       response.warning = 'Row created but verification pending. Page may take up to 60 seconds to appear.';
     }
 
-    console.log('=== createprop v5.1 COMPLETE ===');
+    console.log('=== createprop v5.2 COMPLETE ===');
     console.log('Response:', JSON.stringify(response));
 
     sendResponse({
@@ -161,7 +161,7 @@ exports.main = async (context, sendResponse) => {
     });
 
   } catch (error) {
-    console.error('=== createprop v5.1 ERROR ===');
+    console.error('=== createprop v5.2 ERROR ===');
     console.error('Error:', error.message);
     sendResponse({
       statusCode: 500,

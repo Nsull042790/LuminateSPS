@@ -1,4 +1,4 @@
-// Get single property from HubDB
+// Get single property from HubDB - v5.2
 const https = require('https');
 
 exports.main = async (context, sendResponse) => {

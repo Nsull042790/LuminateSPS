@@ -1,9 +1,9 @@
-// Update Property in HubDB - v1.0
+// Update Property in HubDB - v5.2
 // Updates an existing property row (only by original creator)
 const https = require('https');
 
 exports.main = async (context, sendResponse) => {
-  console.log('=== updateprop v1.0 START ===');
+  console.log('=== updateprop v5.2 START ===');
   const body = context.body;
 
   if (!body || !body.rowId || !body.property || !body.userEmail) {
@@ -147,17 +147,17 @@ exports.main = async (context, sendResponse) => {
       rowId: rowId,
       slug: existingRow.values.slug,
       published: true,
-      version: '1.0'
+      version: '5.2'
     };
 
-    console.log('=== updateprop v1.0 COMPLETE ===');
+    console.log('=== updateprop v5.2 COMPLETE ===');
     sendResponse({
       statusCode: 200,
       body: response
     });
 
   } catch (error) {
-    console.error('=== updateprop v1.0 ERROR ===');
+    console.error('=== updateprop v5.2 ERROR ===');
     console.error('Error:', error.message);
     sendResponse({
       statusCode: 500,
