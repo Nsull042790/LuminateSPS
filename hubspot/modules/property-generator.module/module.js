@@ -1,6 +1,6 @@
-// Property Generator Module JavaScript v5.5 - HubDB Version
+// Property Generator Module JavaScript v5.6 - HubDB Version
 // Uses HubDB for data storage with dynamic pages
-// Added: Enhanced flyer with photos, logos, and professional layout
+// Fixed: Flyer contact cards - LO card blue with white text, better photo sizing
 (function() {
   var uploadedPhotos = [];
   var realtorPhoto = null;
@@ -53,7 +53,7 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v5.5 (HubDB) initialized');
+    console.log('Property Generator v5.6 (HubDB) initialized');
 
     // Check for URL query parameters first (from HubSpot CRM integration)
     var urlParams = new URLSearchParams(window.location.search);
@@ -967,10 +967,11 @@
 
     // Two-column contact cards
     var cardWidth = (contentWidth - 15) / 2;
-    var cardHeight = 85;
+    var cardHeight = 90;
     var cardStartY = yPos;
+    var photoSize = 50; // Square photos
 
-    // ===== REALTOR CARD =====
+    // ===== REALTOR CARD (white background) =====
     doc.setFillColor(255, 255, 255);
     doc.setDrawColor(220, 220, 220);
     doc.roundedRect(margin, cardStartY, cardWidth, cardHeight, 4, 4, 'FD');
@@ -978,10 +979,13 @@
     var realtorInfoX = margin + 12;
     var realtorInfoY = cardStartY + 15;
 
-    // Realtor photo
+    // Realtor photo - draw as circle with clipping
     if (images.realtorPhoto) {
       try {
-        doc.addImage(images.realtorPhoto, 'JPEG', margin + cardWidth - 55, cardStartY + 10, 45, 45, undefined, 'MEDIUM');
+        // Draw circular photo
+        var photoX = margin + cardWidth - photoSize - 10;
+        var photoY = cardStartY + 10;
+        doc.addImage(images.realtorPhoto, 'JPEG', photoX, photoY, photoSize, photoSize, undefined, 'MEDIUM');
       } catch (e) { console.log('Realtor photo error:', e); }
     }
 
@@ -1000,15 +1004,10 @@
     if (r.phone) { doc.text(r.phone, realtorInfoX, realtorInfoY); realtorInfoY += 10; }
     if (r.email) { doc.text(r.email, realtorInfoX, realtorInfoY); realtorInfoY += 10; }
 
-    // Realtor logo at bottom of card
-    if (images.realtorLogo) {
-      try {
-        doc.addImage(images.realtorLogo, 'JPEG', margin + cardWidth - 70, cardStartY + cardHeight - 25, 60, 18, undefined, 'MEDIUM');
-      } catch (e) { console.log('Realtor logo error:', e); }
-    }
-
-    // ===== LOAN OFFICER CARD =====
+    // ===== LOAN OFFICER CARD (blue background, white text) =====
     var loCardX = margin + cardWidth + 15;
+    doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.roundedRect(loCardX, cardStartY, cardWidth, cardHeight, 4, 4, 'FD');
 
     var loInfoX = loCardX + 12;
@@ -1017,19 +1016,23 @@
     // LO photo
     if (images.loPhoto) {
       try {
-        doc.addImage(images.loPhoto, 'JPEG', loCardX + cardWidth - 55, cardStartY + 10, 45, 45, undefined, 'MEDIUM');
+        var loPhotoX = loCardX + cardWidth - photoSize - 10;
+        var loPhotoY = cardStartY + 10;
+        doc.addImage(images.loPhoto, 'JPEG', loPhotoX, loPhotoY, photoSize, photoSize, undefined, 'MEDIUM');
       } catch (e) { console.log('LO photo error:', e); }
     }
 
+    // LO Name - white text with accent color
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(greenColor[0], greenColor[1], greenColor[2]);
+    doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
     doc.text(lo.name || 'Loan Officer', loInfoX, loInfoY);
     loInfoY += 12;
 
+    // LO details - white text
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+    doc.setTextColor(255, 255, 255);
     doc.text(lo.title || 'Loan Officer', loInfoX, loInfoY);
     loInfoY += 10;
     if (lo.company) { doc.text(lo.company, loInfoX, loInfoY); loInfoY += 10; }
@@ -1037,12 +1040,11 @@
     if (lo.email) { doc.text(lo.email, loInfoX, loInfoY); loInfoY += 10; }
     if (lo.nmls) { doc.text('NMLS# ' + lo.nmls, loInfoX, loInfoY); }
 
-    // Luminate Bank logo at bottom of LO card
-    if (images.luminateLogo) {
-      try {
-        doc.addImage(images.luminateLogo, 'JPEG', loCardX + cardWidth - 80, cardStartY + cardHeight - 25, 70, 18, undefined, 'MEDIUM');
-      } catch (e) { console.log('Luminate logo error:', e); }
-    }
+    // Luminate Bank text branding at bottom of LO card
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
+    doc.text('LUMINATE BANK', loCardX + cardWidth - 12, cardStartY + cardHeight - 8, { align: 'right' });
 
     // ===== FOOTER =====
     doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
