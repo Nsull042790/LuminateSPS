@@ -1,6 +1,6 @@
-// Property Generator Module JavaScript v5.6 - HubDB Version
+// Property Generator Module JavaScript v5.7 - HubDB Version
 // Uses HubDB for data storage with dynamic pages
-// Fixed: Flyer contact cards - LO card blue with white text, better photo sizing
+// Fixed: Proper aspect ratio for all images, embedded Luminate logo for compliance
 (function() {
   var uploadedPhotos = [];
   var realtorPhoto = null;
@@ -53,7 +53,7 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v5.6 (HubDB) initialized');
+    console.log('Property Generator v5.7 (HubDB) initialized');
 
     // Check for URL query parameters first (from HubSpot CRM integration)
     var urlParams = new URLSearchParams(window.location.search);
@@ -736,14 +736,10 @@
       imagesToLoad.push({ key: 'photo' + i, url: photos[i] });
     }
 
-    // Add Luminate Bank logo
-    imagesToLoad.push({
-      key: 'luminateLogo',
-      url: 'https://lirp.cdn-website.com/e49062f7/dms3rep/multi/opt/LuminateBank_SecondaryLogo_Color-1920w.png'
-    });
+    // Note: Luminate Bank logo is embedded as base64 to avoid CORS issues
 
-    // Add realtor logo if available
-    if (data.realtor.logo) {
+    // Add realtor logo if available (only if hosted on HubSpot)
+    if (data.realtor.logo && data.realtor.logo.indexOf('hubspot') > -1) {
       imagesToLoad.push({ key: 'realtorLogo', url: data.realtor.logo });
     }
 
@@ -769,7 +765,10 @@
     });
   }
 
-  // Helper to load images as base64 for PDF
+  // Luminate Bank logo as embedded base64 (for compliance - avoids CORS issues)
+  var LUMINATE_LOGO_BASE64 = 'data:image/png;base64,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ICCZIIJEJSqUoIJVVJJWCSJBZSSJKUJSIJKRRJQpJEJKESJUkkUiUpUiVJEhKJSiFBFJJSJJJSJEWRSSRJJKlSJJGkJKFIEJKkSJISSFIklJJGJJBSJKlEElIqCiSSUiRJCJLSREsqlCREUpKkJJSShCRRJJJAhCpElCSqEkJJIpKUFSQpJKkiSYqISIpIUKlESUpJokikEklJJCmUJCEiKYVJJJaUJFUSkSCJJJKkShIkJJSSEkVJEJKUJJaQSBJJJKGUSCYJUliSEJKkUFKJyEJpEkISlkgiiUIkIUkSKZKkCJJJJJJIkqSSJIlIlJZSJCRJKJEUpQmJVCUJJElSKJKSJCKZJJJYSqFJJIlJJCkSWkuJSSJJEhISktRSEkkJJJIkJAQRSSipQkipVEkkIZFSkiQkqVRJJZaQJJGEJBJSWUJJJJZUlJAiIkkSJEIqqUokIZFJJIlJIpMlJJLCZEmqRIJJJJZSEkkkJEliJBJJKJGlEkkklJISJJGkJEkoIRFJJJGkKEqKRJJYSCRJJCFJIkmFJJEkJJGJJJKkJIEkJJEkJJlKkYRJJIkkqSQpRBIKJRRJJJEqIZJJJJJEkkRJkUqSIpJIJJEkSYhIQpJIJJQklJAiIpKkSCShCEqJJJEllJJIkpJIJJEkYSklIkiSSKJQSiYSSYolSSghJQlJQkIJJSEJJJYSkiREIpJIkkhSSSSJhCRJCCUhJKOEJCRJCCUhJSEtSYpIQokkJCFJQiERSSQllYSQhCRVJEVKJYpIIokiJZKQRCSRJJKQpBCRJJJJJpJJQpJKIomkTESSUClJIkkoJSWkJEmSCCSJJCShJCFJJYqQhJJIJJKESKQVJJIkkiREJCGJJBJJJJpIklBCKKEkSZAqkihCkiQSJSGSkoQkkZCkIpJIJJIqJSIJJJQkSRKVJJKSCIkkJSKJJJIkJJJIJEmIVCqJqJREIokklJRIJFIkJJEkSUOIJJJVJKEkJJIQSkhKEkIJJJVIIokkkpCEkkgiiUQSCUkSSUhSSSqRJJJIJJElJCEkJJJEQkJJRVJJIiJJCCWRSEiJJJJEJJFJIkkoJYkkJJJQJJGkJJISRYJEEkkiSUISSSxJJKEkkZBIJJEkhSSRpJJIJEkSSSQhiYRJJCRJJJJEJJFIkpJIUpIkkiQkkiQUUiSSRJJIJJJEJJJEJJGkEkkkkiSSVJKSRJISSiKJhCQJJZGQJJFESKQRISUSSRJJSCSRJCSRJJJJJCGJhJJIJJIkJJJEEolUkkgiIZJISqJIQhIJSSQkJJFSIiGJSCKJhIQkJSGRhCSRJCSRRJJIJJKkJJJIQiKSSCIhIZIliSQRJZJIYomERIqkJJFUIkkkkUgiCUkkkkQSSEgiJZJEJJKEJJJIIkkqkUQkJJJIJEmISJJKJJJIJJIkkiQSSSSRJJJIEpJIJJJIIpFJJBJJJJFEJJFIEpGkhJBEJJEkJJKQSEIiiSQSSSQhkiQSSSSSSUJJJJFIJJJEkpBIIokkkqokiSQkkpBIElJCIomEJJJJJCSSJJJJJJIkkZBQJJFIJCGhJJFIJJGkJJJIJBJJJJKQJJJIJJJIJJKkJJJIJBJJJJJIJJEkJJJIJJGkJJJIJJJIJJJIJJJIJJJIJJJIJJJIJJJI';
+
+  // Helper to load images as base64 for PDF with aspect ratio data
   function loadImagesForPDF(imageList, callback) {
     var loaded = {};
     var remaining = imageList.length;
@@ -789,7 +788,13 @@
           canvas.height = img.height;
           var ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0);
-          loaded[item.key] = canvas.toDataURL('image/jpeg', 0.8);
+          // Store both the data URL and dimensions for aspect ratio calculations
+          loaded[item.key] = {
+            data: canvas.toDataURL('image/jpeg', 0.85),
+            width: img.width,
+            height: img.height,
+            aspectRatio: img.width / img.height
+          };
         } catch (e) {
           console.log('Could not load image:', item.key, e);
         }
@@ -811,6 +816,43 @@
         callback(loaded);
       }
     }, 5000);
+  }
+
+  // Calculate dimensions that fit within a box while maintaining aspect ratio
+  function fitImageToBox(imgData, maxWidth, maxHeight) {
+    var aspectRatio = imgData.aspectRatio;
+    var width = maxWidth;
+    var height = maxWidth / aspectRatio;
+
+    // If height exceeds max, scale down based on height
+    if (height > maxHeight) {
+      height = maxHeight;
+      width = maxHeight * aspectRatio;
+    }
+
+    return { width: width, height: height };
+  }
+
+  // Calculate dimensions to cover a box (crop to fill) while maintaining aspect ratio
+  function coverImageToBox(imgData, boxWidth, boxHeight) {
+    var aspectRatio = imgData.aspectRatio;
+    var boxAspectRatio = boxWidth / boxHeight;
+
+    var width, height, offsetX = 0, offsetY = 0;
+
+    if (aspectRatio > boxAspectRatio) {
+      // Image is wider - fit to height, crop width
+      height = boxHeight;
+      width = boxHeight * aspectRatio;
+      offsetX = (width - boxWidth) / 2;
+    } else {
+      // Image is taller - fit to width, crop height
+      width = boxWidth;
+      height = boxWidth / aspectRatio;
+      offsetY = (height - boxHeight) / 2;
+    }
+
+    return { width: boxWidth, height: boxHeight, sourceWidth: width, sourceHeight: height, offsetX: offsetX, offsetY: offsetY };
   }
 
   // Generate the actual PDF flyer
@@ -850,32 +892,40 @@
 
     var yPos = 60;
 
-    // ===== HERO PHOTO (large) =====
+    // ===== HERO PHOTO (large) - with proper aspect ratio =====
+    var heroBoxHeight = 220;
     if (images.photo0) {
       try {
-        var heroHeight = 220;
-        doc.addImage(images.photo0, 'JPEG', margin, yPos, contentWidth, heroHeight, undefined, 'MEDIUM');
-        yPos += heroHeight + 10;
+        var heroDims = fitImageToBox(images.photo0, contentWidth, heroBoxHeight);
+        var heroX = margin + (contentWidth - heroDims.width) / 2; // Center horizontally
+        doc.addImage(images.photo0.data, 'JPEG', heroX, yPos, heroDims.width, heroDims.height, undefined, 'MEDIUM');
+        yPos += heroDims.height + 10;
       } catch (e) {
         console.log('Hero image error:', e);
         yPos += 10;
       }
     }
 
-    // ===== TWO SMALLER PHOTOS =====
+    // ===== TWO SMALLER PHOTOS - with proper aspect ratio =====
     var smallPhotoWidth = (contentWidth - 10) / 2;
-    var smallPhotoHeight = 100;
+    var smallPhotoHeight = 110;
     var hasSmallPhotos = images.photo1 || images.photo2;
 
     if (hasSmallPhotos) {
       if (images.photo1) {
         try {
-          doc.addImage(images.photo1, 'JPEG', margin, yPos, smallPhotoWidth, smallPhotoHeight, undefined, 'MEDIUM');
+          var dims1 = fitImageToBox(images.photo1, smallPhotoWidth, smallPhotoHeight);
+          var x1 = margin + (smallPhotoWidth - dims1.width) / 2;
+          var y1 = yPos + (smallPhotoHeight - dims1.height) / 2;
+          doc.addImage(images.photo1.data, 'JPEG', x1, y1, dims1.width, dims1.height, undefined, 'MEDIUM');
         } catch (e) { console.log('Photo 2 error:', e); }
       }
       if (images.photo2) {
         try {
-          doc.addImage(images.photo2, 'JPEG', margin + smallPhotoWidth + 10, yPos, smallPhotoWidth, smallPhotoHeight, undefined, 'MEDIUM');
+          var dims2 = fitImageToBox(images.photo2, smallPhotoWidth, smallPhotoHeight);
+          var x2 = margin + smallPhotoWidth + 10 + (smallPhotoWidth - dims2.width) / 2;
+          var y2 = yPos + (smallPhotoHeight - dims2.height) / 2;
+          doc.addImage(images.photo2.data, 'JPEG', x2, y2, dims2.width, dims2.height, undefined, 'MEDIUM');
         } catch (e) { console.log('Photo 3 error:', e); }
       }
       yPos += smallPhotoHeight + 15;
@@ -967,9 +1017,9 @@
 
     // Two-column contact cards
     var cardWidth = (contentWidth - 15) / 2;
-    var cardHeight = 90;
+    var cardHeight = 95;
     var cardStartY = yPos;
-    var photoSize = 50; // Square photos
+    var photoBoxSize = 55; // Box size for photos
 
     // ===== REALTOR CARD (white background) =====
     doc.setFillColor(255, 255, 255);
@@ -979,13 +1029,13 @@
     var realtorInfoX = margin + 12;
     var realtorInfoY = cardStartY + 15;
 
-    // Realtor photo - draw as circle with clipping
+    // Realtor photo - with proper aspect ratio
     if (images.realtorPhoto) {
       try {
-        // Draw circular photo
-        var photoX = margin + cardWidth - photoSize - 10;
-        var photoY = cardStartY + 10;
-        doc.addImage(images.realtorPhoto, 'JPEG', photoX, photoY, photoSize, photoSize, undefined, 'MEDIUM');
+        var rPhotoDims = fitImageToBox(images.realtorPhoto, photoBoxSize, photoBoxSize);
+        var rPhotoX = margin + cardWidth - photoBoxSize - 8 + (photoBoxSize - rPhotoDims.width) / 2;
+        var rPhotoY = cardStartY + 8 + (photoBoxSize - rPhotoDims.height) / 2;
+        doc.addImage(images.realtorPhoto.data, 'JPEG', rPhotoX, rPhotoY, rPhotoDims.width, rPhotoDims.height, undefined, 'MEDIUM');
       } catch (e) { console.log('Realtor photo error:', e); }
     }
 
@@ -1013,16 +1063,17 @@
     var loInfoX = loCardX + 12;
     var loInfoY = cardStartY + 15;
 
-    // LO photo
+    // LO photo - with proper aspect ratio
     if (images.loPhoto) {
       try {
-        var loPhotoX = loCardX + cardWidth - photoSize - 10;
-        var loPhotoY = cardStartY + 10;
-        doc.addImage(images.loPhoto, 'JPEG', loPhotoX, loPhotoY, photoSize, photoSize, undefined, 'MEDIUM');
+        var loPhotoDims = fitImageToBox(images.loPhoto, photoBoxSize, photoBoxSize);
+        var loPhotoX = loCardX + cardWidth - photoBoxSize - 8 + (photoBoxSize - loPhotoDims.width) / 2;
+        var loPhotoY = cardStartY + 8 + (photoBoxSize - loPhotoDims.height) / 2;
+        doc.addImage(images.loPhoto.data, 'JPEG', loPhotoX, loPhotoY, loPhotoDims.width, loPhotoDims.height, undefined, 'MEDIUM');
       } catch (e) { console.log('LO photo error:', e); }
     }
 
-    // LO Name - white text with accent color
+    // LO Name - accent color
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
@@ -1040,21 +1091,30 @@
     if (lo.email) { doc.text(lo.email, loInfoX, loInfoY); loInfoY += 10; }
     if (lo.nmls) { doc.text('NMLS# ' + lo.nmls, loInfoX, loInfoY); }
 
-    // Luminate Bank text branding at bottom of LO card
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
-    doc.text('LUMINATE BANK', loCardX + cardWidth - 12, cardStartY + cardHeight - 8, { align: 'right' });
+    // Luminate Bank logo at bottom of LO card (embedded base64)
+    try {
+      doc.addImage(LUMINATE_LOGO_BASE64, 'PNG', loCardX + cardWidth - 85, cardStartY + cardHeight - 22, 75, 16, undefined, 'MEDIUM');
+    } catch (e) {
+      // Fallback to text if image fails
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
+      doc.text('LUMINATE BANK', loCardX + cardWidth - 12, cardStartY + cardHeight - 10, { align: 'right' });
+    }
 
     // ===== FOOTER =====
     doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.rect(0, pageHeight - 55, pageWidth, 55, 'F');
 
-    // Luminate logo in footer (white version would be ideal, but we'll add text)
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
-    doc.text('LUMINATE BANK', margin, pageHeight - 38);
+    // Luminate Bank logo in footer (embedded base64)
+    try {
+      doc.addImage(LUMINATE_LOGO_BASE64, 'PNG', margin, pageHeight - 50, 100, 20, undefined, 'MEDIUM');
+    } catch (e) {
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
+      doc.text('LUMINATE BANK', margin, pageHeight - 38);
+    }
 
     doc.setFontSize(6);
     doc.setFont('helvetica', 'normal');
