@@ -1,10 +1,10 @@
-// Create Property in HubDB - v5.3
+// Create Property in HubDB - v5.4
 // Added: Duplicate slug detection with unique suffix
 // Added: Better error messages for common issues
 const https = require('https');
 
 exports.main = async (context, sendResponse) => {
-  console.log('=== createprop v5.3 START ===');
+  console.log('=== createprop v5.4 START ===');
   const body = context.body;
 
   if (!body || !body.property || !body.userEmail) {
@@ -160,14 +160,14 @@ exports.main = async (context, sendResponse) => {
       slug: finalSlug,
       published: publishResult.success,
       verified: verified,
-      version: '5.3'
+      version: '5.4'
     };
 
     if (!verified) {
       response.warning = 'Row created but verification pending. Page may take up to 60 seconds to appear.';
     }
 
-    console.log('=== createprop v5.3 COMPLETE ===');
+    console.log('=== createprop v5.4 COMPLETE ===');
     console.log('Response:', JSON.stringify(response));
 
     sendResponse({
@@ -176,7 +176,7 @@ exports.main = async (context, sendResponse) => {
     });
 
   } catch (error) {
-    console.error('=== createprop v5.3 ERROR ===');
+    console.error('=== createprop v5.4 ERROR ===');
     console.error('Error:', error.message);
 
     // Provide user-friendly error messages

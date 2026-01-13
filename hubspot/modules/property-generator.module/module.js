@@ -1,6 +1,6 @@
-// Property Generator Module JavaScript v5.3 - HubDB Version
+// Property Generator Module JavaScript v5.4 - HubDB Version
 // Uses HubDB for data storage with dynamic pages
-// Added: Double-click prevention, delete confirmation modal
+// Added: Download Flyer button with jsPDF generation
 (function() {
   var uploadedPhotos = [];
   var realtorPhoto = null;
@@ -53,7 +53,7 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v5.3 (HubDB) initialized');
+    console.log('Property Generator v5.4 (HubDB) initialized');
 
     // Check for URL query parameters first (from HubSpot CRM integration)
     var urlParams = new URLSearchParams(window.location.search);
@@ -449,10 +449,12 @@
     var generateBtn = document.getElementById('generate-btn');
     var previewBtn = document.getElementById('preview-btn');
     var clearBtn = document.getElementById('clear-btn');
+    var flyerBtn = document.getElementById('flyer-btn');
 
     if (generateBtn) generateBtn.addEventListener('click', generateProperty);
     if (previewBtn) previewBtn.addEventListener('click', previewProperty);
     if (clearBtn) clearBtn.addEventListener('click', clearForm);
+    if (flyerBtn) flyerBtn.addEventListener('click', downloadFlyer);
 
     // Format price input
     var priceInput = document.querySelector('input[name="price"]');
@@ -701,6 +703,229 @@
     var iframe = document.getElementById('preview-iframe');
     iframe.srcdoc = html;
     document.getElementById('preview-modal').classList.add('active');
+  }
+
+  // Download Flyer - Generate PDF from form data
+  function downloadFlyer() {
+    var data = getFormData();
+
+    if (!data.property.address) {
+      showToast('Please enter a property address first', 'error');
+      return;
+    }
+
+    var btn = document.getElementById('flyer-btn');
+    var originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+
+    // Check if jsPDF is loaded
+    if (typeof window.jspdf === 'undefined') {
+      showToast('PDF library not loaded. Please refresh and try again.', 'error');
+      btn.disabled = false;
+      btn.textContent = originalText;
+      return;
+    }
+
+    try {
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF('p', 'pt', 'letter'); // 612 x 792 points
+
+      var pageWidth = 612;
+      var pageHeight = 792;
+      var margin = 40;
+      var contentWidth = pageWidth - (margin * 2);
+
+      // Colors
+      var primaryColor = [13, 23, 60];      // #0d173c
+      var accentColor = [150, 218, 248];    // #96daf8
+      var grayColor = [113, 128, 150];      // #718096
+      var greenColor = [17, 153, 142];      // #11998e
+
+      var yPos = margin;
+      var p = data.property;
+      var r = data.realtor;
+      var lo = data.loanOfficer;
+
+      // Header bar
+      doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      doc.rect(0, 0, pageWidth, 60, 'F');
+
+      // Header text
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(24);
+      doc.setFont('helvetica', 'bold');
+      doc.text('FOR SALE', margin, 40);
+
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'normal');
+      var priceNum = parseFloat(String(p.price || 0).replace(/[$,]/g, '')) || 0;
+      doc.text('$' + priceNum.toLocaleString(), pageWidth - margin, 40, { align: 'right' });
+
+      yPos = 80;
+
+      // Property Address
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      doc.setFontSize(22);
+      doc.setFont('helvetica', 'bold');
+      var fullAddress = p.address + (p.address2 ? ' ' + p.address2 : '');
+      doc.text(fullAddress, margin, yPos);
+      yPos += 25;
+
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+      doc.text(p.city + ', ' + p.state + ' ' + p.zip, margin, yPos);
+      yPos += 35;
+
+      // Stats bar
+      doc.setFillColor(247, 250, 252);
+      doc.rect(margin, yPos, contentWidth, 50, 'F');
+
+      var statsY = yPos + 32;
+      var statWidth = contentWidth / 4;
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+
+      if (p.bedrooms) {
+        doc.text(String(p.bedrooms), margin + statWidth * 0.5, statsY, { align: 'center' });
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Bedrooms', margin + statWidth * 0.5, statsY + 15, { align: 'center' });
+      }
+
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      if (p.bathrooms) {
+        doc.text(String(p.bathrooms), margin + statWidth * 1.5, statsY, { align: 'center' });
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Bathrooms', margin + statWidth * 1.5, statsY + 15, { align: 'center' });
+      }
+
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      if (p.sqft) {
+        var sqftNum = parseFloat(String(p.sqft).replace(/,/g, '')) || 0;
+        doc.text(sqftNum.toLocaleString(), margin + statWidth * 2.5, statsY, { align: 'center' });
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Sq Ft', margin + statWidth * 2.5, statsY + 15, { align: 'center' });
+      }
+
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      if (p.yearBuilt && p.yearBuilt !== '0' && p.yearBuilt !== 0) {
+        doc.text(String(p.yearBuilt), margin + statWidth * 3.5, statsY, { align: 'center' });
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Year Built', margin + statWidth * 3.5, statsY + 15, { align: 'center' });
+      }
+
+      yPos += 70;
+
+      // Description
+      if (p.description) {
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+        doc.text('About This Property', margin, yPos);
+        yPos += 18;
+
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+        var descText = p.description.substring(0, 400);
+        var descLines = doc.splitTextToSize(descText, contentWidth);
+        doc.text(descLines.slice(0, 6), margin, yPos);
+        yPos += (Math.min(descLines.length, 6) * 14) + 20;
+      }
+
+      // MLS Number
+      if (p.mlsNumber) {
+        doc.setFontSize(10);
+        doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+        doc.text('MLS# ' + p.mlsNumber, margin, yPos);
+        yPos += 25;
+      }
+
+      // Divider
+      doc.setDrawColor(230, 230, 230);
+      doc.line(margin, yPos, pageWidth - margin, yPos);
+      yPos += 25;
+
+      // Contact Section Header
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      doc.text('Contact Us', margin, yPos);
+      yPos += 25;
+
+      // Two column contact cards
+      var colWidth = (contentWidth - 20) / 2;
+
+      // Realtor Card
+      doc.setFillColor(255, 255, 255);
+      doc.setDrawColor(230, 230, 230);
+      doc.roundedRect(margin, yPos, colWidth, 100, 5, 5, 'FD');
+
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      doc.text(r.name || 'Realtor', margin + 15, yPos + 25);
+
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+      doc.text(r.title || 'Licensed Realtor', margin + 15, yPos + 40);
+      if (r.company) doc.text(r.company, margin + 15, yPos + 53);
+      if (r.phone) doc.text(r.phone, margin + 15, yPos + 66);
+      if (r.email) doc.text(r.email, margin + 15, yPos + 79);
+      if (r.license) doc.text(r.license, margin + 15, yPos + 92);
+
+      // Loan Officer Card
+      var loX = margin + colWidth + 20;
+      doc.roundedRect(loX, yPos, colWidth, 100, 5, 5, 'FD');
+
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(greenColor[0], greenColor[1], greenColor[2]);
+      doc.text(lo.name || 'Loan Officer', loX + 15, yPos + 25);
+
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+      doc.text(lo.title || 'Loan Officer', loX + 15, yPos + 40);
+      if (lo.company) doc.text(lo.company, loX + 15, yPos + 53);
+      if (lo.phone) doc.text(lo.phone, loX + 15, yPos + 66);
+      if (lo.email) doc.text(lo.email, loX + 15, yPos + 79);
+      if (lo.nmls) doc.text('NMLS# ' + lo.nmls, loX + 15, yPos + 92);
+
+      yPos += 120;
+
+      // Footer
+      doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      doc.rect(0, pageHeight - 80, pageWidth, 80, 'F');
+
+      doc.setFontSize(7);
+      doc.setTextColor(255, 255, 255);
+      var disclaimer = 'Luminate Bank NMLS 1281698 Bank Headquarters 2523 S. Wayzata Blvd., Suite 100 Minneapolis, MN 55405 (952) 939-7200. This is not an offer to enter into an agreement. Information, rates and programs are subject to change without prior notice and may not be available in all states. All loans are subject to credit and property approval. Luminate Bank is not affiliated with any government agency. 2026 Luminate Bank. All rights reserved. Member FDIC. Equal Housing Opportunity Lender';
+      var disclaimerLines = doc.splitTextToSize(disclaimer, contentWidth);
+      doc.text(disclaimerLines, margin, pageHeight - 55);
+
+      // Save the PDF
+      var filename = fullAddress.replace(/[^a-z0-9]/gi, '-').toLowerCase() + '-flyer.pdf';
+      doc.save(filename);
+
+      showToast('Flyer downloaded!', 'success');
+    } catch (err) {
+      console.error('Flyer generation error:', err);
+      showToast('Error generating flyer: ' + err.message, 'error');
+    }
+
+    btn.disabled = false;
+    btn.textContent = originalText;
   }
 
   function generatePreviewHTML(data) {

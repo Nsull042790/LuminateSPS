@@ -20,7 +20,7 @@
     <div class="pg-logo">
       <img src="https://lirp.cdn-website.com/e49062f7/dms3rep/multi/opt/Luminatebank_PrimaryLogo_White_Gradient-62f357ba-1920w.png" alt="Luminate Bank">
     </div>
-    <h1>Property Site Generator <span class="version">v5.3</span></h1>
+    <h1>Property Site Generator <span class="version">v5.4</span></h1>
     {% if user_email %}
     <p class="pg-user-info">Logged in as: {{ user_email }}</p>
     {% else %}
@@ -230,6 +230,7 @@
       <div class="pg-actions">
         <button type="button" id="preview-btn" class="btn btn-secondary">Preview</button>
         <button type="button" id="generate-btn" class="btn btn-primary">Create Property Site</button>
+        <button type="button" id="flyer-btn" class="btn btn-flyer">📄 Download Flyer</button>
         <button type="button" id="clear-btn" class="btn btn-outline">Clear Form</button>
       </div>
     </form>
@@ -298,3 +299,6 @@
   <!-- Toast Container -->
   <div id="toast-container"></div>
 </div>
+
+<!-- jsPDF Library for Flyer Generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
