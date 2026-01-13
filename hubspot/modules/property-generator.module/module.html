@@ -20,7 +20,7 @@
     <div class="pg-logo">
       <img src="https://lirp.cdn-website.com/e49062f7/dms3rep/multi/opt/Luminatebank_PrimaryLogo_White_Gradient-62f357ba-1920w.png" alt="Luminate Bank">
     </div>
-    <h1>Property Site Generator <span class="version">v5.13</span></h1>
+    <h1>Property Site Generator <span class="version">v5.14</span></h1>
     {% if user_email %}
     <p class="pg-user-info">Logged in as: {{ user_email }}</p>
     {% else %}
@@ -300,5 +300,121 @@
   <div id="toast-container"></div>
 </div>
 
-<!-- jsPDF Library for Flyer Generation -->
+<!-- jsPDF and html2canvas Libraries for Flyer Generation -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<!-- Hidden Flyer Template for PDF Generation -->
+<div id="flyer-template" style="position: absolute; left: -9999px; top: 0;">
+  <div id="flyer-content" style="width: 612px; height: 792px; background: #fff; font-family: 'Helvetica', 'Arial', sans-serif; position: relative; overflow: hidden;">
+
+    <!-- Hero Section -->
+    <div id="flyer-hero" style="position: relative; width: 100%; height: 240px; overflow: hidden;">
+      <img id="flyer-hero-img" src="" style="width: 100%; height: 100%; object-fit: cover;" />
+
+      <!-- Luminate Logo Overlay -->
+      <div style="position: absolute; top: 12px; left: 12px; background: #0d173c; border-radius: 6px; padding: 8px 12px;">
+        <img id="flyer-luminate-logo" src="https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/Luminatebank_PrimaryLogo_White_Gradient.png" style="height: 24px; width: auto;" />
+      </div>
+
+      <!-- FDIC Logo Overlay -->
+      <div style="position: absolute; top: 12px; right: 12px; background: #fff; border-radius: 6px; padding: 6px 10px;">
+        <img id="flyer-fdic-logo" src="https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/member-fdic-equal-housing-lender1-WHT.png" style="height: 40px; width: auto;" />
+      </div>
+
+      <!-- Price Badge -->
+      <div id="flyer-price-badge" style="position: absolute; bottom: 0; left: 0; background: #3b82f6; padding: 12px 24px;">
+        <span id="flyer-price" style="color: #fff; font-size: 28px; font-weight: bold;">$450,000</span>
+      </div>
+    </div>
+
+    <!-- Thumbnail Grid -->
+    <div id="flyer-thumbnails" style="display: flex; gap: 4px; padding: 4px 0;">
+      <img id="flyer-thumb-1" src="" style="flex: 1; height: 80px; object-fit: cover;" />
+      <img id="flyer-thumb-2" src="" style="flex: 1; height: 80px; object-fit: cover;" />
+      <img id="flyer-thumb-3" src="" style="flex: 1; height: 80px; object-fit: cover;" />
+    </div>
+
+    <!-- Property Info Section -->
+    <div style="display: flex; padding: 12px 20px; gap: 20px;">
+
+      <!-- Left Column: Address & Stats -->
+      <div style="width: 180px;">
+        <div id="flyer-address" style="font-size: 18px; font-weight: bold; color: #0d173c; line-height: 1.2;">123 Main Street</div>
+        <div id="flyer-city-state" style="font-size: 11px; color: #64748b; margin-top: 4px;">City, ST 12345</div>
+
+        <!-- Stats Grid -->
+        <div style="margin-top: 16px;">
+          <div id="flyer-stat-beds" style="display: flex; align-items: baseline; margin-bottom: 8px;">
+            <span style="font-size: 20px; font-weight: bold; color: #0d173c; width: 50px;">3</span>
+            <span style="font-size: 10px; color: #9ca3af;">Bedrooms</span>
+          </div>
+          <div id="flyer-stat-baths" style="display: flex; align-items: baseline; margin-bottom: 8px;">
+            <span style="font-size: 20px; font-weight: bold; color: #0d173c; width: 50px;">2</span>
+            <span style="font-size: 10px; color: #9ca3af;">Baths</span>
+          </div>
+          <div id="flyer-stat-sqft" style="display: flex; align-items: baseline; margin-bottom: 8px;">
+            <span style="font-size: 20px; font-weight: bold; color: #0d173c; width: 50px;">2,500</span>
+            <span style="font-size: 10px; color: #9ca3af;">Sq Ft</span>
+          </div>
+          <div id="flyer-stat-year" style="display: flex; align-items: baseline; margin-bottom: 8px;">
+            <span style="font-size: 20px; font-weight: bold; color: #0d173c; width: 50px;">2020</span>
+            <span style="font-size: 10px; color: #9ca3af;">Year Built</span>
+          </div>
+        </div>
+
+        <div id="flyer-mls" style="font-size: 9px; font-weight: bold; color: #0d173c; margin-top: 12px;">MLS# 123456</div>
+      </div>
+
+      <!-- Right Column: Description -->
+      <div style="flex: 1;">
+        <div id="flyer-description" style="font-size: 9px; color: #64748b; line-height: 1.5; max-height: 140px; overflow: hidden;">
+          Property description goes here...
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Cards Section -->
+    <div style="display: flex; gap: 12px; padding: 0 20px; margin-top: 8px;">
+
+      <!-- Realtor Card -->
+      <div style="flex: 1; border: 2px solid #3b82f6; border-radius: 8px; padding: 12px; background: #fff; display: flex;">
+        <div style="flex: 1;">
+          <div id="flyer-realtor-name" style="font-size: 14px; font-weight: bold; color: #0d173c;">Realtor Name</div>
+          <div id="flyer-realtor-title" style="font-size: 9px; color: #3b82f6; margin-top: 2px;">Licensed Realtor</div>
+          <div id="flyer-realtor-company" style="font-size: 8px; color: #64748b; margin-top: 6px;">Company</div>
+          <div id="flyer-realtor-phone" style="font-size: 8px; color: #64748b; margin-top: 2px;">Phone</div>
+          <div id="flyer-realtor-email" style="font-size: 8px; color: #64748b; margin-top: 2px;">Email</div>
+        </div>
+        <img id="flyer-realtor-photo" src="" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;" />
+      </div>
+
+      <!-- Loan Officer Card -->
+      <div style="flex: 1; background: #0d173c; border-radius: 8px; padding: 12px; display: flex;">
+        <div style="flex: 1;">
+          <div id="flyer-lo-name" style="font-size: 14px; font-weight: bold; color: #96daf8;">Loan Officer Name</div>
+          <div id="flyer-lo-title" style="font-size: 9px; color: #fff; margin-top: 2px;">Loan Officer</div>
+          <div id="flyer-lo-company" style="font-size: 8px; color: #fff; margin-top: 6px;">Luminate Bank</div>
+          <div id="flyer-lo-phone" style="font-size: 8px; color: #fff; margin-top: 2px;">Phone</div>
+          <div id="flyer-lo-email" style="font-size: 8px; color: #fff; margin-top: 2px;">Email</div>
+          <img id="flyer-lo-logo" src="https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/Luminatebank_PrimaryLogo_White_Gradient.png" style="height: 16px; width: auto; margin-top: 8px;" />
+        </div>
+        <img id="flyer-lo-photo" src="" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;" />
+      </div>
+    </div>
+
+    <!-- NMLS -->
+    <div id="flyer-nmls" style="font-size: 7px; color: #64748b; padding: 8px 20px;">NMLS #123456</div>
+
+    <!-- Footer -->
+    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: #0d173c; padding: 12px 20px; display: flex; align-items: center;">
+      <div style="flex: 1;">
+        <div id="flyer-disclaimer" style="font-size: 5px; color: #fff; line-height: 1.4;">
+          Luminate Home Loans, Inc. NMLS#180933. Corporate Headquarters 2523 Wayzata Blvd. S. Suite 200, Minneapolis, MN 55405. This advertisement does not constitute a loan approval or loan commitment. Loan approval and interest rate are subject to credit approval and will depend upon specific borrower attributes and certain underwriting criteria.
+        </div>
+      </div>
+      <img id="flyer-footer-fdic" src="https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/member-fdic-equal-housing-lender1-WHT.png" style="height: 28px; width: auto; margin-left: 12px;" />
+    </div>
+
+  </div>
+</div>

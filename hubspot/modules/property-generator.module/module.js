@@ -872,279 +872,175 @@
     return { width: boxWidth, height: boxHeight, sourceWidth: width, sourceHeight: height, offsetX: offsetX, offsetY: offsetY };
   }
 
-  // Generate the actual PDF flyer
+  // Generate the actual PDF flyer using HTML template + html2canvas
   function generateFlyerPDF(data, images) {
-    var jsPDF = window.jspdf.jsPDF;
-    var doc = new jsPDF('p', 'pt', 'letter'); // 612 x 792 points
-
-    var pageWidth = 612;
-    var pageHeight = 792;
-    var margin = 20;
-    var contentWidth = pageWidth - (margin * 2);
-
-    // Colors
-    var primaryColor = [13, 23, 60];      // #0d173c - dark navy
-    var accentColor = [150, 218, 248];    // #96daf8 - light blue
-    var grayColor = [100, 116, 139];      // #64748b
-    var lightGray = [156, 163, 175];      // #9ca3af
-    var blueBg = [59, 130, 246];          // #3b82f6
-
     var p = data.property;
     var r = data.realtor;
     var lo = data.loanOfficer;
+    var photos = data.photos || [];
     var fullAddress = p.address + (p.address2 ? ' ' + p.address2 : '');
     var priceNum = parseFloat(String(p.price || 0).replace(/[$,]/g, '')) || 0;
 
-    var yPos = 0;
+    // Get the flyer template element
+    var template = document.getElementById('flyer-template');
+    var content = document.getElementById('flyer-content');
 
-    // ===== HERO SECTION (maintain aspect ratio) =====
-    var heroHeight = 195;
+    // Make template visible for rendering (move to visible area temporarily)
+    template.style.left = '0';
+    template.style.top = '0';
+    template.style.zIndex = '9999';
 
-    // Draw hero photo - maintain aspect ratio, crop to fill
-    if (images.photo0) {
-      try {
-        var heroDims = coverImageToBox(images.photo0, pageWidth, heroHeight);
-        doc.addImage(images.photo0.data, 'JPEG', -heroDims.offsetX, -heroDims.offsetY, heroDims.sourceWidth, heroDims.sourceHeight, undefined, 'MEDIUM');
-      } catch (e) {
-        console.log('Hero image error:', e);
-        doc.addImage(images.photo0.data, 'JPEG', 0, 0, pageWidth, heroHeight, undefined, 'MEDIUM');
-      }
+    // Populate the template with data
+    // Hero image
+    var heroImg = document.getElementById('flyer-hero-img');
+    if (photos.length > 0) {
+      heroImg.src = photos[0];
+      heroImg.style.display = 'block';
     } else {
-      doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.rect(0, 0, pageWidth, heroHeight, 'F');
+      heroImg.style.display = 'none';
     }
 
-    // Luminate Bank logo overlay (top left with dark background)
-    if (images.luminateLogo) {
-      try {
-        var lumLogoDims = fitImageToBox(images.luminateLogo, 100, 30);
-        doc.setFillColor(13, 23, 60);
-        doc.roundedRect(8, 8, lumLogoDims.width + 16, lumLogoDims.height + 12, 4, 4, 'F');
-        var logoFormat = images.luminateLogo.isPng ? 'PNG' : 'JPEG';
-        doc.addImage(images.luminateLogo.data, logoFormat, 16, 14, lumLogoDims.width, lumLogoDims.height, undefined, 'MEDIUM');
-      } catch (e) { console.log('Luminate logo error:', e); }
+    // Price
+    document.getElementById('flyer-price').textContent = '$' + priceNum.toLocaleString();
+
+    // Thumbnail images
+    var thumbs = [
+      document.getElementById('flyer-thumb-1'),
+      document.getElementById('flyer-thumb-2'),
+      document.getElementById('flyer-thumb-3')
+    ];
+    for (var i = 0; i < 3; i++) {
+      if (photos[i + 1]) {
+        thumbs[i].src = photos[i + 1];
+        thumbs[i].style.display = 'block';
+      } else {
+        thumbs[i].style.display = 'none';
+      }
     }
 
-    // FDIC/Equal Housing logo overlay (top right with white background)
-    if (images.fdicLogo) {
-      try {
-        var fdicOverlayDims = fitImageToBox(images.fdicLogo, 70, 45);
-        doc.setFillColor(255, 255, 255);
-        doc.roundedRect(pageWidth - fdicOverlayDims.width - 24, 8, fdicOverlayDims.width + 16, fdicOverlayDims.height + 12, 4, 4, 'F');
-        var fdicFormat = images.fdicLogo.isPng ? 'PNG' : 'JPEG';
-        doc.addImage(images.fdicLogo.data, fdicFormat, pageWidth - fdicOverlayDims.width - 16, 14, fdicOverlayDims.width, fdicOverlayDims.height, undefined, 'MEDIUM');
-      } catch (e) { console.log('FDIC overlay error:', e); }
-    }
-
-    // Price badge overlay (bottom left of hero)
-    var priceText = '$' + priceNum.toLocaleString();
-    doc.setFontSize(32);
-    doc.setFont('helvetica', 'bold');
-    var priceWidth = doc.getTextWidth(priceText) + 40;
-    doc.setFillColor(59, 130, 246);
-    doc.rect(0, heroHeight - 55, priceWidth, 55, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.text(priceText, 20, heroHeight - 20);
-
-    yPos = heroHeight + 6;
-
-    // ===== PHOTO GRID (3 photos, larger size) =====
-    var photoKeys = ['photo1', 'photo2', 'photo3'];
-    var availablePhotos = photoKeys.filter(function(key) { return images[key]; });
-
-    if (availablePhotos.length > 0) {
-      var gridGap = 6;
-      var gridPhotoCount = availablePhotos.length;
-      var gridPhotoWidth = (contentWidth - (gridGap * (gridPhotoCount - 1))) / gridPhotoCount;
-      var gridPhotoHeight = 85;
-
-      availablePhotos.forEach(function(key, idx) {
-        try {
-          var photoX = margin + (idx * (gridPhotoWidth + gridGap));
-          // Maintain aspect ratio for thumbnails too
-          var thumbDims = coverImageToBox(images[key], gridPhotoWidth, gridPhotoHeight);
-          doc.addImage(images[key].data, 'JPEG', photoX, yPos, gridPhotoWidth, gridPhotoHeight, undefined, 'MEDIUM');
-        } catch (e) { console.log('Grid photo error:', key, e); }
-      });
-      yPos += gridPhotoHeight + 15;
-    }
-
-    // ===== TWO COLUMN LAYOUT =====
-    var colGap = 20;
-    var leftColWidth = 160;
-    var rightColWidth = contentWidth - leftColWidth - colGap;
-    var leftColX = margin;
-    var rightColX = margin + leftColWidth + colGap;
-    var colStartY = yPos;
-
-    // LEFT COLUMN: Address and Stats
-    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    var addressLines = doc.splitTextToSize(fullAddress, leftColWidth);
-    doc.text(addressLines, leftColX, colStartY);
-    var addressHeight = addressLines.length * 16;
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
-    doc.text(p.city + ', ' + p.state + ' ' + p.zip, leftColX, colStartY + addressHeight + 4);
+    // Address and location
+    document.getElementById('flyer-address').textContent = fullAddress;
+    document.getElementById('flyer-city-state').textContent = p.city + ', ' + p.state + ' ' + p.zip;
 
     // Stats
-    var statsY = colStartY + addressHeight + 25;
-    var statsData = [];
-    if (p.bedrooms) statsData.push({ value: String(p.bedrooms), label: 'Bedrooms' });
-    if (p.bathrooms) statsData.push({ value: String(p.bathrooms), label: 'Baths' });
+    var bedsEl = document.getElementById('flyer-stat-beds');
+    var bathsEl = document.getElementById('flyer-stat-baths');
+    var sqftEl = document.getElementById('flyer-stat-sqft');
+    var yearEl = document.getElementById('flyer-stat-year');
+
+    if (p.bedrooms) {
+      bedsEl.querySelector('span:first-child').textContent = p.bedrooms;
+      bedsEl.style.display = 'flex';
+    } else {
+      bedsEl.style.display = 'none';
+    }
+
+    if (p.bathrooms) {
+      bathsEl.querySelector('span:first-child').textContent = p.bathrooms;
+      bathsEl.style.display = 'flex';
+    } else {
+      bathsEl.style.display = 'none';
+    }
+
     if (p.sqft) {
       var sqftNum = parseFloat(String(p.sqft).replace(/,/g, '')) || 0;
-      statsData.push({ value: sqftNum.toLocaleString(), label: 'Sq Ft' });
+      sqftEl.querySelector('span:first-child').textContent = sqftNum.toLocaleString();
+      sqftEl.style.display = 'flex';
+    } else {
+      sqftEl.style.display = 'none';
     }
+
     if (p.yearBuilt && p.yearBuilt !== '0' && p.yearBuilt !== 0) {
-      statsData.push({ value: String(p.yearBuilt), label: 'Year Built' });
+      yearEl.querySelector('span:first-child').textContent = p.yearBuilt;
+      yearEl.style.display = 'flex';
+    } else {
+      yearEl.style.display = 'none';
     }
 
-    statsData.forEach(function(stat, idx) {
-      var statY = statsY + (idx * 20);
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.text(stat.value, leftColX, statY);
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(lightGray[0], lightGray[1], lightGray[2]);
-      doc.text(stat.label, leftColX + 45, statY);
-    });
-
-    // MLS Number
+    // MLS
+    var mlsEl = document.getElementById('flyer-mls');
     if (p.mlsNumber) {
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.text('MLS# ' + p.mlsNumber, leftColX, statsY + (statsData.length * 20) + 10);
+      mlsEl.textContent = 'MLS# ' + p.mlsNumber;
+      mlsEl.style.display = 'block';
+    } else {
+      mlsEl.style.display = 'none';
     }
 
-    // RIGHT COLUMN: Description
-    if (p.description) {
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
-      var descLines = doc.splitTextToSize(p.description, rightColWidth);
-      doc.text(descLines.slice(0, 14), rightColX, colStartY);
+    // Description
+    document.getElementById('flyer-description').textContent = p.description || '';
+
+    // Realtor info
+    document.getElementById('flyer-realtor-name').textContent = r.name || 'Realtor';
+    document.getElementById('flyer-realtor-title').textContent = r.title || 'Licensed Realtor';
+    document.getElementById('flyer-realtor-company').textContent = r.company || '';
+    document.getElementById('flyer-realtor-phone').textContent = r.phone || '';
+    document.getElementById('flyer-realtor-email').textContent = r.email || '';
+
+    var realtorPhotoEl = document.getElementById('flyer-realtor-photo');
+    if (r.photo) {
+      realtorPhotoEl.src = r.photo;
+      realtorPhotoEl.style.display = 'block';
+    } else {
+      realtorPhotoEl.style.display = 'none';
     }
 
-    yPos = colStartY + 145;
+    // Loan Officer info
+    document.getElementById('flyer-lo-name').textContent = lo.name || 'Loan Officer';
+    document.getElementById('flyer-lo-title').textContent = lo.title || 'Loan Officer';
+    document.getElementById('flyer-lo-company').textContent = lo.company || 'Luminate Bank';
+    document.getElementById('flyer-lo-phone').textContent = lo.phone || '';
+    document.getElementById('flyer-lo-email').textContent = lo.email || '';
 
-    // ===== CONTACT CARDS =====
-    var cardGap = 12;
-    var cardWidth = (contentWidth - cardGap) / 2;
-    var cardHeight = 85;
-    var cardStartY = yPos;
-    var photoSize = 55;
-
-    // REALTOR CARD (white with blue border)
-    doc.setFillColor(255, 255, 255);
-    doc.setDrawColor(59, 130, 246);
-    doc.setLineWidth(2);
-    doc.roundedRect(margin, cardStartY, cardWidth, cardHeight, 5, 5, 'FD');
-
-    var rInfoX = margin + 12;
-    var rInfoY = cardStartY + 16;
-
-    doc.setFontSize(13);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.text(r.name || 'Realtor', rInfoX, rInfoY);
-
-    doc.setFontSize(8);
-    doc.setTextColor(59, 130, 246);
-    doc.text(r.title || 'Licensed Realtor', rInfoX, rInfoY + 12);
-
-    doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
-    doc.setFont('helvetica', 'normal');
-    var rY = rInfoY + 24;
-    if (r.company) { doc.text(r.company, rInfoX, rY); rY += 10; }
-    if (r.phone) { doc.text(r.phone, rInfoX, rY); rY += 10; }
-    if (r.email) { doc.text(r.email, rInfoX, rY); }
-
-    // Realtor photo
-    if (images.realtorPhoto) {
-      try {
-        doc.addImage(images.realtorPhoto.data, 'JPEG', margin + cardWidth - photoSize - 12, cardStartY + 15, photoSize, photoSize, undefined, 'MEDIUM');
-      } catch (e) { console.log('Realtor photo error:', e); }
+    var loPhotoEl = document.getElementById('flyer-lo-photo');
+    if (lo.photo) {
+      loPhotoEl.src = lo.photo;
+      loPhotoEl.style.display = 'block';
+    } else {
+      loPhotoEl.style.display = 'none';
     }
 
-    // LOAN OFFICER CARD (dark navy)
-    var loCardX = margin + cardWidth + cardGap;
-    doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.setLineWidth(0);
-    doc.roundedRect(loCardX, cardStartY, cardWidth, cardHeight, 5, 5, 'F');
-
-    var loInfoX = loCardX + 12;
-    var loInfoY = cardStartY + 16;
-
-    doc.setFontSize(13);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
-    doc.text(lo.name || 'Loan Officer', loInfoX, loInfoY);
-
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(255, 255, 255);
-    doc.text(lo.title || 'Loan Officer', loInfoX, loInfoY + 12);
-
-    var loY = loInfoY + 24;
-    if (lo.company) { doc.text(lo.company, loInfoX, loY); loY += 10; }
-    if (lo.phone) { doc.text(lo.phone, loInfoX, loY); loY += 10; }
-    if (lo.email) { doc.text(lo.email, loInfoX, loY); }
-
-    // LO photo
-    if (images.loPhoto) {
-      try {
-        doc.addImage(images.loPhoto.data, 'JPEG', loCardX + cardWidth - photoSize - 12, cardStartY + 15, photoSize, photoSize, undefined, 'MEDIUM');
-      } catch (e) { console.log('LO photo error:', e); }
-    }
-
-    // Luminate logo in LO card (bottom left)
-    if (images.luminateLogo) {
-      try {
-        var loLogoDims = fitImageToBox(images.luminateLogo, 70, 18);
-        var logoFormat = images.luminateLogo.isPng ? 'PNG' : 'JPEG';
-        doc.addImage(images.luminateLogo.data, logoFormat, loCardX + 12, cardStartY + cardHeight - loLogoDims.height - 8, loLogoDims.width, loLogoDims.height, undefined, 'MEDIUM');
-      } catch (e) { console.log('LO card logo error:', e); }
-    }
-
-    // NMLS below cards
+    // NMLS
+    var nmlsEl = document.getElementById('flyer-nmls');
     if (lo.nmls) {
-      doc.setFontSize(7);
-      doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
-      doc.text('NMLS #' + lo.nmls, margin, cardStartY + cardHeight + 12);
+      nmlsEl.textContent = 'NMLS #' + lo.nmls;
+      nmlsEl.style.display = 'block';
+    } else {
+      nmlsEl.style.display = 'none';
     }
 
-    // ===== FOOTER =====
-    var footerY = pageHeight - 40;
-    doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.rect(0, footerY, pageWidth, 40, 'F');
+    // Wait for images to load, then render
+    setTimeout(function() {
+      html2canvas(content, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        width: 612,
+        height: 792
+      }).then(function(canvas) {
+        // Hide template again
+        template.style.left = '-9999px';
+        template.style.zIndex = 'auto';
 
-    // Disclaimer text
-    doc.setFontSize(5);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(255, 255, 255);
-    var disclaimer = 'Luminate Home Loans, Inc. NMLS#180933. Corporate Headquarters 2523 Wayzata Blvd. S. Suite 200, Minneapolis, MN 55405. This advertisement does not constitute a loan approval or loan commitment. Loan approval and interest rate are subject to credit approval and will depend upon specific borrower attributes and certain underwriting criteria.';
-    var disclaimerLines = doc.splitTextToSize(disclaimer, contentWidth - 60);
-    doc.text(disclaimerLines, margin, footerY + 12);
+        // Create PDF
+        var jsPDF = window.jspdf.jsPDF;
+        var doc = new jsPDF('p', 'pt', 'letter');
 
-    // Small FDIC logo in footer (right side)
-    if (images.fdicLogo) {
-      try {
-        var footerFdicDims = fitImageToBox(images.fdicLogo, 35, 25);
-        var fdicFormat = images.fdicLogo.isPng ? 'PNG' : 'JPEG';
-        doc.addImage(images.fdicLogo.data, fdicFormat, pageWidth - margin - footerFdicDims.width, footerY + 8, footerFdicDims.width, footerFdicDims.height, undefined, 'MEDIUM');
-      } catch (e) { console.log('Footer FDIC error:', e); }
-    }
+        // Add canvas as image to PDF
+        var imgData = canvas.toDataURL('image/jpeg', 0.95);
+        doc.addImage(imgData, 'JPEG', 0, 0, 612, 792);
 
-    // Save the PDF
-    var filename = fullAddress.replace(/[^a-z0-9]/gi, '-').toLowerCase() + '-flyer.pdf';
-    doc.save(filename);
+        // Save
+        var filename = fullAddress.replace(/[^a-z0-9]/gi, '-').toLowerCase() + '-flyer.pdf';
+        doc.save(filename);
+      }).catch(function(err) {
+        console.error('html2canvas error:', err);
+        // Hide template on error too
+        template.style.left = '-9999px';
+        template.style.zIndex = 'auto';
+        showToast('Error generating flyer: ' + err.message, 'error');
+      });
+    }, 500); // Give images time to load
   }
 
   function generatePreviewHTML(data) {
