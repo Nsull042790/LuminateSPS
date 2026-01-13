@@ -891,30 +891,26 @@
     template.style.zIndex = '9999';
 
     // Populate the template with data
-    // Hero image
-    var heroImg = document.getElementById('flyer-hero-img');
+    // Hero image - using background-image for proper scaling
+    var heroEl = document.getElementById('flyer-hero');
     if (photos.length > 0) {
-      heroImg.src = photos[0];
-      heroImg.style.display = 'block';
+      heroEl.style.backgroundImage = 'url(' + photos[0] + ')';
     } else {
-      heroImg.style.display = 'none';
+      heroEl.style.backgroundImage = 'none';
     }
 
     // Price
     document.getElementById('flyer-price').textContent = '$' + priceNum.toLocaleString();
 
-    // Thumbnail images
-    var thumbs = [
-      document.getElementById('flyer-thumb-1'),
-      document.getElementById('flyer-thumb-2'),
-      document.getElementById('flyer-thumb-3')
-    ];
+    // Thumbnail images - using background-image
+    var thumbIds = ['flyer-thumb-1', 'flyer-thumb-2', 'flyer-thumb-3'];
     for (var i = 0; i < 3; i++) {
+      var thumbEl = document.getElementById(thumbIds[i]);
       if (photos[i + 1]) {
-        thumbs[i].src = photos[i + 1];
-        thumbs[i].style.display = 'block';
+        thumbEl.style.backgroundImage = 'url(' + photos[i + 1] + ')';
+        thumbEl.style.display = 'block';
       } else {
-        thumbs[i].style.display = 'none';
+        thumbEl.style.display = 'none';
       }
     }
 
@@ -922,37 +918,37 @@
     document.getElementById('flyer-address').textContent = fullAddress;
     document.getElementById('flyer-city-state').textContent = p.city + ', ' + p.state + ' ' + p.zip;
 
-    // Stats
+    // Stats - using table cells (td)
     var bedsEl = document.getElementById('flyer-stat-beds');
     var bathsEl = document.getElementById('flyer-stat-baths');
     var sqftEl = document.getElementById('flyer-stat-sqft');
     var yearEl = document.getElementById('flyer-stat-year');
 
     if (p.bedrooms) {
-      bedsEl.querySelector('span:first-child').textContent = p.bedrooms;
-      bedsEl.style.display = 'flex';
+      bedsEl.querySelector('td:first-child').textContent = p.bedrooms;
+      bedsEl.style.display = 'table-row';
     } else {
       bedsEl.style.display = 'none';
     }
 
     if (p.bathrooms) {
-      bathsEl.querySelector('span:first-child').textContent = p.bathrooms;
-      bathsEl.style.display = 'flex';
+      bathsEl.querySelector('td:first-child').textContent = p.bathrooms;
+      bathsEl.style.display = 'table-row';
     } else {
       bathsEl.style.display = 'none';
     }
 
     if (p.sqft) {
       var sqftNum = parseFloat(String(p.sqft).replace(/,/g, '')) || 0;
-      sqftEl.querySelector('span:first-child').textContent = sqftNum.toLocaleString();
-      sqftEl.style.display = 'flex';
+      sqftEl.querySelector('td:first-child').textContent = sqftNum.toLocaleString();
+      sqftEl.style.display = 'table-row';
     } else {
       sqftEl.style.display = 'none';
     }
 
     if (p.yearBuilt && p.yearBuilt !== '0' && p.yearBuilt !== 0) {
-      yearEl.querySelector('span:first-child').textContent = p.yearBuilt;
-      yearEl.style.display = 'flex';
+      yearEl.querySelector('td:first-child').textContent = p.yearBuilt;
+      yearEl.style.display = 'table-row';
     } else {
       yearEl.style.display = 'none';
     }
@@ -976,12 +972,12 @@
     document.getElementById('flyer-realtor-phone').textContent = r.phone || '';
     document.getElementById('flyer-realtor-email').textContent = r.email || '';
 
+    // Realtor photo - using background-image
     var realtorPhotoEl = document.getElementById('flyer-realtor-photo');
     if (r.photo) {
-      realtorPhotoEl.src = r.photo;
-      realtorPhotoEl.style.display = 'block';
+      realtorPhotoEl.style.backgroundImage = 'url(' + r.photo + ')';
     } else {
-      realtorPhotoEl.style.display = 'none';
+      realtorPhotoEl.style.backgroundImage = 'none';
     }
 
     // Loan Officer info
@@ -991,12 +987,12 @@
     document.getElementById('flyer-lo-phone').textContent = lo.phone || '';
     document.getElementById('flyer-lo-email').textContent = lo.email || '';
 
+    // LO photo - using background-image
     var loPhotoEl = document.getElementById('flyer-lo-photo');
     if (lo.photo) {
-      loPhotoEl.src = lo.photo;
-      loPhotoEl.style.display = 'block';
+      loPhotoEl.style.backgroundImage = 'url(' + lo.photo + ')';
     } else {
-      loPhotoEl.style.display = 'none';
+      loPhotoEl.style.backgroundImage = 'none';
     }
 
     // NMLS
