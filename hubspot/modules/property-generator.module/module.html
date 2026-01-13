@@ -20,7 +20,7 @@
     <div class="pg-logo">
       <img src="https://lirp.cdn-website.com/e49062f7/dms3rep/multi/opt/Luminatebank_PrimaryLogo_White_Gradient-62f357ba-1920w.png" alt="Luminate Bank">
     </div>
-    <h1>Property Site Generator <span class="version">v5.2</span></h1>
+    <h1>Property Site Generator <span class="version">v5.3</span></h1>
     {% if user_email %}
     <p class="pg-user-info">Logged in as: {{ user_email }}</p>
     {% else %}
@@ -275,6 +275,22 @@
       <div class="pg-modal-footer">
         <button class="btn btn-secondary" id="success-close">Close</button>
         <button class="btn btn-primary" id="copy-url">📋 Copy URL</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="pg-modal" id="delete-modal">
+    <div class="pg-modal-content small">
+      <div class="pg-modal-body centered">
+        <div class="warning-icon">⚠️</div>
+        <h2>Delete Property?</h2>
+        <p>Are you sure you want to delete <strong id="delete-prop-name">this property</strong>?</p>
+        <p class="note warning">This action cannot be undone. The property page will be permanently removed.</p>
+      </div>
+      <div class="pg-modal-footer">
+        <button class="btn btn-secondary" id="delete-cancel">Cancel</button>
+        <button class="btn btn-danger" id="delete-confirm">🗑️ Delete Property</button>
       </div>
     </div>
   </div>

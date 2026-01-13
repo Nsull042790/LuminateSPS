@@ -1,9 +1,10 @@
-// Create Property in HubDB - v5.2
-// Fixed: Added delay between publish and verification for propagation
+// Create Property in HubDB - v5.3
+// Added: Duplicate slug detection with unique suffix
+// Added: Better error messages for common issues
 const https = require('https');
 
 exports.main = async (context, sendResponse) => {
-  console.log('=== createprop v5.2 START ===');
+  console.log('=== createprop v5.3 START ===');
   const body = context.body;
 
   if (!body || !body.property || !body.userEmail) {
@@ -63,11 +64,25 @@ exports.main = async (context, sendResponse) => {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
 
-  console.log('Generated slug:', slugVal);
+  console.log('Generated base slug:', slugVal);
+
+  // Check for duplicate slug and make unique if needed
+  let finalSlug = slugVal;
+  try {
+    const existingRows = await checkExistingSlug(token, tableId, slugVal);
+    if (existingRows > 0) {
+      // Append timestamp to make unique
+      const timestamp = Date.now().toString(36);
+      finalSlug = slugVal + '-' + timestamp;
+      console.log('Slug collision detected, using unique slug:', finalSlug);
+    }
+  } catch (e) {
+    console.log('Slug check failed, proceeding with original:', e.message);
+  }
 
   const rowData = {
     name: prop.address + (prop.address2 ? ' ' + prop.address2 : '') + ', ' + prop.city,
-    slug: slugVal,
+    slug: finalSlug,
     address: prop.address,
     address2: prop.address2 || '',
     city: prop.city,
@@ -108,7 +123,7 @@ exports.main = async (context, sendResponse) => {
   try {
     // STEP 1: Create the row (goes to draft)
     console.log('STEP 1: Creating row in HubDB draft...');
-    const createResult = await createRow(token, tableId, rowData, slugVal);
+    const createResult = await createRow(token, tableId, rowData, finalSlug);
     console.log('Row created - ID:', createResult.id);
 
     // STEP 2: Publish the table
@@ -142,17 +157,17 @@ exports.main = async (context, sendResponse) => {
     const response = {
       success: true,
       rowId: createResult.id,
-      slug: slugVal,
+      slug: finalSlug,
       published: publishResult.success,
       verified: verified,
-      version: '5.2'
+      version: '5.3'
     };
 
     if (!verified) {
       response.warning = 'Row created but verification pending. Page may take up to 60 seconds to appear.';
     }
 
-    console.log('=== createprop v5.2 COMPLETE ===');
+    console.log('=== createprop v5.3 COMPLETE ===');
     console.log('Response:', JSON.stringify(response));
 
     sendResponse({
@@ -161,11 +176,22 @@ exports.main = async (context, sendResponse) => {
     });
 
   } catch (error) {
-    console.error('=== createprop v5.2 ERROR ===');
+    console.error('=== createprop v5.3 ERROR ===');
     console.error('Error:', error.message);
+
+    // Provide user-friendly error messages
+    let userMessage = error.message;
+    if (error.message.includes('DUPLICATE_PATH')) {
+      userMessage = 'A property with this address already exists. Please use a different address or edit the existing property.';
+    } else if (error.message.includes('rate limit') || error.message.includes('429')) {
+      userMessage = 'Too many requests. Please wait a moment and try again.';
+    } else if (error.message.includes('network') || error.message.includes('ECONNREFUSED')) {
+      userMessage = 'Network error. Please check your connection and try again.';
+    }
+
     sendResponse({
       statusCode: 500,
-      body: { error: error.message }
+      body: { error: userMessage, technical: error.message }
     });
   }
 };
@@ -250,6 +276,37 @@ function publishTable(token, tableId) {
       console.error('Publish network error:', e.message);
       resolve({ success: false, status: 0, error: e.message });
     });
+    req.end();
+  });
+}
+
+// Check if a slug already exists in the table
+function checkExistingSlug(token, tableId, slug) {
+  return new Promise((resolve, reject) => {
+    const req = https.request({
+      hostname: 'api.hubapi.com',
+      path: '/cms/v3/hubdb/tables/' + tableId + '/rows?path=' + encodeURIComponent(slug),
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    }, (res) => {
+      let d = '';
+      res.on('data', c => d += c);
+      res.on('end', () => {
+        if (res.statusCode === 200) {
+          try {
+            const result = JSON.parse(d);
+            resolve(result.total || 0);
+          } catch (e) {
+            resolve(0);
+          }
+        } else {
+          resolve(0);
+        }
+      });
+    });
+    req.on('error', (e) => reject(e));
     req.end();
   });
 }

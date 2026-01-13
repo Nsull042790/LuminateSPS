@@ -634,6 +634,34 @@ main,
   box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
 }
 
+/* Danger button for destructive actions */
+.btn-danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+}
+
+/* Small modal variant */
+.pg-modal-content.small {
+  max-width: 400px;
+}
+
+/* Warning icon for delete confirmation */
+.warning-icon {
+  font-size: 3em;
+  margin-bottom: 15px;
+}
+
+/* Warning note text */
+.note.warning {
+  color: var(--error);
+  font-weight: 500;
+}
+
 /* Edit button in sidebar */
 .site-item .edit-site {
   color: var(--accent);

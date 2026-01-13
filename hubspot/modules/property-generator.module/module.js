@@ -1,5 +1,6 @@
-// Property Generator Module JavaScript v5.2 - HubDB Version
+// Property Generator Module JavaScript v5.3 - HubDB Version
 // Uses HubDB for data storage with dynamic pages
+// Added: Double-click prevention, delete confirmation modal
 (function() {
   var uploadedPhotos = [];
   var realtorPhoto = null;
@@ -12,6 +13,10 @@
   var editMode = false;
   var currentEditRowId = null;
   var currentEditSlug = null;
+
+  // Submission tracking to prevent double-clicks
+  var isSubmitting = false;
+  var pendingDeleteId = null;
 
   // LO Company Logo - always Luminate Bank
   var LO_COMPANY_LOGO = 'https://lirp.cdn-website.com/e49062f7/dms3rep/multi/opt/LuminateBank_SecondaryLogo_Color-1920w.png';
@@ -48,7 +53,7 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v5.2 (HubDB) initialized');
+    console.log('Property Generator v5.3 (HubDB) initialized');
 
     // Check for URL query parameters first (from HubSpot CRM integration)
     var urlParams = new URLSearchParams(window.location.search);
@@ -487,6 +492,12 @@
     });
     if (successClose) successClose.addEventListener('click', closeSuccessModal);
     if (copyUrlBtn) copyUrlBtn.addEventListener('click', copyUrl);
+
+    // Delete confirmation modal handlers
+    var deleteCancel = document.getElementById('delete-cancel');
+    var deleteConfirmBtn = document.getElementById('delete-confirm');
+    if (deleteCancel) deleteCancel.addEventListener('click', closeDeleteModal);
+    if (deleteConfirmBtn) deleteConfirmBtn.addEventListener('click', confirmDelete);
   }
 
   function setupNeighborhoodToggle() {
@@ -562,6 +573,12 @@
   }
 
   function generateProperty() {
+    // Prevent double-submission
+    if (isSubmitting) {
+      console.log('Submission already in progress, ignoring click');
+      return;
+    }
+
     var data = getFormData();
 
     if (!data.property.address || !data.realtor.name || !data.loanOfficer.name) {
@@ -574,6 +591,7 @@
       return;
     }
 
+    isSubmitting = true;
     var btn = document.getElementById('generate-btn');
     btn.disabled = true;
 
@@ -592,6 +610,7 @@
       })
       .then(function(res) { return res.json(); })
       .then(function(result) {
+        isSubmitting = false;
         btn.disabled = false;
         updateEditModeUI();
 
@@ -612,6 +631,7 @@
         }
       })
       .catch(function(err) {
+        isSubmitting = false;
         btn.disabled = false;
         updateEditModeUI();
         showToast('Error updating property', 'error');
@@ -630,6 +650,7 @@
       })
       .then(function(res) { return res.json(); })
       .then(function(result) {
+        isSubmitting = false;
         btn.disabled = false;
         btn.textContent = 'Create Property Site';
 
@@ -658,6 +679,7 @@
         }
       })
       .catch(function(err) {
+        isSubmitting = false;
         btn.disabled = false;
         btn.textContent = 'Create Property Site';
         showToast('Error creating property', 'error');
@@ -922,8 +944,9 @@
           list.querySelectorAll('.delete-site').forEach(function(btn) {
             btn.addEventListener('click', function() {
               var rowId = this.getAttribute('data-id');
-              // Direct delete - confirm() doesn't work in sandboxed iframes
-              deleteProperty(rowId);
+              var propName = this.closest('.site-item').querySelector('.site-name').textContent;
+              // Show confirmation modal instead of direct delete
+              showDeleteConfirmation(rowId, propName);
             });
           });
         } else {
@@ -933,6 +956,39 @@
       .catch(function(err) {
         console.error('Error loading properties:', err);
       });
+  }
+
+  function showDeleteConfirmation(rowId, propName) {
+    pendingDeleteId = rowId;
+    var modal = document.getElementById('delete-modal');
+    var nameSpan = document.getElementById('delete-prop-name');
+    if (modal && nameSpan) {
+      nameSpan.textContent = propName || 'this property';
+      modal.classList.add('active');
+    } else {
+      // Fallback if modal not available - still require double action
+      if (window._deleteConfirmPending === rowId) {
+        deleteProperty(rowId);
+        window._deleteConfirmPending = null;
+      } else {
+        window._deleteConfirmPending = rowId;
+        showToast('Click delete again to confirm', 'info');
+        setTimeout(function() { window._deleteConfirmPending = null; }, 3000);
+      }
+    }
+  }
+
+  function closeDeleteModal() {
+    var modal = document.getElementById('delete-modal');
+    if (modal) modal.classList.remove('active');
+    pendingDeleteId = null;
+  }
+
+  function confirmDelete() {
+    if (pendingDeleteId) {
+      deleteProperty(pendingDeleteId);
+      closeDeleteModal();
+    }
   }
 
   function deleteProperty(rowId) {
