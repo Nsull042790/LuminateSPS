@@ -883,11 +883,10 @@
     var contentWidth = pageWidth - (margin * 2);
 
     // Colors
-    var primaryColor = [13, 23, 60];      // #0d173c
-    var accentColor = [150, 218, 248];    // #96daf8
+    var primaryColor = [13, 23, 60];      // #0d173c - dark navy
+    var accentColor = [150, 218, 248];    // #96daf8 - light blue
     var grayColor = [100, 116, 139];      // #64748b
     var lightGray = [156, 163, 175];      // #9ca3af
-    var lightBg = [248, 250, 252];        // #f8fafc
     var blueBg = [59, 130, 246];          // #3b82f6
 
     var p = data.property;
@@ -898,103 +897,101 @@
 
     var yPos = 0;
 
-    // ===== HERO SECTION WITH LOGO OVERLAYS =====
-    var heroHeight = 200;
+    // ===== HERO SECTION (maintain aspect ratio) =====
+    var heroHeight = 195;
 
-    // Draw hero photo (full width, edge to edge)
+    // Draw hero photo - maintain aspect ratio, crop to fill
     if (images.photo0) {
       try {
+        var heroDims = coverImageToBox(images.photo0, pageWidth, heroHeight);
+        doc.addImage(images.photo0.data, 'JPEG', -heroDims.offsetX, -heroDims.offsetY, heroDims.sourceWidth, heroDims.sourceHeight, undefined, 'MEDIUM');
+      } catch (e) {
+        console.log('Hero image error:', e);
         doc.addImage(images.photo0.data, 'JPEG', 0, 0, pageWidth, heroHeight, undefined, 'MEDIUM');
-      } catch (e) { console.log('Hero image error:', e); }
+      }
     } else {
-      // Placeholder gradient if no photo
       doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.rect(0, 0, pageWidth, heroHeight, 'F');
     }
 
-    // Luminate Bank logo overlay (top left with semi-transparent background)
+    // Luminate Bank logo overlay (top left with dark background)
     if (images.luminateLogo) {
       try {
-        var lumLogoDims = fitImageToBox(images.luminateLogo, 120, 35);
-        // Semi-transparent dark background behind logo
+        var lumLogoDims = fitImageToBox(images.luminateLogo, 100, 30);
         doc.setFillColor(13, 23, 60);
-        doc.setGState(new doc.GState({opacity: 0.85}));
-        doc.roundedRect(10, 10, lumLogoDims.width + 20, lumLogoDims.height + 14, 4, 4, 'F');
-        doc.setGState(new doc.GState({opacity: 1}));
+        doc.roundedRect(8, 8, lumLogoDims.width + 16, lumLogoDims.height + 12, 4, 4, 'F');
         var logoFormat = images.luminateLogo.isPng ? 'PNG' : 'JPEG';
-        doc.addImage(images.luminateLogo.data, logoFormat, 20, 17, lumLogoDims.width, lumLogoDims.height, undefined, 'MEDIUM');
+        doc.addImage(images.luminateLogo.data, logoFormat, 16, 14, lumLogoDims.width, lumLogoDims.height, undefined, 'MEDIUM');
       } catch (e) { console.log('Luminate logo error:', e); }
     }
 
-    // Realtor logo overlay (top right) if available
-    if (images.realtorLogo) {
+    // FDIC/Equal Housing logo overlay (top right with white background)
+    if (images.fdicLogo) {
       try {
-        var rLogoOverlayDims = fitImageToBox(images.realtorLogo, 100, 40);
+        var fdicOverlayDims = fitImageToBox(images.fdicLogo, 70, 45);
         doc.setFillColor(255, 255, 255);
-        doc.setGState(new doc.GState({opacity: 0.9}));
-        doc.roundedRect(pageWidth - rLogoOverlayDims.width - 30, 10, rLogoOverlayDims.width + 20, rLogoOverlayDims.height + 14, 4, 4, 'F');
-        doc.setGState(new doc.GState({opacity: 1}));
-        var rLogoFormat = images.realtorLogo.isPng ? 'PNG' : 'JPEG';
-        doc.addImage(images.realtorLogo.data, rLogoFormat, pageWidth - rLogoOverlayDims.width - 20, 17, rLogoOverlayDims.width, rLogoOverlayDims.height, undefined, 'MEDIUM');
-      } catch (e) { console.log('Realtor logo overlay error:', e); }
+        doc.roundedRect(pageWidth - fdicOverlayDims.width - 24, 8, fdicOverlayDims.width + 16, fdicOverlayDims.height + 12, 4, 4, 'F');
+        var fdicFormat = images.fdicLogo.isPng ? 'PNG' : 'JPEG';
+        doc.addImage(images.fdicLogo.data, fdicFormat, pageWidth - fdicOverlayDims.width - 16, 14, fdicOverlayDims.width, fdicOverlayDims.height, undefined, 'MEDIUM');
+      } catch (e) { console.log('FDIC overlay error:', e); }
     }
 
     // Price badge overlay (bottom left of hero)
-    doc.setFillColor(59, 130, 246);
-    doc.setGState(new doc.GState({opacity: 0.95}));
     var priceText = '$' + priceNum.toLocaleString();
-    doc.setFontSize(28);
-    var priceWidth = doc.getTextWidth(priceText) + 30;
-    doc.roundedRect(0, heroHeight - 50, priceWidth, 50, 0, 0, 'F');
-    doc.setGState(new doc.GState({opacity: 1}));
-    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(32);
     doc.setFont('helvetica', 'bold');
-    doc.text(priceText, 15, heroHeight - 18);
+    var priceWidth = doc.getTextWidth(priceText) + 40;
+    doc.setFillColor(59, 130, 246);
+    doc.rect(0, heroHeight - 55, priceWidth, 55, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.text(priceText, 20, heroHeight - 20);
 
-    yPos = heroHeight + 8;
+    yPos = heroHeight + 6;
 
-    // ===== PHOTO GRID (up to 5 additional photos in a row) =====
-    var photoKeys = ['photo1', 'photo2', 'photo3', 'photo4', 'photo5'];
+    // ===== PHOTO GRID (3 photos, larger size) =====
+    var photoKeys = ['photo1', 'photo2', 'photo3'];
     var availablePhotos = photoKeys.filter(function(key) { return images[key]; });
 
     if (availablePhotos.length > 0) {
-      var gridPhotoCount = Math.min(availablePhotos.length, 5);
-      var gridGap = 4;
+      var gridGap = 6;
+      var gridPhotoCount = availablePhotos.length;
       var gridPhotoWidth = (contentWidth - (gridGap * (gridPhotoCount - 1))) / gridPhotoCount;
-      var gridPhotoHeight = 70;
+      var gridPhotoHeight = 85;
 
-      availablePhotos.slice(0, 5).forEach(function(key, idx) {
+      availablePhotos.forEach(function(key, idx) {
         try {
           var photoX = margin + (idx * (gridPhotoWidth + gridGap));
+          // Maintain aspect ratio for thumbnails too
+          var thumbDims = coverImageToBox(images[key], gridPhotoWidth, gridPhotoHeight);
           doc.addImage(images[key].data, 'JPEG', photoX, yPos, gridPhotoWidth, gridPhotoHeight, undefined, 'MEDIUM');
         } catch (e) { console.log('Grid photo error:', key, e); }
       });
-      yPos += gridPhotoHeight + 12;
+      yPos += gridPhotoHeight + 15;
     }
 
-    // ===== TWO COLUMN LAYOUT: Property Info Left, Description Right =====
-    var colGap = 15;
-    var leftColWidth = 180;
+    // ===== TWO COLUMN LAYOUT =====
+    var colGap = 20;
+    var leftColWidth = 160;
     var rightColWidth = contentWidth - leftColWidth - colGap;
     var leftColX = margin;
     var rightColX = margin + leftColWidth + colGap;
     var colStartY = yPos;
 
-    // LEFT COLUMN: Address, Location, Stats
+    // LEFT COLUMN: Address and Stats
     doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.setFontSize(14);
+    doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
     var addressLines = doc.splitTextToSize(fullAddress, leftColWidth);
-    doc.text(addressLines, leftColX, colStartY + 12);
-    var addressHeight = addressLines.length * 14;
+    doc.text(addressLines, leftColX, colStartY);
+    var addressHeight = addressLines.length * 16;
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
-    doc.text(p.city + ', ' + p.state + ' ' + p.zip, leftColX, colStartY + addressHeight + 20);
+    doc.text(p.city + ', ' + p.state + ' ' + p.zip, leftColX, colStartY + addressHeight + 4);
 
-    // Stats in left column
-    var statsStartY = colStartY + addressHeight + 38;
+    // Stats
+    var statsY = colStartY + addressHeight + 25;
     var statsData = [];
     if (p.bedrooms) statsData.push({ value: String(p.bedrooms), label: 'Bedrooms' });
     if (p.bathrooms) statsData.push({ value: String(p.bathrooms), label: 'Baths' });
@@ -1007,117 +1004,116 @@
     }
 
     statsData.forEach(function(stat, idx) {
-      doc.setFontSize(16);
+      var statY = statsY + (idx * 20);
+      doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.text(stat.value, leftColX, statsStartY + (idx * 22));
+      doc.text(stat.value, leftColX, statY);
       doc.setFontSize(9);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(lightGray[0], lightGray[1], lightGray[2]);
-      doc.text(stat.label, leftColX + 50, statsStartY + (idx * 22));
+      doc.text(stat.label, leftColX + 45, statY);
     });
+
+    // MLS Number
+    if (p.mlsNumber) {
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      doc.text('MLS# ' + p.mlsNumber, leftColX, statsY + (statsData.length * 20) + 10);
+    }
 
     // RIGHT COLUMN: Description
     if (p.description) {
       doc.setFontSize(9);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
-      var descText = p.description.substring(0, 800);
-      var descLines = doc.splitTextToSize(descText, rightColWidth);
-      doc.text(descLines.slice(0, 12), rightColX, colStartY + 12);
-    }
-
-    // MLS Number below description
-    if (p.mlsNumber) {
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.text('MLS# ' + p.mlsNumber, leftColX, colStartY + 130);
+      var descLines = doc.splitTextToSize(p.description, rightColWidth);
+      doc.text(descLines.slice(0, 14), rightColX, colStartY);
     }
 
     yPos = colStartY + 145;
 
     // ===== CONTACT CARDS =====
-    var cardWidth = (contentWidth - 12) / 2;
-    var cardHeight = 90;
+    var cardGap = 12;
+    var cardWidth = (contentWidth - cardGap) / 2;
+    var cardHeight = 85;
     var cardStartY = yPos;
-    var photoBoxSize = 60;
+    var photoSize = 55;
 
-    // Realtor Card (white with blue border)
+    // REALTOR CARD (white with blue border)
     doc.setFillColor(255, 255, 255);
     doc.setDrawColor(59, 130, 246);
-    doc.setLineWidth(1.5);
+    doc.setLineWidth(2);
     doc.roundedRect(margin, cardStartY, cardWidth, cardHeight, 5, 5, 'FD');
 
-    var realtorInfoX = margin + 10;
-    var realtorInfoY = cardStartY + 14;
+    var rInfoX = margin + 12;
+    var rInfoY = cardStartY + 16;
+
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.text(r.name || 'Realtor', rInfoX, rInfoY);
+
+    doc.setFontSize(8);
+    doc.setTextColor(59, 130, 246);
+    doc.text(r.title || 'Licensed Realtor', rInfoX, rInfoY + 12);
+
+    doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+    doc.setFont('helvetica', 'normal');
+    var rY = rInfoY + 24;
+    if (r.company) { doc.text(r.company, rInfoX, rY); rY += 10; }
+    if (r.phone) { doc.text(r.phone, rInfoX, rY); rY += 10; }
+    if (r.email) { doc.text(r.email, rInfoX, rY); }
 
     // Realtor photo
     if (images.realtorPhoto) {
       try {
-        var rPhotoDims = fitImageToBox(images.realtorPhoto, photoBoxSize, photoBoxSize);
-        doc.addImage(images.realtorPhoto.data, 'JPEG', margin + cardWidth - photoBoxSize - 8, cardStartY + 15, rPhotoDims.width, rPhotoDims.height, undefined, 'MEDIUM');
+        doc.addImage(images.realtorPhoto.data, 'JPEG', margin + cardWidth - photoSize - 12, cardStartY + 15, photoSize, photoSize, undefined, 'MEDIUM');
       } catch (e) { console.log('Realtor photo error:', e); }
     }
 
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.text(r.name || 'Realtor', realtorInfoX, realtorInfoY);
-    realtorInfoY += 13;
-
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(59, 130, 246);
-    doc.text(r.title || 'Licensed Realtor', realtorInfoX, realtorInfoY);
-    realtorInfoY += 10;
-
-    doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
-    if (r.company) { doc.text(r.company, realtorInfoX, realtorInfoY); realtorInfoY += 10; }
-    if (r.phone) { doc.text(r.phone, realtorInfoX, realtorInfoY); realtorInfoY += 10; }
-    if (r.email) { doc.text(r.email, realtorInfoX, realtorInfoY); }
-
-    // Loan Officer Card (dark blue)
-    var loCardX = margin + cardWidth + 12;
+    // LOAN OFFICER CARD (dark navy)
+    var loCardX = margin + cardWidth + cardGap;
     doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.setLineWidth(0);
     doc.roundedRect(loCardX, cardStartY, cardWidth, cardHeight, 5, 5, 'F');
 
-    var loInfoX = loCardX + 10;
-    var loInfoY = cardStartY + 14;
+    var loInfoX = loCardX + 12;
+    var loInfoY = cardStartY + 16;
 
-    // LO photo
-    if (images.loPhoto) {
-      try {
-        var loPhotoDims = fitImageToBox(images.loPhoto, photoBoxSize, photoBoxSize);
-        doc.addImage(images.loPhoto.data, 'JPEG', loCardX + cardWidth - photoBoxSize - 8, cardStartY + 15, loPhotoDims.width, loPhotoDims.height, undefined, 'MEDIUM');
-      } catch (e) { console.log('LO photo error:', e); }
-    }
-
-    doc.setFontSize(12);
+    doc.setFontSize(13);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
     doc.text(lo.name || 'Loan Officer', loInfoX, loInfoY);
-    loInfoY += 13;
 
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(255, 255, 255);
-    doc.text(lo.title || 'Loan Officer', loInfoX, loInfoY);
-    loInfoY += 10;
-    if (lo.company) { doc.text(lo.company, loInfoX, loInfoY); loInfoY += 10; }
-    if (lo.phone) { doc.text(lo.phone, loInfoX, loInfoY); loInfoY += 10; }
-    if (lo.email) { doc.text(lo.email, loInfoX, loInfoY); }
+    doc.text(lo.title || 'Loan Officer', loInfoX, loInfoY + 12);
 
-    // Luminate logo in LO card
+    var loY = loInfoY + 24;
+    if (lo.company) { doc.text(lo.company, loInfoX, loY); loY += 10; }
+    if (lo.phone) { doc.text(lo.phone, loInfoX, loY); loY += 10; }
+    if (lo.email) { doc.text(lo.email, loInfoX, loY); }
+
+    // LO photo
+    if (images.loPhoto) {
+      try {
+        doc.addImage(images.loPhoto.data, 'JPEG', loCardX + cardWidth - photoSize - 12, cardStartY + 15, photoSize, photoSize, undefined, 'MEDIUM');
+      } catch (e) { console.log('LO photo error:', e); }
+    }
+
+    // Luminate logo in LO card (bottom left)
     if (images.luminateLogo) {
       try {
-        var loLogoDims = fitImageToBox(images.luminateLogo, 80, 20);
+        var loLogoDims = fitImageToBox(images.luminateLogo, 70, 18);
         var logoFormat = images.luminateLogo.isPng ? 'PNG' : 'JPEG';
-        doc.addImage(images.luminateLogo.data, logoFormat, loCardX + 10, cardStartY + cardHeight - loLogoDims.height - 8, loLogoDims.width, loLogoDims.height, undefined, 'MEDIUM');
+        doc.addImage(images.luminateLogo.data, logoFormat, loCardX + 12, cardStartY + cardHeight - loLogoDims.height - 8, loLogoDims.width, loLogoDims.height, undefined, 'MEDIUM');
       } catch (e) { console.log('LO card logo error:', e); }
     }
 
-    // NMLS below LO card
+    // NMLS below cards
     if (lo.nmls) {
       doc.setFontSize(7);
       doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
@@ -1125,32 +1121,26 @@
     }
 
     // ===== FOOTER =====
+    var footerY = pageHeight - 40;
     doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.rect(0, pageHeight - 45, pageWidth, 45, 'F');
+    doc.rect(0, footerY, pageWidth, 40, 'F');
 
-    // FDIC/Equal Housing Lender logo on right side of footer (smaller)
-    var fdicLogoWidth = 0;
-    if (images.fdicLogo) {
-      try {
-        var fdicDims = fitImageToBox(images.fdicLogo, 40, 18);
-        var fdicX = pageWidth - margin - fdicDims.width;
-        var fdicY = pageHeight - 35;
-        var fdicFormat = images.fdicLogo.isPng ? 'PNG' : 'JPEG';
-        doc.addImage(images.fdicLogo.data, fdicFormat, fdicX, fdicY, fdicDims.width, fdicDims.height, undefined, 'MEDIUM');
-        fdicLogoWidth = fdicDims.width + 10;
-      } catch (e) {
-        console.log('FDIC logo error:', e);
-      }
-    }
-
-    // Full compliance disclaimer
+    // Disclaimer text
     doc.setFontSize(5);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(255, 255, 255);
     var disclaimer = 'Luminate Home Loans, Inc. NMLS#180933. Corporate Headquarters 2523 Wayzata Blvd. S. Suite 200, Minneapolis, MN 55405. This advertisement does not constitute a loan approval or loan commitment. Loan approval and interest rate are subject to credit approval and will depend upon specific borrower attributes and certain underwriting criteria.';
-    var disclaimerWidth = contentWidth - fdicLogoWidth;
-    var disclaimerLines = doc.splitTextToSize(disclaimer, disclaimerWidth);
-    doc.text(disclaimerLines, margin, pageHeight - 32);
+    var disclaimerLines = doc.splitTextToSize(disclaimer, contentWidth - 60);
+    doc.text(disclaimerLines, margin, footerY + 12);
+
+    // Small FDIC logo in footer (right side)
+    if (images.fdicLogo) {
+      try {
+        var footerFdicDims = fitImageToBox(images.fdicLogo, 35, 25);
+        var fdicFormat = images.fdicLogo.isPng ? 'PNG' : 'JPEG';
+        doc.addImage(images.fdicLogo.data, fdicFormat, pageWidth - margin - footerFdicDims.width, footerY + 8, footerFdicDims.width, footerFdicDims.height, undefined, 'MEDIUM');
+      } catch (e) { console.log('Footer FDIC error:', e); }
+    }
 
     // Save the PDF
     var filename = fullAddress.replace(/[^a-z0-9]/gi, '-').toLowerCase() + '-flyer.pdf';
