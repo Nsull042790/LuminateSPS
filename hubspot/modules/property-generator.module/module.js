@@ -1007,12 +1007,13 @@
     // Wait for images to load, then render
     setTimeout(function() {
       html2canvas(content, {
-        scale: 2,
+        scale: 3,  // Higher scale for better quality
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
         width: 612,
-        height: 792
+        height: 792,
+        logging: false
       }).then(function(canvas) {
         // Hide template again
         template.style.left = '-9999px';
@@ -1022,9 +1023,9 @@
         var jsPDF = window.jspdf.jsPDF;
         var doc = new jsPDF('p', 'pt', 'letter');
 
-        // Add canvas as image to PDF
-        var imgData = canvas.toDataURL('image/jpeg', 0.95);
-        doc.addImage(imgData, 'JPEG', 0, 0, 612, 792);
+        // Add canvas as high-quality PNG to PDF
+        var imgData = canvas.toDataURL('image/png');
+        doc.addImage(imgData, 'PNG', 0, 0, 612, 792);
 
         // Save
         var filename = fullAddress.replace(/[^a-z0-9]/gi, '-').toLowerCase() + '-flyer.pdf';
