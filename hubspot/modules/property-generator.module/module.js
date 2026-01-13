@@ -53,7 +53,7 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v5.10 (HubDB) initialized');
+    console.log('Property Generator v5.11 (HubDB) initialized');
 
     // Check for URL query parameters first (from HubSpot CRM integration)
     var urlParams = new URLSearchParams(window.location.search);
@@ -743,6 +743,13 @@
       keepTransparent: true
     });
 
+    // Add FDIC/Equal Housing Lender logo for footer
+    imagesToLoad.push({
+      key: 'fdicLogo',
+      url: 'https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/member-fdic-equal-housing-lender1-WHT.png',
+      keepTransparent: true
+    });
+
     // Add realtor logo if available (keep PNG transparency)
     if (data.realtor.logo) {
       console.log('Loading realtor logo:', data.realtor.logo);
@@ -1139,12 +1146,28 @@
     doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.rect(0, pageHeight - 50, pageWidth, 50, 'F');
 
-    // Full compliance disclaimer (no logo in footer)
+    // FDIC/Equal Housing Lender logo on right side of footer
+    var fdicLogoWidth = 0;
+    if (images.fdicLogo) {
+      try {
+        var fdicDims = fitImageToBox(images.fdicLogo, 80, 35);
+        var fdicX = pageWidth - margin - fdicDims.width;
+        var fdicY = pageHeight - 45;
+        var fdicFormat = images.fdicLogo.isPng ? 'PNG' : 'JPEG';
+        doc.addImage(images.fdicLogo.data, fdicFormat, fdicX, fdicY, fdicDims.width, fdicDims.height, undefined, 'MEDIUM');
+        fdicLogoWidth = fdicDims.width + 15;
+      } catch (e) {
+        console.log('FDIC logo error:', e);
+      }
+    }
+
+    // Full compliance disclaimer
     doc.setFontSize(5.5);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(255, 255, 255);
-    var disclaimer = 'Luminate Bank NMLS 1281698 | Bank Headquarters: 2523 S. Wayzata Blvd., Suite 100, Minneapolis, MN 55405 | (952) 939-7200 | This is not an offer to enter into an agreement. Information, rates and programs are subject to change without prior notice and may not be available in all states. All loans are subject to credit and property approval. Luminate Bank is not affiliated with any government agency. 2026 Luminate Bank. All rights reserved. Member FDIC. Equal Housing Opportunity Lender.';
-    var disclaimerLines = doc.splitTextToSize(disclaimer, contentWidth);
+    var disclaimer = 'Luminate Bank NMLS 1281698 | Bank Headquarters: 2523 S. Wayzata Blvd., Suite 100, Minneapolis, MN 55405 | (952) 939-7200 | This is not an offer to enter into an agreement. Information, rates and programs are subject to change without prior notice and may not be available in all states. All loans are subject to credit and property approval. Luminate Bank is not affiliated with any government agency. 2026 Luminate Bank. All rights reserved.';
+    var disclaimerWidth = contentWidth - fdicLogoWidth;
+    var disclaimerLines = doc.splitTextToSize(disclaimer, disclaimerWidth);
     doc.text(disclaimerLines, margin, pageHeight - 38);
 
     // Save the PDF
