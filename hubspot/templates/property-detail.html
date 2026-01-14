@@ -466,6 +466,7 @@
           {% if row.realtor_company %}<p>{{ row.realtor_company }}</p>{% endif %}
           {% if row.realtor_phone %}<p>&#128222; <a href="tel:{{ row.realtor_phone }}">{{ row.realtor_phone }}</a></p>{% endif %}
           {% if row.realtor_email %}<p>&#9993; <a href="mailto:{{ row.realtor_email }}">{{ row.realtor_email }}</a></p>{% endif %}
+          {% if row.realtor_website %}<p>&#127760; <a href="{{ row.realtor_website }}" target="_blank">{{ row.realtor_website|replace('https://','')|replace('http://','') }}</a></p>{% endif %}
           {% if row.realtor_license %}<p style="font-size:0.85em;color:#a0aec0;">License# {{ row.realtor_license }}</p>{% endif %}
         </div>
       </div>
@@ -483,6 +484,7 @@
           {% if row.lo_company %}<p>{{ row.lo_company }}</p>{% endif %}
           {% if row.lo_phone %}<p>&#128222; <a href="tel:{{ row.lo_phone }}">{{ row.lo_phone }}</a></p>{% endif %}
           {% if row.lo_email %}<p>&#9993; <a href="mailto:{{ row.lo_email }}">{{ row.lo_email }}</a></p>{% endif %}
+          {% if row.lo_website %}<p>&#127760; <a href="{{ row.lo_website }}" target="_blank">{{ row.lo_website|replace('https://','')|replace('http://','') }}</a></p>{% endif %}
           {% if row.lo_nmls %}<p style="font-size:0.85em;color:#a0aec0;">NMLS# {{ row.lo_nmls }}</p>{% endif %}
         </div>
       </div>
