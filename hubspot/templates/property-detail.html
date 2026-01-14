@@ -124,12 +124,13 @@
       border: none;
     }
     .share-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-    .share-btn-facebook { background: #1877f2; color: white; }
-    .share-btn-twitter { background: #000000; color: white; }
-    .share-btn-linkedin { background: #0a66c2; color: white; }
-    .share-btn-email { background: #ea4335; color: white; }
-    .share-btn-sms { background: #25d366; color: white; }
-    .share-btn-copy { background: #6b7280; color: white; }
+    .share-btn-facebook { background: #0d173c; color: white; }
+    .share-btn-twitter { background: #0d173c; color: white; }
+    .share-btn-linkedin { background: #96daf8; color: #0d173c; }
+    .share-btn-email { background: #d4a5c9; color: #0d173c; }
+    .share-btn-sms { background: #9b8dc9; color: white; }
+    .share-btn-copy { background: #0d173c; color: white; }
+    .share-btn-flyer { background: #f5c86e; color: white; }
     .share-btn svg { width: 18px; height: 18px; fill: currentColor; }
 
     /* Sections */
@@ -340,7 +341,7 @@
         <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
         <span>Copy Link</span>
       </button>
-      <button class="share-btn share-btn-flyer" id="download-flyer-btn" style="background: linear-gradient(135deg, #0d173c, #1a365d);">
+      <button class="share-btn share-btn-flyer" id="download-flyer-btn">
         <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zm-3-7v4H9v-4H7l5-5 5 5h-2z" fill="currentColor"/></svg>
         <span>Download Flyer</span>
       </button>
@@ -464,7 +465,7 @@
           {% if row.realtor_company %}<p>{{ row.realtor_company }}</p>{% endif %}
           {% if row.realtor_phone %}<p>&#128222; <a href="tel:{{ row.realtor_phone }}">{{ row.realtor_phone }}</a></p>{% endif %}
           {% if row.realtor_email %}<p>&#9993; <a href="mailto:{{ row.realtor_email }}">{{ row.realtor_email }}</a></p>{% endif %}
-          {% if row.realtor_license %}<p style="font-size:0.85em;color:#a0aec0;">{{ row.realtor_license }}</p>{% endif %}
+          {% if row.realtor_license %}<p style="font-size:0.85em;color:#a0aec0;">License# {{ row.realtor_license }}</p>{% endif %}
         </div>
       </div>
 
