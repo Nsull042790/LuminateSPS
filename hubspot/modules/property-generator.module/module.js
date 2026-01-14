@@ -522,7 +522,7 @@
     var data = {
       property: {
         address: getValue('address'),
-        address2: getValue('address2') || '',
+        address_2: getValue('address2') || '',
         city: getValue('city'),
         state: getValue('state'),
         zip: getValue('zip'),
@@ -1126,7 +1126,8 @@
     var r = data.realtor;
     var lo = data.loanOfficer;
     var photos = data.photos || [];
-    var fullAddress = p.address + (p.address2 ? ' ' + p.address2 : '');
+    var address2Val = getValue('address2') || '';
+    var fullAddress = p.address + (address2Val ? ' ' + address2Val : '');
     var priceNum = parseFloat(String(p.price || 0).replace(/[$,]/g, '')) || 0;
 
     // Get selected flyer design
@@ -1690,7 +1691,7 @@
 
     // Property info
     setValue('address', vals.address);
-    setValue('address2', vals.address2);
+    setValue('address2', vals.address_2);
     setValue('city', vals.city);
     setValue('state', vals.state);
     setValue('zip', vals.zip);
