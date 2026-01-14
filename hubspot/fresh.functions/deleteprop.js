@@ -116,16 +116,31 @@ function deleteRow(token, tableId, rowId) {
 }
 
 function publishTable(token, tableId) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const req = https.request({
       hostname: 'api.hubapi.com',
       path: '/cms/v3/hubdb/tables/' + tableId + '/draft/publish',
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer ' + token
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
       }
-    }, () => resolve());
-    req.on('error', () => resolve());
+    }, (res) => {
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => {
+        console.log('Publish response:', res.statusCode, data);
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve({ success: true });
+        } else {
+          reject(new Error('Publish failed: ' + res.statusCode + ' ' + data));
+        }
+      });
+    });
+    req.on('error', (err) => {
+      console.error('Publish error:', err);
+      reject(err);
+    });
     req.end();
   });
 }
