@@ -20,7 +20,7 @@
     <div class="pg-logo">
       <img src="https://lirp.cdn-website.com/e49062f7/dms3rep/multi/opt/Luminatebank_PrimaryLogo_White_Gradient-62f357ba-1920w.png" alt="Luminate Bank">
     </div>
-    <h1>Property Site Generator <span class="version">v5.35</span></h1>
+    <h1>Property Site Generator <span class="version">v5.36</span></h1>
     {% if user_email %}
     <p class="pg-user-info">Logged in as: {{ user_email }}</p>
     {% else %}
@@ -509,8 +509,8 @@
     </div>
 
     <!-- Property Details Section -->
-    <div style="display: flex; padding: 12px 20px 10px 0; gap: 15px; background: #ffffff; flex-shrink: 0;">
-      <div style="width: 175px; min-width: 175px; background: #96daf8; border-radius: 0 8px 8px 0; padding: 10px 15px 10px 20px;">
+    <div style="display: flex; padding: 8px 20px 6px 0; gap: 15px; background: #ffffff; flex-shrink: 0;">
+      <div style="width: 175px; min-width: 175px; background: #96daf8; border-radius: 0 8px 8px 0; padding: 8px 15px 8px 20px;">
         <div id="flyer2-address" style="font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 700; color: #0d173c; line-height: 1.2;">123 Main St</div>
         <div id="flyer2-city-state" style="font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: #0d173c; line-height: 1.2; margin-bottom: 10px; white-space: nowrap;">City, ST 12345</div>
         <div style="font-family: 'Josefin Sans', sans-serif; font-size: 13px; color: #0d173c; line-height: 1.6;">
@@ -525,51 +525,52 @@
       </div>
     </div>
 
-    <!-- Agents Section -->
-    <div style="background: #0d173c; flex-shrink: 0; padding-bottom: 45px;">
-      <div style="display: flex; padding: 15px 20px; gap: 20px;">
+    <!-- Agents Section + Footer (one unified navy box) -->
+    <div style="background: #0d173c; flex: 1; display: flex; flex-direction: column;">
+      <!-- Contact Cards -->
+      <div style="display: flex; padding: 12px 20px; gap: 20px;">
         <!-- Loan Officer Card -->
         <div style="display: flex; align-items: flex-start; gap: 10px; flex: 1;">
           <div style="display: flex; flex-direction: column; align-items: center;">
-            <div style="width: 75px; height: 85px; overflow: hidden; border-radius: 4px; flex-shrink: 0; background: #cccccc;">
+            <div style="width: 70px; height: 80px; overflow: hidden; border-radius: 4px; flex-shrink: 0; background: #cccccc;">
               <img id="flyer2-lo-photo" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
             </div>
-            <div id="flyer2-nmls" style="font-family: 'Josefin Sans', sans-serif; font-size: 8px; color: #ffffff; margin-top: 4px; text-align: center;">NMLS #123456</div>
+            <div id="flyer2-nmls" style="font-family: 'Josefin Sans', sans-serif; font-size: 8px; color: #ffffff; margin-top: 3px; text-align: center;">NMLS #123456</div>
           </div>
           <div style="display: flex; flex-direction: column; gap: 0px;">
-            <div id="flyer2-lo-name" style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700; color: #ffffff; margin-bottom: 1px;">Loan Officer Name</div>
-            <div style="font-family: 'Josefin Sans', sans-serif; font-size: 11px; font-weight: 600; color: #96daf8; margin-bottom: 2px;">Luminate Bank</div>
-            <div id="flyer2-lo-phone" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; color: #ffffff; line-height: 1.45;">Phone</div>
-            <div id="flyer2-lo-website" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; color: #ffffff; line-height: 1.45;">Website</div>
-            <div id="flyer2-lo-email" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; color: #ffffff; line-height: 1.45;">Email</div>
+            <div id="flyer2-lo-name" style="font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: #ffffff; margin-bottom: 1px;">Loan Officer Name</div>
+            <div style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; font-weight: 600; color: #96daf8; margin-bottom: 1px;">Luminate Bank</div>
+            <div id="flyer2-lo-phone" style="font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff; line-height: 1.4;">Phone</div>
+            <div id="flyer2-lo-website" style="font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff; line-height: 1.4;">Website</div>
+            <div id="flyer2-lo-email" style="font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff; line-height: 1.4;">Email</div>
           </div>
         </div>
 
         <!-- Realtor Card -->
         <div style="display: flex; align-items: flex-start; gap: 10px; flex: 1; justify-content: flex-end;">
           <div style="display: flex; flex-direction: column; gap: 0px; text-align: right;">
-            <div id="flyer2-realtor-name" style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700; color: #ffffff; margin-bottom: 1px;">Realtor Name</div>
-            <div id="flyer2-realtor-company" style="font-family: 'Josefin Sans', sans-serif; font-size: 11px; font-weight: 600; color: #96daf8; margin-bottom: 2px;">Company</div>
-            <div id="flyer2-realtor-phone" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; color: #ffffff; line-height: 1.45;">Phone</div>
-            <div id="flyer2-realtor-website" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; color: #ffffff; line-height: 1.45;">Website</div>
-            <div id="flyer2-realtor-email" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; color: #ffffff; line-height: 1.45;">Email</div>
+            <div id="flyer2-realtor-name" style="font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: #ffffff; margin-bottom: 1px;">Realtor Name</div>
+            <div id="flyer2-realtor-company" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; font-weight: 600; color: #96daf8; margin-bottom: 1px;">Company</div>
+            <div id="flyer2-realtor-phone" style="font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff; line-height: 1.4;">Phone</div>
+            <div id="flyer2-realtor-website" style="font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff; line-height: 1.4;">Website</div>
+            <div id="flyer2-realtor-email" style="font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff; line-height: 1.4;">Email</div>
           </div>
           <div style="display: flex; flex-direction: column; align-items: center;">
-            <div style="width: 75px; height: 85px; overflow: hidden; border-radius: 4px; flex-shrink: 0; background: #cccccc;">
+            <div style="width: 70px; height: 80px; overflow: hidden; border-radius: 4px; flex-shrink: 0; background: #cccccc;">
               <img id="flyer2-realtor-photo" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
             </div>
-            <div id="flyer2-realtor-license" style="font-family: 'Josefin Sans', sans-serif; font-size: 8px; color: #ffffff; margin-top: 4px; text-align: center;">License #</div>
+            <div id="flyer2-realtor-license" style="font-family: 'Josefin Sans', sans-serif; font-size: 8px; color: #ffffff; margin-top: 3px; text-align: center;">License #</div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Disclaimer Footer -->
-    <div style="background: #0d173c; padding: 8px 15px; display: flex; align-items: center; position: absolute; bottom: 0; left: 0; right: 0;">
-      <p style="font-family: 'Josefin Sans', sans-serif; font-size: 5px; color: #ffffff; line-height: 1.35; flex: 1;">
-        Luminate Bank NMLS 1281698 Bank Headquarters 2523 S. Wayzata Blvd., Suite 100 Minneapolis, MN 55405 (952) 939-7200. This is not an offer to enter into an agreement. Information provided is outlining the minimum down payment requirements as allowed by specific loan program and product guidelines and any information, rates and programs are subject to change without prior notice and may not be available in all states. All loans are subject to credit and property approval. Luminate Bank is not affiliated with any government agency. All rights reserved.
-      </p>
-      <img src="https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/member-fdic-equal-housing-lender1-WHT.png" style="height: 28px; width: auto; margin-left: 12px;" crossorigin="anonymous" />
+      <!-- Compliance Footer (pushed to bottom with margin-top: auto) -->
+      <div style="padding: 8px 15px; display: flex; align-items: center; margin-top: auto;">
+        <p style="font-family: 'Josefin Sans', sans-serif; font-size: 5px; color: #ffffff; line-height: 1.35; flex: 1;">
+          Luminate Bank NMLS 1281698 Bank Headquarters 2523 S. Wayzata Blvd., Suite 100 Minneapolis, MN 55405 (952) 939-7200. This is not an offer to enter into an agreement. Information provided is outlining the minimum down payment requirements as allowed by specific loan program and product guidelines and any information, rates and programs are subject to change without prior notice and may not be available in all states. All loans are subject to credit and property approval. Luminate Bank is not affiliated with any government agency. All rights reserved.
+        </p>
+        <img src="https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/member-fdic-equal-housing-lender1-WHT.png" style="height: 28px; width: auto; margin-left: 12px;" crossorigin="anonymous" />
+      </div>
     </div>
 
   </div>
