@@ -872,6 +872,23 @@
     return { width: boxWidth, height: boxHeight, sourceWidth: width, sourceHeight: height, offsetX: offsetX, offsetY: offsetY };
   }
 
+  // Format phone number as (xxx) xxx-xxxx
+  function formatPhoneNumber(phone) {
+    if (!phone) return '';
+    // Remove all non-digits
+    var digits = String(phone).replace(/\D/g, '');
+    // Check if we have 10 digits
+    if (digits.length === 10) {
+      return '(' + digits.substring(0, 3) + ') ' + digits.substring(3, 6) + '-' + digits.substring(6);
+    }
+    // If 11 digits starting with 1, skip the 1
+    if (digits.length === 11 && digits[0] === '1') {
+      return '(' + digits.substring(1, 4) + ') ' + digits.substring(4, 7) + '-' + digits.substring(7);
+    }
+    // Return original if can't format
+    return phone;
+  }
+
   // Generate the actual PDF flyer using HTML template + html2canvas
   function generateFlyerPDF(data, images) {
     var p = data.property;
@@ -969,7 +986,7 @@
     document.getElementById('flyer-realtor-name').textContent = r.name || 'Realtor';
     document.getElementById('flyer-realtor-title').textContent = r.title || 'Licensed Realtor';
     document.getElementById('flyer-realtor-company').textContent = r.company || '';
-    document.getElementById('flyer-realtor-phone').textContent = r.phone || '';
+    document.getElementById('flyer-realtor-phone').textContent = formatPhoneNumber(r.phone);
     document.getElementById('flyer-realtor-email').textContent = r.email || '';
 
     // Realtor photo - using img tag for better quality
@@ -995,7 +1012,7 @@
     document.getElementById('flyer-lo-name').textContent = lo.name || 'Loan Officer';
     document.getElementById('flyer-lo-title').textContent = lo.title || 'Loan Officer';
     document.getElementById('flyer-lo-company').textContent = lo.company || 'Luminate Bank';
-    document.getElementById('flyer-lo-phone').textContent = lo.phone || '';
+    document.getElementById('flyer-lo-phone').textContent = formatPhoneNumber(lo.phone);
     document.getElementById('flyer-lo-email').textContent = lo.email || '';
 
     // LO photo - using img tag for better quality
