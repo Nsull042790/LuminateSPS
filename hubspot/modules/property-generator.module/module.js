@@ -1721,6 +1721,16 @@
     setValue('realtorPhone', vals.realtor_phone);
     setValue('realtorEmail', vals.realtor_email);
     setValue('realtorLicense', vals.realtor_license);
+    setValue('realtorWebsite', vals.realtor_website);
+
+    // Load realtor logo
+    if (vals.realtor_logo) {
+      realtorLogo = vals.realtor_logo;
+      var logoPreview = document.getElementById('realtor-logo-preview');
+      if (logoPreview) {
+        logoPreview.innerHTML = '<img src="' + vals.realtor_logo + '" alt="Logo">';
+      }
+    }
 
     // Load realtor photo
     if (vals.realtor_photo) {
@@ -1740,6 +1750,7 @@
     setValue('loPhone', vals.lo_phone);
     setValue('loEmail', vals.lo_email);
     setValue('loNmls', vals.lo_nmls);
+    setValue('loWebsite', vals.lo_website);
 
     // Load LO photo
     if (vals.lo_photo) {
