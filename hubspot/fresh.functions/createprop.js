@@ -81,10 +81,10 @@ exports.main = async (context, sendResponse) => {
   }
 
   const rowData = {
-    name: prop.address + (prop.address2 ? ' ' + prop.address2 : '') + ', ' + prop.city,
+    name: prop.address + (prop.address_2 ? ' ' + prop.address_2 : '') + ', ' + prop.city,
     slug: finalSlug,
     address: prop.address,
-    address2: prop.address2 || '',
+    address_2: prop.address_2 || '',
     city: prop.city,
     state: prop.state || '',
     zip: prop.zip || '',
