@@ -1211,9 +1211,9 @@
         var jsPDF = window.jspdf.jsPDF;
         var doc = new jsPDF('p', 'pt', 'letter');
 
-        // Add canvas as high-quality PNG to PDF (no compression)
-        var imgData = canvas.toDataURL('image/png', 1.0);
-        doc.addImage(imgData, 'PNG', 0, 0, 612, 792, undefined, 'NONE');
+        // Add canvas as JPEG to PDF (smaller file size, good quality)
+        var imgData = canvas.toDataURL('image/jpeg', 0.9);
+        doc.addImage(imgData, 'JPEG', 0, 0, 612, 792);
 
         // Save
         var filename = fullAddress.replace(/[^a-z0-9]/gi, '-').toLowerCase() + '-flyer.pdf';
