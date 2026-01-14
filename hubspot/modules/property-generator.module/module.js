@@ -918,37 +918,37 @@
     document.getElementById('flyer-address').textContent = fullAddress;
     document.getElementById('flyer-city-state').textContent = p.city + ', ' + p.state + ' ' + p.zip;
 
-    // Stats - using table cells (td)
+    // Stats - using styled divs with spans
     var bedsEl = document.getElementById('flyer-stat-beds');
     var bathsEl = document.getElementById('flyer-stat-baths');
     var sqftEl = document.getElementById('flyer-stat-sqft');
     var yearEl = document.getElementById('flyer-stat-year');
 
     if (p.bedrooms) {
-      bedsEl.querySelector('td:first-child').textContent = p.bedrooms;
-      bedsEl.style.display = 'table-row';
+      bedsEl.querySelector('span:first-child').textContent = p.bedrooms;
+      bedsEl.style.display = 'flex';
     } else {
       bedsEl.style.display = 'none';
     }
 
     if (p.bathrooms) {
-      bathsEl.querySelector('td:first-child').textContent = p.bathrooms;
-      bathsEl.style.display = 'table-row';
+      bathsEl.querySelector('span:first-child').textContent = p.bathrooms;
+      bathsEl.style.display = 'flex';
     } else {
       bathsEl.style.display = 'none';
     }
 
     if (p.sqft) {
       var sqftNum = parseFloat(String(p.sqft).replace(/,/g, '')) || 0;
-      sqftEl.querySelector('td:first-child').textContent = sqftNum.toLocaleString();
-      sqftEl.style.display = 'table-row';
+      sqftEl.querySelector('span:first-child').textContent = sqftNum.toLocaleString();
+      sqftEl.style.display = 'flex';
     } else {
       sqftEl.style.display = 'none';
     }
 
     if (p.yearBuilt && p.yearBuilt !== '0' && p.yearBuilt !== 0) {
-      yearEl.querySelector('td:first-child').textContent = p.yearBuilt;
-      yearEl.style.display = 'table-row';
+      yearEl.querySelector('span:first-child').textContent = p.yearBuilt;
+      yearEl.style.display = 'flex';
     } else {
       yearEl.style.display = 'none';
     }
@@ -1007,13 +1007,21 @@
     // Wait for images to load, then render
     setTimeout(function() {
       html2canvas(content, {
-        scale: 3,  // Higher scale for better quality
+        scale: 4,  // High scale for crisp images
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
         width: 612,
         height: 792,
-        logging: false
+        logging: false,
+        imageTimeout: 0,  // No timeout for image loading
+        onclone: function(clonedDoc) {
+          // Ensure images are rendered at full quality
+          var imgs = clonedDoc.querySelectorAll('img');
+          imgs.forEach(function(img) {
+            img.style.imageRendering = 'high-quality';
+          });
+        }
       }).then(function(canvas) {
         // Hide template again
         template.style.left = '-9999px';
