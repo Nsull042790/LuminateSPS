@@ -542,6 +542,7 @@
         phone: getValue('realtorPhone') || '',
         email: getValue('realtorEmail') || '',
         license: getValue('realtorLicense') || '',
+        website: getValue('realtorWebsite') || '',
         photo: realtorPhoto,
         logo: realtorLogo
       },
@@ -552,6 +553,7 @@
         phone: getValue('loPhone') || '',
         email: getValue('loEmail') || '',
         nmls: getValue('loNmls') || '',
+        website: getValue('loWebsite') || '',
         photo: loanOfficerPhoto,
         logo: LO_COMPANY_LOGO
       },
@@ -1063,9 +1065,17 @@
     // Realtor info
     document.getElementById('flyer2-realtor-name').textContent = r.name || 'Realtor';
     document.getElementById('flyer2-realtor-company').textContent = r.company || '';
-    document.getElementById('flyer2-realtor-title').textContent = r.title || 'Licensed Realtor';
     document.getElementById('flyer2-realtor-phone').textContent = formatPhoneNumber(r.phone);
+    document.getElementById('flyer2-realtor-website').textContent = r.website || '';
     document.getElementById('flyer2-realtor-email').textContent = r.email || '';
+
+    // Realtor license (under photo)
+    var realtorLicenseEl = document.getElementById('flyer2-realtor-license');
+    if (r.license) {
+      realtorLicenseEl.textContent = r.license;
+    } else {
+      realtorLicenseEl.textContent = '';
+    }
 
     // Realtor photo
     var realtorPhotoEl = document.getElementById('flyer2-realtor-photo');
@@ -1089,6 +1099,7 @@
     // Loan Officer info
     document.getElementById('flyer2-lo-name').textContent = lo.name || 'Loan Officer';
     document.getElementById('flyer2-lo-phone').textContent = formatPhoneNumber(lo.phone);
+    document.getElementById('flyer2-lo-website').textContent = lo.website || '';
     document.getElementById('flyer2-lo-email').textContent = lo.email || '';
 
     // LO photo

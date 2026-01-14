@@ -20,7 +20,7 @@
     <div class="pg-logo">
       <img src="https://lirp.cdn-website.com/e49062f7/dms3rep/multi/opt/Luminatebank_PrimaryLogo_White_Gradient-62f357ba-1920w.png" alt="Luminate Bank">
     </div>
-    <h1>Property Site Generator <span class="version">v5.25</span></h1>
+    <h1>Property Site Generator <span class="version">v5.26</span></h1>
     {% if user_email %}
     <p class="pg-user-info">Logged in as: {{ user_email }}</p>
     {% else %}
@@ -141,6 +141,10 @@
               <label>License #</label>
               <input type="text" name="realtorLicense" placeholder="DRE# 12345678">
             </div>
+            <div class="pg-field">
+              <label>Website</label>
+              <input type="text" name="realtorWebsite" placeholder="www.janesmithrealty.com">
+            </div>
             <div class="pg-field full-width">
               <label>Company Logo</label>
               <div class="pg-logo-upload" id="realtor-logo-area">
@@ -187,6 +191,10 @@
             <div class="pg-field">
               <label>NMLS #</label>
               <input type="text" name="loNmls" placeholder="NMLS# 123456">
+            </div>
+            <div class="pg-field">
+              <label>Website</label>
+              <input type="text" name="loWebsite" placeholder="www.luminatebank.com/johndoe">
             </div>
             <div class="pg-field full-width">
               <label>Company Logo</label>
@@ -501,8 +509,8 @@
     </div>
 
     <!-- Property Details Section -->
-    <div style="display: flex; padding: 18px 20px 15px 20px; gap: 15px; background: #ffffff; min-height: 165px;">
-      <div style="width: 145px; min-width: 145px; background: #96daf8; border-radius: 8px; padding: 12px 15px;">
+    <div style="display: flex; padding: 18px 20px 15px 0; gap: 15px; background: #ffffff; min-height: 165px;">
+      <div style="width: 160px; min-width: 160px; background: #96daf8; border-radius: 0 8px 8px 0; padding: 12px 15px 12px 20px;">
         <div id="flyer2-address" style="font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 700; color: #0d173c; line-height: 1.2;">123 Main St</div>
         <div id="flyer2-city-state" style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700; color: #0d173c; line-height: 1.2; margin-bottom: 10px;">City, ST 12345</div>
         <div style="font-family: 'Josefin Sans', sans-serif; font-size: 13px; color: #0d173c; line-height: 1.6;">
@@ -519,16 +527,20 @@
 
     <!-- Agents Section -->
     <div style="position: relative; background: #ffffff;">
-      <div style="display: flex; background: #0d173c; padding: 15px 20px 12px 20px; gap: 20px; position: relative;">
+      <div style="display: flex; background: #0d173c; padding: 15px 20px 15px 20px; gap: 20px; position: relative;">
         <!-- Loan Officer Card -->
         <div style="display: flex; align-items: flex-start; gap: 10px; flex: 1;">
-          <div style="width: 75px; height: 85px; overflow: hidden; border-radius: 4px; flex-shrink: 0; background: #cccccc;">
-            <img id="flyer2-lo-photo" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <div style="width: 75px; height: 85px; overflow: hidden; border-radius: 4px; flex-shrink: 0; background: #cccccc;">
+              <img id="flyer2-lo-photo" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
+            </div>
+            <div id="flyer2-nmls" style="font-family: 'Josefin Sans', sans-serif; font-size: 8px; color: #ffffff; margin-top: 4px; text-align: center;">NMLS #123456</div>
           </div>
           <div style="display: flex; flex-direction: column; gap: 0px;">
             <div id="flyer2-lo-name" style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700; color: #ffffff; margin-bottom: 1px;">Loan Officer Name</div>
             <div style="font-family: 'Josefin Sans', sans-serif; font-size: 11px; font-weight: 600; color: #96daf8; margin-bottom: 2px;">Luminate Bank</div>
             <div id="flyer2-lo-phone" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; color: #ffffff; line-height: 1.45;">Phone</div>
+            <div id="flyer2-lo-website" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; color: #ffffff; line-height: 1.45;">Website</div>
             <div id="flyer2-lo-email" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; color: #ffffff; line-height: 1.45;">Email</div>
           </div>
         </div>
@@ -538,17 +550,17 @@
           <div style="display: flex; flex-direction: column; gap: 0px; text-align: right;">
             <div id="flyer2-realtor-name" style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700; color: #ffffff; margin-bottom: 1px;">Realtor Name</div>
             <div id="flyer2-realtor-company" style="font-family: 'Josefin Sans', sans-serif; font-size: 11px; font-weight: 600; color: #96daf8; margin-bottom: 2px;">Company</div>
-            <div id="flyer2-realtor-title" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; color: #ffffff; line-height: 1.45;">Title</div>
             <div id="flyer2-realtor-phone" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; color: #ffffff; line-height: 1.45;">Phone</div>
+            <div id="flyer2-realtor-website" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; color: #ffffff; line-height: 1.45;">Website</div>
             <div id="flyer2-realtor-email" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; color: #ffffff; line-height: 1.45;">Email</div>
           </div>
-          <div style="width: 75px; height: 85px; overflow: hidden; border-radius: 4px; flex-shrink: 0; background: #cccccc;">
-            <img id="flyer2-realtor-photo" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <div style="width: 75px; height: 85px; overflow: hidden; border-radius: 4px; flex-shrink: 0; background: #cccccc;">
+              <img id="flyer2-realtor-photo" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
+            </div>
+            <div id="flyer2-realtor-license" style="font-family: 'Josefin Sans', sans-serif; font-size: 8px; color: #ffffff; margin-top: 4px; text-align: center;">License #</div>
           </div>
         </div>
-
-        <!-- NMLS at bottom left -->
-        <div id="flyer2-nmls" style="position: absolute; bottom: 8px; left: 12px; font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff;">NMLS #123456</div>
       </div>
     </div>
 
