@@ -972,12 +972,13 @@
     document.getElementById('flyer-realtor-phone').textContent = r.phone || '';
     document.getElementById('flyer-realtor-email').textContent = r.email || '';
 
-    // Realtor photo - using background-image
+    // Realtor photo - using img tag for better quality
     var realtorPhotoEl = document.getElementById('flyer-realtor-photo');
     if (r.photo) {
-      realtorPhotoEl.style.backgroundImage = 'url(' + r.photo + ')';
+      realtorPhotoEl.src = r.photo;
+      realtorPhotoEl.style.display = 'block';
     } else {
-      realtorPhotoEl.style.backgroundImage = 'none';
+      realtorPhotoEl.style.display = 'none';
     }
 
     // Realtor company logo in hero section (top left)
@@ -997,12 +998,13 @@
     document.getElementById('flyer-lo-phone').textContent = lo.phone || '';
     document.getElementById('flyer-lo-email').textContent = lo.email || '';
 
-    // LO photo - using background-image
+    // LO photo - using img tag for better quality
     var loPhotoEl = document.getElementById('flyer-lo-photo');
     if (lo.photo) {
-      loPhotoEl.style.backgroundImage = 'url(' + lo.photo + ')';
+      loPhotoEl.src = lo.photo;
+      loPhotoEl.style.display = 'block';
     } else {
-      loPhotoEl.style.backgroundImage = 'none';
+      loPhotoEl.style.display = 'none';
     }
 
     // NMLS
