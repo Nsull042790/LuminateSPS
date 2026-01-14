@@ -1512,13 +1512,18 @@
   }
 
   function confirmDelete() {
+    console.log('confirmDelete called, pendingDeleteId:', pendingDeleteId);
     if (pendingDeleteId) {
       deleteProperty(pendingDeleteId);
       closeDeleteModal();
+    } else {
+      console.log('No pendingDeleteId set!');
     }
   }
 
   function deleteProperty(rowId) {
+    console.log('deleteProperty called with rowId:', rowId);
+    console.log('API URL:', API_BASE + '/deleteprop');
     fetch(API_BASE + '/deleteprop', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1527,8 +1532,12 @@
         userEmail: currentUserEmail
       })
     })
-    .then(function(res) { return res.json(); })
+    .then(function(res) {
+      console.log('deleteprop response status:', res.status);
+      return res.json();
+    })
     .then(function(data) {
+      console.log('deleteprop response:', data);
       if (data.success) {
         showToast('Property deleted', 'success');
         loadExistingProperties();
@@ -1537,6 +1546,7 @@
       }
     })
     .catch(function(err) {
+      console.error('deleteprop error:', err);
       showToast('Error deleting property', 'error');
     });
   }
