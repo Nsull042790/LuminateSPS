@@ -1004,25 +1004,46 @@
       nmlsEl.style.display = 'none';
     }
 
-    // Wait for images to load, then render
-    setTimeout(function() {
-      html2canvas(content, {
-        scale: 4,  // High scale for crisp images
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        width: 612,
-        height: 792,
-        logging: false,
-        imageTimeout: 0,  // No timeout for image loading
-        onclone: function(clonedDoc) {
-          // Ensure images are rendered at full quality
-          var imgs = clonedDoc.querySelectorAll('img');
-          imgs.forEach(function(img) {
-            img.style.imageRendering = 'high-quality';
-          });
-        }
-      }).then(function(canvas) {
+    // Preload headshot images for better quality
+    var imagesToPreload = [];
+    if (r.photo) imagesToPreload.push(r.photo);
+    if (lo.photo) imagesToPreload.push(lo.photo);
+
+    var preloadPromises = imagesToPreload.map(function(src) {
+      return new Promise(function(resolve) {
+        var img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = resolve;
+        img.onerror = resolve;
+        img.src = src;
+      });
+    });
+
+    // Wait for preload then render
+    Promise.all(preloadPromises).then(function() {
+      setTimeout(function() {
+        html2canvas(content, {
+          scale: 4,  // High scale for crisp images
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          width: 612,
+          height: 792,
+          logging: false,
+          imageTimeout: 0,  // No timeout for image loading
+          onclone: function(clonedDoc) {
+            // Ensure images are rendered at full quality
+            var imgs = clonedDoc.querySelectorAll('img');
+            imgs.forEach(function(img) {
+              img.style.imageRendering = 'high-quality';
+            });
+            // Also handle background images on divs
+            var bgDivs = clonedDoc.querySelectorAll('[style*="background-image"]');
+            bgDivs.forEach(function(div) {
+              div.style.imageRendering = '-webkit-optimize-contrast';
+            });
+          }
+        }).then(function(canvas) {
         // Hide template again
         template.style.left = '-9999px';
         template.style.zIndex = 'auto';
@@ -1038,14 +1059,15 @@
         // Save
         var filename = fullAddress.replace(/[^a-z0-9]/gi, '-').toLowerCase() + '-flyer.pdf';
         doc.save(filename);
-      }).catch(function(err) {
-        console.error('html2canvas error:', err);
-        // Hide template on error too
-        template.style.left = '-9999px';
-        template.style.zIndex = 'auto';
-        showToast('Error generating flyer: ' + err.message, 'error');
-      });
-    }, 500); // Give images time to load
+        }).catch(function(err) {
+          console.error('html2canvas error:', err);
+          // Hide template on error too
+          template.style.left = '-9999px';
+          template.style.zIndex = 'auto';
+          showToast('Error generating flyer: ' + err.message, 'error');
+        });
+      }, 500); // Give images time to load
+    }); // End Promise.all.then
   }
 
   function generatePreviewHTML(data) {
