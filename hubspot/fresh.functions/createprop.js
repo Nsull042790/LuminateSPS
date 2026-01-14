@@ -58,8 +58,8 @@ exports.main = async (context, sendResponse) => {
 
   const prop = body.property;
 
-  // Generate slug from address and city
-  const slugVal = (prop.address + '-' + prop.city)
+  // Generate slug from address, unit number, and city
+  const slugVal = (prop.address + (prop.address_2 ? '-' + prop.address_2 : '') + '-' + prop.city)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
