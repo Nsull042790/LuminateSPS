@@ -20,7 +20,7 @@
     <div class="pg-logo">
       <img src="https://lirp.cdn-website.com/e49062f7/dms3rep/multi/opt/Luminatebank_PrimaryLogo_White_Gradient-62f357ba-1920w.png" alt="Luminate Bank">
     </div>
-    <h1>Property Site Generator <span class="version">v5.23</span></h1>
+    <h1>Property Site Generator <span class="version">v5.24</span></h1>
     {% if user_email %}
     <p class="pg-user-info">Logged in as: {{ user_email }}</p>
     {% else %}
@@ -308,30 +308,37 @@
 <div id="flyer-template" style="position: absolute; left: -9999px; top: 0;">
   <div id="flyer-content" style="width: 612px; height: 792px; background: #fff; font-family: 'Josefin Sans', 'Poppins', 'Helvetica', sans-serif; position: relative; overflow: hidden;">
 
-    <!-- Hero Section - using background-image for proper scaling -->
-    <div id="flyer-hero" style="position: relative; width: 100%; height: 240px; overflow: hidden; background-color: #0d173c; background-size: cover; background-position: center;">
+    <!-- Hero Section - using img tag for better quality -->
+    <div id="flyer-hero" style="position: relative; width: 100%; height: 240px; overflow: hidden; background-color: #0d173c;">
+      <img id="flyer-hero-img" src="" style="width: 100%; height: auto; min-height: 100%; position: absolute; top: 50%; left: 0; transform: translateY(-50%);" crossorigin="anonymous" />
 
       <!-- Realtor Company Logo - Top Left -->
-      <div id="flyer-realtor-logo-container" style="position: absolute; top: 12px; left: 12px; background: #0d173c; border-radius: 8px; padding: 10px 16px;">
-        <img id="flyer-realtor-company-logo" src="" style="height: 40px; width: auto; max-width: 120px; object-fit: contain;" crossorigin="anonymous" />
+      <div id="flyer-realtor-logo-container" style="position: absolute; top: 12px; left: 12px; background: #0d173c; border-radius: 8px; padding: 10px 16px; z-index: 10;">
+        <img id="flyer-realtor-company-logo" src="" style="height: 40px; width: auto; max-width: 120px;" crossorigin="anonymous" />
       </div>
 
       <!-- Luminate Logo - Top Right -->
-      <div style="position: absolute; top: 12px; right: 12px; background: #0d173c; border-radius: 8px; padding: 10px 16px;">
+      <div style="position: absolute; top: 12px; right: 12px; background: #0d173c; border-radius: 8px; padding: 10px 16px; z-index: 10;">
         <img id="flyer-luminate-logo" src="https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/Luminatebank_PrimaryLogo_White_Gradient.png" style="height: 40px; width: auto;" crossorigin="anonymous" />
       </div>
 
       <!-- Price Badge -->
-      <div id="flyer-price-badge" style="position: absolute; bottom: 0; left: 0; background: #96daf8; padding: 12px 24px;">
+      <div id="flyer-price-badge" style="position: absolute; bottom: 0; left: 0; background: #96daf8; padding: 12px 24px; z-index: 10;">
         <span id="flyer-price" style="font-family: 'Poppins', sans-serif; color: #0d173c; font-size: 28px; font-weight: 700;">$450,000</span>
       </div>
     </div>
 
-    <!-- Thumbnail Grid - using divs with background-image -->
+    <!-- Thumbnail Grid - using img tags for better quality -->
     <div id="flyer-thumbnails" style="display: flex; gap: 4px; padding: 4px 20px;">
-      <div id="flyer-thumb-1" style="flex: 1; height: 80px; background-size: cover; background-position: center; background-color: #e5e7eb;"></div>
-      <div id="flyer-thumb-2" style="flex: 1; height: 80px; background-size: cover; background-position: center; background-color: #e5e7eb;"></div>
-      <div id="flyer-thumb-3" style="flex: 1; height: 80px; background-size: cover; background-position: center; background-color: #e5e7eb;"></div>
+      <div style="flex: 1; height: 80px; overflow: hidden; background-color: #e5e7eb;">
+        <img id="flyer-thumb-1" src="" style="width: 100%; height: auto; min-height: 100%;" crossorigin="anonymous" />
+      </div>
+      <div style="flex: 1; height: 80px; overflow: hidden; background-color: #e5e7eb;">
+        <img id="flyer-thumb-2" src="" style="width: 100%; height: auto; min-height: 100%;" crossorigin="anonymous" />
+      </div>
+      <div style="flex: 1; height: 80px; overflow: hidden; background-color: #e5e7eb;">
+        <img id="flyer-thumb-3" src="" style="width: 100%; height: auto; min-height: 100%;" crossorigin="anonymous" />
+      </div>
     </div>
 
     <!-- Property Info Section -->

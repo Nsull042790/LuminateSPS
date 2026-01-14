@@ -908,26 +908,29 @@
     template.style.zIndex = '9999';
 
     // Populate the template with data
-    // Hero image - using background-image for proper scaling
-    var heroEl = document.getElementById('flyer-hero');
+    // Hero image - using img tag for better quality
+    var heroImg = document.getElementById('flyer-hero-img');
     if (photos.length > 0) {
-      heroEl.style.backgroundImage = 'url(' + photos[0] + ')';
+      heroImg.src = photos[0];
+      heroImg.style.display = 'block';
     } else {
-      heroEl.style.backgroundImage = 'none';
+      heroImg.style.display = 'none';
     }
 
     // Price
     document.getElementById('flyer-price').textContent = '$' + priceNum.toLocaleString();
 
-    // Thumbnail images - using background-image
+    // Thumbnail images - using img tags for better quality
     var thumbIds = ['flyer-thumb-1', 'flyer-thumb-2', 'flyer-thumb-3'];
     for (var i = 0; i < 3; i++) {
       var thumbEl = document.getElementById(thumbIds[i]);
       if (photos[i + 1]) {
-        thumbEl.style.backgroundImage = 'url(' + photos[i + 1] + ')';
+        thumbEl.src = photos[i + 1];
         thumbEl.style.display = 'block';
+        thumbEl.parentElement.style.display = 'block';
       } else {
         thumbEl.style.display = 'none';
+        thumbEl.parentElement.style.display = 'none';
       }
     }
 
