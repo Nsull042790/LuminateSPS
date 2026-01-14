@@ -72,9 +72,6 @@ exports.main = async (context, sendResponse) => {
 
     const prop = body.property;
 
-    // Keep the original slug/path (don't change the URL)
-    const existingPath = existingRow.path || existingRow.values.slug;
-
     const rowData = {
       name: prop.address + (prop.address_2 ? ' ' + prop.address_2 : '') + ', ' + prop.city,
       slug: existingRow.values.slug, // Keep original slug
@@ -118,7 +115,7 @@ exports.main = async (context, sendResponse) => {
 
     // STEP 2: Update the row
     console.log('STEP 2: Updating row in HubDB draft...');
-    const updateResult = await updateRow(token, tableId, rowId, rowData, existingPath);
+    const updateResult = await updateRow(token, tableId, rowId, rowData);
     console.log('Row updated - ID:', updateResult.id);
 
     // STEP 3: Publish the table
@@ -201,12 +198,10 @@ function getRow(token, tableId, rowId) {
   });
 }
 
-function updateRow(token, tableId, rowId, data, path) {
+function updateRow(token, tableId, rowId, data) {
   return new Promise((resolve, reject) => {
+    // Don't include path - HubDB preserves the existing path for the same row
     const requestBody = { values: data };
-    if (path) {
-      requestBody.path = path;
-    }
     const postBody = JSON.stringify(requestBody);
     console.log('Updating row', rowId, 'with', Object.keys(data).length, 'fields');
 
