@@ -20,7 +20,7 @@
     <div class="pg-logo">
       <img src="https://lirp.cdn-website.com/e49062f7/dms3rep/multi/opt/Luminatebank_PrimaryLogo_White_Gradient-62f357ba-1920w.png" alt="Luminate Bank">
     </div>
-    <h1>Property Site Generator <span class="version">v5.24</span></h1>
+    <h1>Property Site Generator <span class="version">v5.25</span></h1>
     {% if user_email %}
     <p class="pg-user-info">Logged in as: {{ user_email }}</p>
     {% else %}
@@ -226,6 +226,30 @@
         </div>
       </section>
 
+      <!-- Flyer Design Selection -->
+      <section class="pg-section">
+        <h2>📄 Flyer Design</h2>
+        <div class="pg-field full-width">
+          <label>Select Flyer Template</label>
+          <div class="pg-flyer-designs">
+            <label class="flyer-design-option">
+              <input type="radio" name="flyerDesign" value="design1" checked>
+              <div class="design-preview">
+                <div class="design-thumbnail design1-thumb"></div>
+                <span>Design 1 - Classic</span>
+              </div>
+            </label>
+            <label class="flyer-design-option">
+              <input type="radio" name="flyerDesign" value="design2">
+              <div class="design-preview">
+                <div class="design-thumbnail design2-thumb"></div>
+                <span>Design 2 - Modern</span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </section>
+
       <!-- Action Buttons -->
       <div class="pg-actions">
         <button type="button" id="preview-btn" class="btn btn-secondary">Preview</button>
@@ -424,6 +448,115 @@
         </div>
       </div>
       <img id="flyer-footer-fdic" src="https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/member-fdic-equal-housing-lender1-WHT.png" style="height: 28px; width: auto; margin-left: 12px;" crossorigin="anonymous" />
+    </div>
+
+  </div>
+</div>
+
+<!-- Hidden Flyer Template 2 (Modern Design) for PDF Generation -->
+<div id="flyer-template-2" style="position: absolute; left: -9999px; top: 0;">
+  <div id="flyer-content-2" style="width: 612px; height: 792px; background: #ffffff; font-family: 'Josefin Sans', sans-serif; position: relative; overflow: hidden;">
+
+    <!-- Hero Section -->
+    <div style="display: flex; height: 270px; width: 100%;">
+      <div style="width: 190px; min-width: 190px; background: #ffffff; display: flex; flex-direction: column;">
+        <div style="background: #0d173c; padding: 15px; display: flex; justify-content: center; align-items: center; height: 90px;">
+          <img src="https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/Luminatebank_PrimaryLogo_White_Gradient.png" style="width: 150px; height: auto;" crossorigin="anonymous" />
+        </div>
+        <div id="flyer2-realtor-logo-container" style="background: #ffffff; padding: 15px 12px; display: flex; align-items: center; justify-content: center; height: 90px;">
+          <img id="flyer2-realtor-company-logo" src="" style="max-width: 140px; max-height: 70px; width: auto; height: auto;" crossorigin="anonymous" />
+        </div>
+        <div style="background: #0d173c; padding: 12px 10px; margin-top: auto;">
+          <div id="flyer2-price" style="font-family: 'Poppins', sans-serif; font-size: 34px; font-weight: 700; color: #96daf8; text-align: center;">$600,000</div>
+        </div>
+      </div>
+      <div style="flex: 1; overflow: hidden; position: relative; background: #cccccc;">
+        <img id="flyer2-hero-img" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
+      </div>
+    </div>
+
+    <!-- White Gap -->
+    <div style="height: 10px; background: #ffffff;"></div>
+
+    <!-- Thumbnails Section -->
+    <div style="display: flex; height: 130px; background: #0d173c; padding: 15px 20px; gap: 15px; justify-content: center;">
+      <div style="position: relative; width: 180px; height: 100px;">
+        <div style="position: absolute; top: 6px; left: 6px; width: 100%; height: 100%; background: #96daf8; border-radius: 12px;"></div>
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; overflow: hidden; background: #cccccc;">
+          <img id="flyer2-thumb-1" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
+        </div>
+      </div>
+      <div style="position: relative; width: 180px; height: 100px;">
+        <div style="position: absolute; top: 6px; left: 6px; width: 100%; height: 100%; background: #96daf8; border-radius: 12px;"></div>
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; overflow: hidden; background: #cccccc;">
+          <img id="flyer2-thumb-2" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
+        </div>
+      </div>
+      <div style="position: relative; width: 180px; height: 100px;">
+        <div style="position: absolute; top: 6px; left: 6px; width: 100%; height: 100%; background: #96daf8; border-radius: 12px;"></div>
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; overflow: hidden; background: #cccccc;">
+          <img id="flyer2-thumb-3" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Property Details Section -->
+    <div style="display: flex; padding: 18px 20px 15px 20px; gap: 15px; background: #ffffff; min-height: 165px;">
+      <div style="width: 145px; min-width: 145px; background: #96daf8; border-radius: 8px; padding: 12px 15px;">
+        <div id="flyer2-address" style="font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 700; color: #0d173c; line-height: 1.2;">123 Main St</div>
+        <div id="flyer2-city-state" style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700; color: #0d173c; line-height: 1.2; margin-bottom: 10px;">City, ST 12345</div>
+        <div style="font-family: 'Josefin Sans', sans-serif; font-size: 13px; color: #0d173c; line-height: 1.6;">
+          <span id="flyer2-bedrooms">3</span> Bedrooms<br>
+          <span id="flyer2-bathrooms">2</span> Bath<br>
+          <span id="flyer2-sqft">2,500</span> Sq Ft<br>
+          Built <span id="flyer2-year">2020</span>
+        </div>
+      </div>
+      <div style="flex: 1;">
+        <p id="flyer2-description" style="font-family: 'Josefin Sans', sans-serif; font-size: 11.5px; color: #333333; line-height: 1.55; text-align: justify;">Property description goes here...</p>
+      </div>
+    </div>
+
+    <!-- Agents Section -->
+    <div style="position: relative; background: #ffffff;">
+      <div style="display: flex; background: #0d173c; padding: 15px 20px 12px 20px; gap: 20px; position: relative;">
+        <!-- Loan Officer Card -->
+        <div style="display: flex; align-items: flex-start; gap: 10px; flex: 1;">
+          <div style="width: 75px; height: 85px; overflow: hidden; border-radius: 4px; flex-shrink: 0; background: #cccccc;">
+            <img id="flyer2-lo-photo" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0px;">
+            <div id="flyer2-lo-name" style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700; color: #ffffff; margin-bottom: 1px;">Loan Officer Name</div>
+            <div style="font-family: 'Josefin Sans', sans-serif; font-size: 11px; font-weight: 600; color: #96daf8; margin-bottom: 2px;">Luminate Bank</div>
+            <div id="flyer2-lo-phone" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; color: #ffffff; line-height: 1.45;">Phone</div>
+            <div id="flyer2-lo-email" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; color: #ffffff; line-height: 1.45;">Email</div>
+          </div>
+        </div>
+
+        <!-- Realtor Card -->
+        <div style="display: flex; align-items: flex-start; gap: 10px; flex: 1; justify-content: flex-end;">
+          <div style="display: flex; flex-direction: column; gap: 0px; text-align: right;">
+            <div id="flyer2-realtor-name" style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700; color: #ffffff; margin-bottom: 1px;">Realtor Name</div>
+            <div id="flyer2-realtor-company" style="font-family: 'Josefin Sans', sans-serif; font-size: 11px; font-weight: 600; color: #96daf8; margin-bottom: 2px;">Company</div>
+            <div id="flyer2-realtor-title" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; color: #ffffff; line-height: 1.45;">Title</div>
+            <div id="flyer2-realtor-phone" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; color: #ffffff; line-height: 1.45;">Phone</div>
+            <div id="flyer2-realtor-email" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; color: #ffffff; line-height: 1.45;">Email</div>
+          </div>
+          <div style="width: 75px; height: 85px; overflow: hidden; border-radius: 4px; flex-shrink: 0; background: #cccccc;">
+            <img id="flyer2-realtor-photo" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
+          </div>
+        </div>
+
+        <!-- NMLS at bottom left -->
+        <div id="flyer2-nmls" style="position: absolute; bottom: 8px; left: 12px; font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff;">NMLS #123456</div>
+      </div>
+    </div>
+
+    <!-- Disclaimer Footer -->
+    <div style="background: #ffffff; padding: 10px 15px 8px 15px;">
+      <p style="font-family: 'Josefin Sans', sans-serif; font-size: 7px; color: #555555; line-height: 1.35; text-align: center;">
+        Luminate Home Loans, Inc. NMLS#180933. Corporate Headquarters 2523 Wayzata Blvd. S. Suite 200, Minneapolis, MN 55405. This advertisement does not constitute a loan approval or loan commitment. Loan approval and interest rate are subject to credit approval and will depend upon specific borrower attributes and certain underwriting criteria.
+      </p>
     </div>
 
   </div>

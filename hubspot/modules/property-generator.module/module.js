@@ -889,26 +889,9 @@
     return phone;
   }
 
-  // Generate the actual PDF flyer using HTML template + html2canvas
-  function generateFlyerPDF(data, images) {
-    var p = data.property;
-    var r = data.realtor;
-    var lo = data.loanOfficer;
-    var photos = data.photos || [];
-    var fullAddress = p.address + (p.address2 ? ' ' + p.address2 : '');
-    var priceNum = parseFloat(String(p.price || 0).replace(/[$,]/g, '')) || 0;
-
-    // Get the flyer template element
-    var template = document.getElementById('flyer-template');
-    var content = document.getElementById('flyer-content');
-
-    // Make template visible for rendering (move to visible area temporarily)
-    template.style.left = '0';
-    template.style.top = '0';
-    template.style.zIndex = '9999';
-
-    // Populate the template with data
-    // Hero image - using img tag for better quality
+  // Populate Design 1 (Classic) template
+  function populateDesign1(p, r, lo, photos, priceNum, fullAddress) {
+    // Hero image
     var heroImg = document.getElementById('flyer-hero-img');
     if (photos.length > 0) {
       heroImg.src = photos[0];
@@ -920,7 +903,7 @@
     // Price
     document.getElementById('flyer-price').textContent = '$' + priceNum.toLocaleString();
 
-    // Thumbnail images - using img tags for better quality
+    // Thumbnail images
     var thumbIds = ['flyer-thumb-1', 'flyer-thumb-2', 'flyer-thumb-3'];
     for (var i = 0; i < 3; i++) {
       var thumbEl = document.getElementById(thumbIds[i]);
@@ -938,7 +921,7 @@
     document.getElementById('flyer-address').textContent = fullAddress;
     document.getElementById('flyer-city-state').textContent = p.city + ', ' + p.state + ' ' + p.zip;
 
-    // Stats - using styled divs with spans
+    // Stats
     var bedsEl = document.getElementById('flyer-stat-beds');
     var bathsEl = document.getElementById('flyer-stat-baths');
     var sqftEl = document.getElementById('flyer-stat-sqft');
@@ -992,7 +975,7 @@
     document.getElementById('flyer-realtor-phone').textContent = formatPhoneNumber(r.phone);
     document.getElementById('flyer-realtor-email').textContent = r.email || '';
 
-    // Realtor photo - using img tag for better quality
+    // Realtor photo
     var realtorPhotoEl = document.getElementById('flyer-realtor-photo');
     if (r.photo) {
       realtorPhotoEl.src = r.photo;
@@ -1001,7 +984,7 @@
       realtorPhotoEl.style.display = 'none';
     }
 
-    // Realtor company logo in hero section (top left)
+    // Realtor company logo
     var realtorLogoContainer = document.getElementById('flyer-realtor-logo-container');
     var realtorCompanyLogo = document.getElementById('flyer-realtor-company-logo');
     if (r.logo) {
@@ -1018,7 +1001,7 @@
     document.getElementById('flyer-lo-phone').textContent = formatPhoneNumber(lo.phone);
     document.getElementById('flyer-lo-email').textContent = lo.email || '';
 
-    // LO photo - using img tag for better quality
+    // LO photo
     var loPhotoEl = document.getElementById('flyer-lo-photo');
     if (lo.photo) {
       loPhotoEl.src = lo.photo;
@@ -1035,6 +1018,128 @@
     } else {
       nmlsEl.style.display = 'none';
     }
+  }
+
+  // Populate Design 2 (Modern) template
+  function populateDesign2(p, r, lo, photos, priceNum, fullAddress) {
+    // Hero image
+    var heroImg = document.getElementById('flyer2-hero-img');
+    if (photos.length > 0) {
+      heroImg.src = photos[0];
+      heroImg.style.display = 'block';
+    } else {
+      heroImg.style.display = 'none';
+    }
+
+    // Price
+    document.getElementById('flyer2-price').textContent = '$' + priceNum.toLocaleString();
+
+    // Thumbnail images
+    var thumbIds = ['flyer2-thumb-1', 'flyer2-thumb-2', 'flyer2-thumb-3'];
+    for (var i = 0; i < 3; i++) {
+      var thumbEl = document.getElementById(thumbIds[i]);
+      if (photos[i + 1]) {
+        thumbEl.src = photos[i + 1];
+        thumbEl.style.display = 'block';
+      } else {
+        thumbEl.style.display = 'none';
+      }
+    }
+
+    // Address and location
+    document.getElementById('flyer2-address').textContent = fullAddress;
+    document.getElementById('flyer2-city-state').textContent = p.city + ', ' + p.state + ' ' + p.zip;
+
+    // Stats
+    document.getElementById('flyer2-bedrooms').textContent = p.bedrooms || '0';
+    document.getElementById('flyer2-bathrooms').textContent = p.bathrooms || '0';
+    var sqftNum = parseFloat(String(p.sqft || 0).replace(/,/g, '')) || 0;
+    document.getElementById('flyer2-sqft').textContent = sqftNum.toLocaleString();
+    document.getElementById('flyer2-year').textContent = p.yearBuilt || '';
+
+    // Description
+    document.getElementById('flyer2-description').textContent = p.description || '';
+
+    // Realtor info
+    document.getElementById('flyer2-realtor-name').textContent = r.name || 'Realtor';
+    document.getElementById('flyer2-realtor-company').textContent = r.company || '';
+    document.getElementById('flyer2-realtor-title').textContent = r.title || 'Licensed Realtor';
+    document.getElementById('flyer2-realtor-phone').textContent = formatPhoneNumber(r.phone);
+    document.getElementById('flyer2-realtor-email').textContent = r.email || '';
+
+    // Realtor photo
+    var realtorPhotoEl = document.getElementById('flyer2-realtor-photo');
+    if (r.photo) {
+      realtorPhotoEl.src = r.photo;
+      realtorPhotoEl.style.display = 'block';
+    } else {
+      realtorPhotoEl.style.display = 'none';
+    }
+
+    // Realtor company logo
+    var realtorLogoContainer = document.getElementById('flyer2-realtor-logo-container');
+    var realtorCompanyLogo = document.getElementById('flyer2-realtor-company-logo');
+    if (r.logo) {
+      realtorCompanyLogo.src = r.logo;
+      realtorLogoContainer.style.display = 'flex';
+    } else {
+      realtorLogoContainer.style.display = 'none';
+    }
+
+    // Loan Officer info
+    document.getElementById('flyer2-lo-name').textContent = lo.name || 'Loan Officer';
+    document.getElementById('flyer2-lo-phone').textContent = formatPhoneNumber(lo.phone);
+    document.getElementById('flyer2-lo-email').textContent = lo.email || '';
+
+    // LO photo
+    var loPhotoEl = document.getElementById('flyer2-lo-photo');
+    if (lo.photo) {
+      loPhotoEl.src = lo.photo;
+      loPhotoEl.style.display = 'block';
+    } else {
+      loPhotoEl.style.display = 'none';
+    }
+
+    // NMLS
+    var nmlsEl = document.getElementById('flyer2-nmls');
+    if (lo.nmls) {
+      nmlsEl.textContent = 'NMLS #' + lo.nmls;
+    } else {
+      nmlsEl.textContent = '';
+    }
+  }
+
+  // Generate the actual PDF flyer using HTML template + html2canvas
+  function generateFlyerPDF(data, images) {
+    var p = data.property;
+    var r = data.realtor;
+    var lo = data.loanOfficer;
+    var photos = data.photos || [];
+    var fullAddress = p.address + (p.address2 ? ' ' + p.address2 : '');
+    var priceNum = parseFloat(String(p.price || 0).replace(/[$,]/g, '')) || 0;
+
+    // Get selected flyer design
+    var selectedDesign = document.querySelector('input[name="flyerDesign"]:checked');
+    var designChoice = selectedDesign ? selectedDesign.value : 'design1';
+
+    var template, content;
+
+    if (designChoice === 'design2') {
+      // Use Design 2 (Modern)
+      template = document.getElementById('flyer-template-2');
+      content = document.getElementById('flyer-content-2');
+      populateDesign2(p, r, lo, photos, priceNum, fullAddress);
+    } else {
+      // Use Design 1 (Classic)
+      template = document.getElementById('flyer-template');
+      content = document.getElementById('flyer-content');
+      populateDesign1(p, r, lo, photos, priceNum, fullAddress);
+    }
+
+    // Make template visible for rendering (move to visible area temporarily)
+    template.style.left = '0';
+    template.style.top = '0';
+    template.style.zIndex = '9999';
 
     // Preload ALL images for full quality rendering
     var imagesToPreload = [];
