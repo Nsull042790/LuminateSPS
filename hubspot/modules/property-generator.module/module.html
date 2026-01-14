@@ -20,7 +20,7 @@
     <div class="pg-logo">
       <img src="https://lirp.cdn-website.com/e49062f7/dms3rep/multi/opt/Luminatebank_PrimaryLogo_White_Gradient-62f357ba-1920w.png" alt="Luminate Bank">
     </div>
-    <h1>Property Site Generator <span class="version">v5.19</span></h1>
+    <h1>Property Site Generator <span class="version">v5.20</span></h1>
     {% if user_email %}
     <p class="pg-user-info">Logged in as: {{ user_email }}</p>
     {% else %}
@@ -311,14 +311,14 @@
     <!-- Hero Section - using background-image for proper scaling -->
     <div id="flyer-hero" style="position: relative; width: 100%; height: 240px; overflow: hidden; background-color: #0d173c; background-size: cover; background-position: center;">
 
-      <!-- Luminate Logo Overlay -->
-      <div style="position: absolute; top: 12px; left: 12px; background: #0d173c; border-radius: 8px; padding: 10px 16px;">
-        <img id="flyer-luminate-logo" src="https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/Luminatebank_PrimaryLogo_White_Gradient.png" style="height: 40px; width: auto;" crossorigin="anonymous" />
+      <!-- Realtor Company Logo - Top Left -->
+      <div id="flyer-realtor-logo-container" style="position: absolute; top: 12px; left: 12px; background: #0d173c; border-radius: 8px; padding: 10px 16px;">
+        <img id="flyer-realtor-company-logo" src="" style="height: 40px; width: auto; max-width: 120px; object-fit: contain;" crossorigin="anonymous" />
       </div>
 
-      <!-- FDIC Logo Overlay - dark background to show white logo -->
-      <div style="position: absolute; top: 12px; right: 12px; background: #0d173c; border-radius: 8px; padding: 10px 14px;">
-        <img id="flyer-fdic-logo" src="https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/member-fdic-equal-housing-lender1-WHT.png" style="height: 50px; width: auto;" crossorigin="anonymous" />
+      <!-- Luminate Logo - Top Right -->
+      <div style="position: absolute; top: 12px; right: 12px; background: #0d173c; border-radius: 8px; padding: 10px 16px;">
+        <img id="flyer-luminate-logo" src="https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/Luminatebank_PrimaryLogo_White_Gradient.png" style="height: 40px; width: auto;" crossorigin="anonymous" />
       </div>
 
       <!-- Price Badge -->

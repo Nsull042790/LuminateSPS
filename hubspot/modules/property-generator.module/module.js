@@ -980,6 +980,16 @@
       realtorPhotoEl.style.backgroundImage = 'none';
     }
 
+    // Realtor company logo in hero section (top left)
+    var realtorLogoContainer = document.getElementById('flyer-realtor-logo-container');
+    var realtorCompanyLogo = document.getElementById('flyer-realtor-company-logo');
+    if (r.logo) {
+      realtorCompanyLogo.src = r.logo;
+      realtorLogoContainer.style.display = 'block';
+    } else {
+      realtorLogoContainer.style.display = 'none';
+    }
+
     // Loan Officer info
     document.getElementById('flyer-lo-name').textContent = lo.name || 'Loan Officer';
     document.getElementById('flyer-lo-title').textContent = lo.title || 'Loan Officer';
@@ -1004,26 +1014,36 @@
       nmlsEl.style.display = 'none';
     }
 
-    // Preload headshot images for better quality
+    // Preload ALL images for full quality rendering
     var imagesToPreload = [];
+    // Property photos
+    photos.forEach(function(photo) {
+      if (photo) imagesToPreload.push(photo);
+    });
+    // Headshots
     if (r.photo) imagesToPreload.push(r.photo);
     if (lo.photo) imagesToPreload.push(lo.photo);
+    // Realtor company logo
+    if (r.logo) imagesToPreload.push(r.logo);
 
     var preloadPromises = imagesToPreload.map(function(src) {
       return new Promise(function(resolve) {
         var img = new Image();
         img.crossOrigin = 'anonymous';
-        img.onload = resolve;
+        img.onload = function() {
+          console.log('Preloaded:', src, img.naturalWidth, 'x', img.naturalHeight);
+          resolve();
+        };
         img.onerror = resolve;
         img.src = src;
       });
     });
 
-    // Wait for preload then render
+    // Wait for all images to preload then render
     Promise.all(preloadPromises).then(function() {
       setTimeout(function() {
         html2canvas(content, {
-          scale: 4,  // High scale for crisp images
+          scale: 5,  // Maximum scale for full resolution
           useCORS: true,
           allowTaint: true,
           backgroundColor: '#ffffff',
@@ -1032,15 +1052,16 @@
           logging: false,
           imageTimeout: 0,  // No timeout for image loading
           onclone: function(clonedDoc) {
-            // Ensure images are rendered at full quality
+            // Ensure all images render at highest quality
             var imgs = clonedDoc.querySelectorAll('img');
             imgs.forEach(function(img) {
-              img.style.imageRendering = 'high-quality';
+              img.style.imageRendering = 'auto';
+              img.setAttribute('crossorigin', 'anonymous');
             });
-            // Also handle background images on divs
+            // Handle background images
             var bgDivs = clonedDoc.querySelectorAll('[style*="background-image"]');
             bgDivs.forEach(function(div) {
-              div.style.imageRendering = '-webkit-optimize-contrast';
+              div.style.imageRendering = 'auto';
             });
           }
         }).then(function(canvas) {
@@ -1052,9 +1073,9 @@
         var jsPDF = window.jspdf.jsPDF;
         var doc = new jsPDF('p', 'pt', 'letter');
 
-        // Add canvas as high-quality PNG to PDF
-        var imgData = canvas.toDataURL('image/png');
-        doc.addImage(imgData, 'PNG', 0, 0, 612, 792);
+        // Add canvas as high-quality PNG to PDF (no compression)
+        var imgData = canvas.toDataURL('image/png', 1.0);
+        doc.addImage(imgData, 'PNG', 0, 0, 612, 792, undefined, 'NONE');
 
         // Save
         var filename = fullAddress.replace(/[^a-z0-9]/gi, '-').toLowerCase() + '-flyer.pdf';
@@ -1066,7 +1087,7 @@
           template.style.zIndex = 'auto';
           showToast('Error generating flyer: ' + err.message, 'error');
         });
-      }, 500); // Give images time to load
+      }, 800); // Give images time to fully load
     }); // End Promise.all.then
   }
 
