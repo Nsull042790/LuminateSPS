@@ -1072,7 +1072,7 @@
     // Realtor license (under photo)
     var realtorLicenseEl = document.getElementById('flyer2-realtor-license');
     if (r.license) {
-      realtorLicenseEl.textContent = r.license;
+      realtorLicenseEl.textContent = 'License# ' + r.license;
     } else {
       realtorLicenseEl.textContent = '';
     }
