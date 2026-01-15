@@ -501,16 +501,13 @@
     <h2 class="section-title">Request More Info or Financing</h2>
     <div class="inquiry-form-container">
       {% form
-         portal_id=244637957
-         form_id="b3694641-fb91-44b6-9ffc-679c93c80ff7"
-         response_redirect_url=""
-         fields=[
-           {"name": "property_address", "value": row.address},
-           {"name": "property_url", "value": request.full_url},
-           {"name": "lo_email", "value": row.lo_email},
-           {"name": "realtor_email", "value": row.realtor_email}
-         ]
+         form_to_use="b3694641-fb91-44b6-9ffc-679c93c80ff7"
       %}
+      <!-- Hidden fields for routing -->
+      <input type="hidden" id="property_address_value" value="{{ row.address }}{% if row.address_2 %} {{ row.address_2 }}{% endif %}, {{ row.city }}, {{ row.state }}">
+      <input type="hidden" id="property_url_value" value="{{ request.full_url }}">
+      <input type="hidden" id="lo_email_value" value="{{ row.lo_email }}">
+      <input type="hidden" id="realtor_email_value" value="{{ row.realtor_email }}">
     </div>
   </section>
 
