@@ -532,6 +532,9 @@
         sqft: parseFloat((getValue('sqft') || '').replace(/,/g, '')) || 0,
         yearBuilt: parseInt(getValue('yearBuilt')) || 0,
         mlsNumber: getValue('mlsNumber') || '',
+        openHouseDate: getValue('openHouseDate') || '',
+        openHouseStart: getValue('openHouseStart') || '',
+        openHouseEnd: getValue('openHouseEnd') || '',
         description: getValue('description') || '',
         features: getValue('features') || ''
       },
@@ -1711,6 +1714,9 @@
     setValue('sqft', vals.sqft ? parseInt(vals.sqft).toLocaleString() : '');
     setValue('yearBuilt', vals.year_built);
     setValue('mlsNumber', vals.mls_number);
+    setValue('openHouseDate', vals.open_house_date);
+    setValue('openHouseStart', vals.open_house_start);
+    setValue('openHouseEnd', vals.open_house_end);
     setValue('description', vals.description);
     setValue('features', vals.features);
 

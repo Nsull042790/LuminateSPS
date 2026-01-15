@@ -144,6 +144,10 @@ main,
   grid-column: 1 / -1;
 }
 
+.pg-field.half-width {
+  grid-column: span 1;
+}
+
 .pg-field label {
   font-size: 0.85em;
   font-weight: 600;
