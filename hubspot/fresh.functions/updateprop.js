@@ -86,7 +86,7 @@ exports.main = async (context, sendResponse) => {
       sqft: parseInt(String(prop.sqft || 0).replace(/[^0-9]/g, '')) || 0,
       year_built: parseInt(prop.yearBuilt) || 0,
       mls_number: prop.mlsNumber || '',
-      open_house_date: prop.openHouseDate || '',
+      open_house_date: prop.openHouseDate ? new Date(prop.openHouseDate).getTime() : null,
       open_house_start: prop.openHouseStart || '',
       open_house_end: prop.openHouseEnd || '',
       description: prop.description || '',
