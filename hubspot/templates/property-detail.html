@@ -225,6 +225,51 @@
     .calc-result .amount { font-size: 2.5em; font-weight: bold; }
     .calc-result .label { opacity: 0.9; margin-top: 5px; }
 
+    /* Inquiry Form */
+    .section-inquiry {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    .inquiry-form-container {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      max-width: 600px;
+    }
+    .inquiry-form-container .hs-form-field { margin-bottom: 20px; }
+    .inquiry-form-container label { font-weight: 600; color: #4a5568; margin-bottom: 8px; display: block; }
+    .inquiry-form-container input[type="text"],
+    .inquiry-form-container input[type="email"],
+    .inquiry-form-container input[type="tel"],
+    .inquiry-form-container textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+    .inquiry-form-container input:focus,
+    .inquiry-form-container textarea:focus {
+      border-color: #96daf8;
+      outline: none;
+    }
+    .inquiry-form-container .hs-button {
+      background: linear-gradient(135deg, #0d173c, #1a2a5e);
+      color: white;
+      border: none;
+      padding: 14px 30px;
+      border-radius: 8px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .inquiry-form-container .hs-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(13,23,60,0.3);
+    }
+
     /* Footer */
     .footer { background: #0d173c; color: white; padding: 40px; text-align: center; }
     .footer p { margin: 5px 0; }
@@ -448,6 +493,24 @@
         <div class="amount" id="calc-result">$0</div>
         <div class="label">Estimated Monthly Payment</div>
       </div>
+    </div>
+  </section>
+
+  <!-- Property Inquiry Form -->
+  <section class="section section-inquiry">
+    <h2 class="section-title">Request More Info or Financing</h2>
+    <div class="inquiry-form-container">
+      {% form
+         portal_id=244637957
+         form_id="b3694641-fb91-44b6-9ffc-679c93c80ff7"
+         response_redirect_url=""
+         fields=[
+           {"name": "property_address", "value": row.address},
+           {"name": "property_url", "value": request.full_url},
+           {"name": "lo_email", "value": row.lo_email},
+           {"name": "realtor_email", "value": row.realtor_email}
+         ]
+      %}
     </div>
   </section>
 
