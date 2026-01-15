@@ -53,7 +53,7 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v6.0 (HubDB) initialized');
+    console.log('Property Generator v6.1 (HubDB) initialized');
 
     // Check for URL query parameters first (from HubSpot CRM integration)
     var urlParams = new URLSearchParams(window.location.search);
