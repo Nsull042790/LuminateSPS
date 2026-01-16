@@ -3,7 +3,7 @@
   label: Property Detail Page
   screenshotPath: ../images/template-preview.png
   isAvailableForNewContent: true
-  version: 6.8
+  version: 6.9
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -1017,6 +1017,40 @@
       });
     }
   </script>
+
+  <!-- Floating Feedback Button -->
+  <a href="#" id="feedback-btn" title="Report an issue" style="position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #0d173c, #1a2a5e); color: white; padding: 12px 18px; border-radius: 50px; text-decoration: none; font-family: 'Josefin Sans', sans-serif; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(13, 23, 60, 0.4); transition: all 0.3s ease; z-index: 9999;">
+    <span style="font-size: 18px;">🐛</span>
+    <span>Report Issue</span>
+  </a>
+  <script>
+    document.getElementById('feedback-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      var propertyAddress = "{{ row.address }}{% if row.address_2 %} {{ row.address_2 }}{% endif %}, {{ row.city }}, {{ row.state }}";
+      var pageUrl = window.location.href;
+      var browser = navigator.userAgent;
+      var subject = encodeURIComponent('SPS Beta Feedback - ' + propertyAddress);
+      var body = encodeURIComponent(
+        '--- Please describe the issue below ---\n\n\n\n' +
+        '--- System Info (do not edit) ---\n' +
+        'Property: ' + propertyAddress + '\n' +
+        'Page: ' + pageUrl + '\n' +
+        'Browser: ' + browser + '\n' +
+        'Version: v6.9\n' +
+        'Timestamp: ' + new Date().toISOString()
+      );
+      window.location.href = 'mailto:nsullivan@luminatebank.com?subject=' + subject + '&body=' + body;
+    });
+    document.getElementById('feedback-btn').addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-2px)';
+      this.style.boxShadow = '0 6px 20px rgba(13, 23, 60, 0.5)';
+    });
+    document.getElementById('feedback-btn').addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+      this.style.boxShadow = '0 4px 15px rgba(13, 23, 60, 0.4)';
+    });
+  </script>
+
   {{ standard_footer_includes }}
 </body>
 </html>

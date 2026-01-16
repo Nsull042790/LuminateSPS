@@ -780,3 +780,38 @@ main,
   height: 24px;
 }
 
+/* Floating Feedback Button */
+.feedback-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #0d173c, #1a2a5e);
+  color: white;
+  padding: 12px 18px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(13, 23, 60, 0.4);
+  transition: all 0.3s ease;
+  z-index: 9999;
+}
+
+.feedback-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(13, 23, 60, 0.5);
+  background: linear-gradient(135deg, #1a2a5e, #2c3e7a);
+}
+
+.feedback-icon {
+  font-size: 18px;
+}
+
+.feedback-text {
+  white-space: nowrap;
+}
+

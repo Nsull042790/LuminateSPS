@@ -20,7 +20,7 @@
     <div class="pg-logo">
       <img src="https://lirp.cdn-website.com/e49062f7/dms3rep/multi/opt/Luminatebank_PrimaryLogo_White_Gradient-62f357ba-1920w.png" alt="Luminate Bank">
     </div>
-    <h1>Property Site Generator <span class="version">v6.8</span></h1>
+    <h1>Property Site Generator <span class="version">v6.9</span></h1>
     {% if user_email %}
     <p class="pg-user-info">Logged in as: {{ user_email }}</p>
     {% else %}
@@ -318,7 +318,34 @@
 
   <!-- Toast Container -->
   <div id="toast-container"></div>
+
+  <!-- Floating Feedback Button -->
+  <a href="#" id="feedback-btn" class="feedback-btn" title="Report an issue">
+    <span class="feedback-icon">🐛</span>
+    <span class="feedback-text">Report Issue</span>
+  </a>
 </div>
+
+<script>
+  // Feedback button - opens pre-filled email
+  document.getElementById('feedback-btn').addEventListener('click', function(e) {
+    e.preventDefault();
+    var userEmail = document.getElementById('property-generator').getAttribute('data-user-email') || 'Unknown';
+    var pageUrl = window.location.href;
+    var browser = navigator.userAgent;
+    var subject = encodeURIComponent('SPS Beta Feedback - Property Generator');
+    var body = encodeURIComponent(
+      '--- Please describe the issue below ---\n\n\n\n' +
+      '--- System Info (do not edit) ---\n' +
+      'Page: ' + pageUrl + '\n' +
+      'User: ' + userEmail + '\n' +
+      'Browser: ' + browser + '\n' +
+      'Version: v6.9\n' +
+      'Timestamp: ' + new Date().toISOString()
+    );
+    window.location.href = 'mailto:nsullivan@luminatebank.com?subject=' + subject + '&body=' + body;
+  });
+</script>
 
 <!-- jsPDF and html2canvas Libraries for Flyer Generation -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
