@@ -1129,7 +1129,7 @@
     var r = data.realtor;
     var lo = data.loanOfficer;
     var photos = data.photos || [];
-    var address2Val = getValue('address2') || '';
+    var address2Val = p.address_2 || '';
     var fullAddress = p.address + (address2Val ? ' ' + address2Val : '');
     var priceNum = parseFloat(String(p.price || 0).replace(/[$,]/g, '')) || 0;
 
