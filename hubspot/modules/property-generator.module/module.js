@@ -1,4 +1,4 @@
-// Property Generator Module JavaScript v5.8 - HubDB Version
+// Property Generator Module JavaScript v6.7 - HubDB Version
 // Uses HubDB for data storage with dynamic pages
 // Fixed: Proper aspect ratio for all images, embedded Luminate logo for compliance
 (function() {
@@ -53,7 +53,7 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v6.6 (HubDB) initialized');
+    console.log('Property Generator v6.7 (HubDB) initialized');
 
     // Check for URL query parameters first (from HubSpot CRM integration)
     var urlParams = new URLSearchParams(window.location.search);
