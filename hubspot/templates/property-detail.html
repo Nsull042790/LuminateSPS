@@ -671,10 +671,119 @@
     });
   </script>
 
-  <!-- jsPDF Library for Flyer Generation -->
+  <!-- jsPDF and html2canvas Libraries for Flyer Generation -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <!-- Hidden Flyer Template (Modern Design) for PDF Generation -->
+  <div id="flyer-template-2" style="position: absolute; left: -9999px; top: 0;">
+    <div id="flyer-content-2" style="width: 612px; height: 792px; background: #ffffff; font-family: 'Josefin Sans', sans-serif; position: relative; overflow: hidden; display: flex; flex-direction: column;">
+      <!-- Hero Section -->
+      <div style="display: flex; height: 270px; width: 100%; flex-shrink: 0;">
+        <div style="width: 190px; min-width: 190px; background: #ffffff; display: flex; flex-direction: column;">
+          <div style="background: #0d173c; padding: 15px; display: flex; justify-content: center; align-items: center; height: 90px;">
+            <img src="https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/Luminatebank_PrimaryLogo_White_Gradient.png" style="width: 150px; height: auto;" crossorigin="anonymous" />
+          </div>
+          <div id="flyer2-realtor-logo-container" style="background: #ffffff; padding: 15px 12px; display: flex; align-items: center; justify-content: center; height: 90px;">
+            <img id="flyer2-realtor-company-logo" src="" style="max-width: 140px; max-height: 70px; width: auto; height: auto;" crossorigin="anonymous" />
+          </div>
+          <div style="background: #0d173c; padding: 12px 10px; margin-top: auto;">
+            <div id="flyer2-price" style="font-family: 'Poppins', sans-serif; font-size: 34px; font-weight: 700; color: #96daf8; text-align: center;">$600,000</div>
+          </div>
+        </div>
+        <div style="flex: 1; overflow: hidden; position: relative; background: #cccccc;">
+          <img id="flyer2-hero-img" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
+        </div>
+      </div>
+      <!-- White Gap -->
+      <div style="height: 10px; background: #ffffff; flex-shrink: 0;"></div>
+      <!-- Thumbnails Section -->
+      <div style="display: flex; height: 130px; background: #0d173c; padding: 15px 20px; gap: 15px; justify-content: center; flex-shrink: 0;">
+        <div style="position: relative; width: 180px; height: 100px;">
+          <div style="position: absolute; top: 6px; left: 6px; width: 100%; height: 100%; background: #96daf8; border-radius: 12px;"></div>
+          <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; overflow: hidden; background: #cccccc;">
+            <img id="flyer2-thumb-1" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
+          </div>
+        </div>
+        <div style="position: relative; width: 180px; height: 100px;">
+          <div style="position: absolute; top: 6px; left: 6px; width: 100%; height: 100%; background: #96daf8; border-radius: 12px;"></div>
+          <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; overflow: hidden; background: #cccccc;">
+            <img id="flyer2-thumb-2" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
+          </div>
+        </div>
+        <div style="position: relative; width: 180px; height: 100px;">
+          <div style="position: absolute; top: 6px; left: 6px; width: 100%; height: 100%; background: #96daf8; border-radius: 12px;"></div>
+          <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; overflow: hidden; background: #cccccc;">
+            <img id="flyer2-thumb-3" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
+          </div>
+        </div>
+      </div>
+      <!-- Property Details Section -->
+      <div style="display: flex; padding: 8px 20px 6px 0; gap: 15px; background: #ffffff; flex-shrink: 0;">
+        <div style="width: 175px; min-width: 175px; background: #96daf8; border-radius: 0 8px 8px 0; padding: 8px 15px 8px 20px;">
+          <div id="flyer2-address" style="font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 700; color: #0d173c; line-height: 1.2;">123 Main St</div>
+          <div id="flyer2-city-state" style="font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: #0d173c; line-height: 1.2; margin-bottom: 10px; white-space: nowrap;">City, ST 12345</div>
+          <div style="font-family: 'Josefin Sans', sans-serif; font-size: 13px; color: #0d173c; line-height: 1.6;">
+            <span id="flyer2-bedrooms">3</span> Bedrooms<br>
+            <span id="flyer2-bathrooms">2</span> Bath<br>
+            <span id="flyer2-sqft">2,500</span> Sq Ft<br>
+            Built <span id="flyer2-year">2020</span>
+          </div>
+        </div>
+        <div style="flex: 1;">
+          <p id="flyer2-description" style="font-family: 'Josefin Sans', sans-serif; font-size: 11.5px; color: #333333; line-height: 1.55; text-align: justify;">Property description goes here...</p>
+        </div>
+      </div>
+      <!-- Agents Section + Footer -->
+      <div style="background: #0d173c; flex: 1; display: flex; flex-direction: column;">
+        <!-- Contact Cards -->
+        <div style="display: flex; padding: 12px 20px; gap: 20px;">
+          <!-- Loan Officer Card -->
+          <div style="display: flex; align-items: flex-start; gap: 10px; flex: 1;">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <div style="width: 70px; height: 80px; overflow: hidden; border-radius: 4px; flex-shrink: 0; background: #cccccc;">
+                <img id="flyer2-lo-photo" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
+              </div>
+              <div id="flyer2-nmls" style="font-family: 'Josefin Sans', sans-serif; font-size: 8px; color: #ffffff; margin-top: 3px; text-align: center;">NMLS #123456</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0px;">
+              <div id="flyer2-lo-name" style="font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: #ffffff; margin-bottom: 1px;">Loan Officer Name</div>
+              <div style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; font-weight: 600; color: #96daf8; margin-bottom: 1px;">Luminate Bank</div>
+              <div id="flyer2-lo-phone" style="font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff; line-height: 1.4;">Phone</div>
+              <div id="flyer2-lo-website" style="font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff; line-height: 1.4;">Website</div>
+              <div id="flyer2-lo-email" style="font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff; line-height: 1.4;">Email</div>
+            </div>
+          </div>
+          <!-- Realtor Card -->
+          <div style="display: flex; align-items: flex-start; gap: 10px; flex: 1; justify-content: flex-end;">
+            <div style="display: flex; flex-direction: column; gap: 0px; text-align: right;">
+              <div id="flyer2-realtor-name" style="font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: #ffffff; margin-bottom: 1px;">Realtor Name</div>
+              <div id="flyer2-realtor-company" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; font-weight: 600; color: #96daf8; margin-bottom: 1px;">Company</div>
+              <div id="flyer2-realtor-phone" style="font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff; line-height: 1.4;">Phone</div>
+              <div id="flyer2-realtor-website" style="font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff; line-height: 1.4;">Website</div>
+              <div id="flyer2-realtor-email" style="font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff; line-height: 1.4;">Email</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <div style="width: 70px; height: 80px; overflow: hidden; border-radius: 4px; flex-shrink: 0; background: #cccccc;">
+                <img id="flyer2-realtor-photo" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
+              </div>
+              <div id="flyer2-realtor-license" style="font-family: 'Josefin Sans', sans-serif; font-size: 8px; color: #ffffff; margin-top: 3px; text-align: center;">License #</div>
+            </div>
+          </div>
+        </div>
+        <!-- Compliance Footer -->
+        <div style="padding: 8px 15px 18px 15px; display: flex; align-items: center; margin-top: auto;">
+          <p style="font-family: 'Josefin Sans', sans-serif; font-size: 5px; color: #ffffff; line-height: 1.35; flex: 1;">
+            Luminate Bank NMLS 1281698 Bank Headquarters 2523 S. Wayzata Blvd., Suite 100 Minneapolis, MN 55405 (952) 939-7200. This is not an offer to enter into an agreement. Information provided is outlining the minimum down payment requirements as allowed by specific loan program and product guidelines and any information, rates and programs are subject to change without prior notice and may not be available in all states. All loans are subject to credit and property approval. Luminate Bank is not affiliated with any government agency. All rights reserved.
+          </p>
+          <img src="https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/member-fdic-equal-housing-lender1-WHT.png" style="height: 28px; width: auto; margin-left: 12px;" crossorigin="anonymous" />
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // PDF Flyer Generation
+    // PDF Flyer Generation using Modern Design Template
     document.getElementById('download-flyer-btn').addEventListener('click', function() {
       var btn = this;
       btn.disabled = true;
@@ -686,12 +795,12 @@
         city: "{{ row.city }}",
         state: "{{ row.state }}",
         zip: "{{ row.zip }}",
-        price: "{{ row.price|format_number }}",
+        price: {{ row.price|default(0) }},
         bedrooms: "{{ row.bedrooms }}",
         bathrooms: "{{ row.bathrooms }}",
-        sqft: "{{ row.sqft|format_number }}",
+        sqft: "{{ row.sqft|default(0) }}",
         yearBuilt: "{{ row.year_built }}",
-        description: "{{ row.description|replace('\n', ' ')|replace('\"', '\\"')|truncate(400) }}",
+        description: "{{ row.description|replace('\n', ' ')|replace('\"', '\\"')|truncate(500) }}",
         mlsNumber: "{{ row.mls_number }}",
         realtorName: "{{ row.realtor_name }}",
         realtorTitle: "{{ row.realtor_title|default('Licensed Realtor') }}",
@@ -699,211 +808,213 @@
         realtorPhone: "{{ row.realtor_phone }}",
         realtorEmail: "{{ row.realtor_email }}",
         realtorLicense: "{{ row.realtor_license }}",
+        realtorWebsite: "{{ row.realtor_website }}",
+        realtorPhoto: "{{ row.realtor_photo }}",
+        realtorLogo: "{{ row.realtor_logo }}",
         loName: "{{ row.lo_name }}",
         loTitle: "{{ row.lo_title|default('Loan Officer') }}",
         loCompany: "{{ row.lo_company }}",
         loPhone: "{{ row.lo_phone }}",
         loEmail: "{{ row.lo_email }}",
         loNmls: "{{ row.lo_nmls }}",
-        heroImage: "{{ hero_image }}",
-        pageUrl: window.location.href
+        loWebsite: "{{ row.lo_website }}",
+        loPhoto: "{{ row.lo_photo }}",
+        photos: {% if photos %}{{ photos|tojson }}{% else %}[]{% endif %}
       };
 
-      generateFlyer(propertyData, btn);
+      generateFlyerPDF(propertyData, btn);
     });
 
-    function generateFlyer(data, btn) {
-      var { jsPDF } = window.jspdf;
-      var doc = new jsPDF('p', 'pt', 'letter'); // 612 x 792 points
+    function formatPhoneNumber(phone) {
+      if (!phone) return '';
+      var digits = String(phone).replace(/\D/g, '');
+      if (digits.length === 10) {
+        return '(' + digits.substring(0, 3) + ') ' + digits.substring(3, 6) + '-' + digits.substring(6);
+      }
+      if (digits.length === 11 && digits[0] === '1') {
+        return '(' + digits.substring(1, 4) + ') ' + digits.substring(4, 7) + '-' + digits.substring(7);
+      }
+      return phone;
+    }
 
-      var pageWidth = 612;
-      var pageHeight = 792;
-      var margin = 40;
-      var contentWidth = pageWidth - (margin * 2);
+    function populateFlyerTemplate(data) {
+      var photos = data.photos || [];
+      var priceNum = parseFloat(String(data.price || 0).replace(/[$,]/g, '')) || 0;
 
-      // Colors
-      var primaryColor = [13, 23, 60];      // #0d173c
-      var accentColor = [150, 218, 248];    // #96daf8
-      var grayColor = [113, 128, 150];      // #718096
-
-      // Start building PDF
-      var yPos = margin;
-
-      // Header bar
-      doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.rect(0, 0, pageWidth, 60, 'F');
-
-      // Header text
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(24);
-      doc.setFont('helvetica', 'bold');
-      doc.text('FOR SALE', margin, 40);
-
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'normal');
-      doc.text('$' + data.price, pageWidth - margin, 40, { align: 'right' });
-
-      yPos = 80;
-
-      // Property Address
-      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.setFontSize(22);
-      doc.setFont('helvetica', 'bold');
-      doc.text(data.address, margin, yPos);
-      yPos += 25;
-
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
-      doc.text(data.city + ', ' + data.state + ' ' + data.zip, margin, yPos);
-      yPos += 35;
-
-      // Stats bar
-      doc.setFillColor(247, 250, 252);
-      doc.rect(margin, yPos, contentWidth, 50, 'F');
-
-      var statsY = yPos + 32;
-      var statWidth = contentWidth / 4;
-      doc.setFontSize(18);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-
-      if (data.bedrooms) {
-        doc.text(data.bedrooms, margin + statWidth * 0.5, statsY, { align: 'center' });
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text('Bedrooms', margin + statWidth * 0.5, statsY + 15, { align: 'center' });
+      // Hero image
+      var heroImg = document.getElementById('flyer2-hero-img');
+      if (photos.length > 0) {
+        heroImg.src = photos[0];
+        heroImg.style.display = 'block';
+      } else {
+        heroImg.style.display = 'none';
       }
 
-      doc.setFontSize(18);
-      doc.setFont('helvetica', 'bold');
-      if (data.bathrooms) {
-        doc.text(data.bathrooms, margin + statWidth * 1.5, statsY, { align: 'center' });
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text('Bathrooms', margin + statWidth * 1.5, statsY + 15, { align: 'center' });
+      // Price
+      document.getElementById('flyer2-price').textContent = '$' + priceNum.toLocaleString();
+
+      // Thumbnail images
+      var thumbIds = ['flyer2-thumb-1', 'flyer2-thumb-2', 'flyer2-thumb-3'];
+      for (var i = 0; i < 3; i++) {
+        var thumbEl = document.getElementById(thumbIds[i]);
+        if (photos[i + 1]) {
+          thumbEl.src = photos[i + 1];
+          thumbEl.style.display = 'block';
+        } else {
+          thumbEl.style.display = 'none';
+        }
       }
 
-      doc.setFontSize(18);
-      doc.setFont('helvetica', 'bold');
-      if (data.sqft) {
-        doc.text(data.sqft, margin + statWidth * 2.5, statsY, { align: 'center' });
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text('Sq Ft', margin + statWidth * 2.5, statsY + 15, { align: 'center' });
-      }
+      // Address and location
+      document.getElementById('flyer2-address').textContent = data.address;
+      document.getElementById('flyer2-city-state').textContent = data.city + ', ' + data.state + ' ' + data.zip;
 
-      doc.setFontSize(18);
-      doc.setFont('helvetica', 'bold');
-      if (data.yearBuilt && data.yearBuilt !== '0') {
-        doc.text(data.yearBuilt, margin + statWidth * 3.5, statsY, { align: 'center' });
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text('Year Built', margin + statWidth * 3.5, statsY + 15, { align: 'center' });
-      }
-
-      yPos += 70;
+      // Stats
+      document.getElementById('flyer2-bedrooms').textContent = data.bedrooms || '0';
+      document.getElementById('flyer2-bathrooms').textContent = data.bathrooms || '0';
+      var sqftNum = parseFloat(String(data.sqft || 0).replace(/,/g, '')) || 0;
+      document.getElementById('flyer2-sqft').textContent = sqftNum.toLocaleString();
+      document.getElementById('flyer2-year').textContent = data.yearBuilt || '';
 
       // Description
-      if (data.description) {
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-        doc.text('About This Property', margin, yPos);
-        yPos += 18;
+      document.getElementById('flyer2-description').textContent = data.description || '';
 
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
-        var descLines = doc.splitTextToSize(data.description, contentWidth);
-        doc.text(descLines.slice(0, 6), margin, yPos);
-        yPos += (Math.min(descLines.length, 6) * 14) + 20;
+      // Realtor info
+      document.getElementById('flyer2-realtor-name').textContent = data.realtorName || 'Realtor';
+      document.getElementById('flyer2-realtor-company').textContent = data.realtorCompany || '';
+      document.getElementById('flyer2-realtor-phone').textContent = formatPhoneNumber(data.realtorPhone);
+      document.getElementById('flyer2-realtor-website').textContent = data.realtorWebsite || '';
+      document.getElementById('flyer2-realtor-email').textContent = data.realtorEmail || '';
+
+      // Realtor license
+      var realtorLicenseEl = document.getElementById('flyer2-realtor-license');
+      if (data.realtorLicense) {
+        realtorLicenseEl.textContent = 'License# ' + data.realtorLicense;
+      } else {
+        realtorLicenseEl.textContent = '';
       }
 
-      // MLS Number
-      if (data.mlsNumber) {
-        doc.setFontSize(10);
-        doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
-        doc.text('MLS# ' + data.mlsNumber, margin, yPos);
-        yPos += 25;
+      // Realtor photo
+      var realtorPhotoEl = document.getElementById('flyer2-realtor-photo');
+      if (data.realtorPhoto) {
+        realtorPhotoEl.src = data.realtorPhoto;
+        realtorPhotoEl.style.display = 'block';
+      } else {
+        realtorPhotoEl.style.display = 'none';
       }
 
-      // Divider
-      doc.setDrawColor(230, 230, 230);
-      doc.line(margin, yPos, pageWidth - margin, yPos);
-      yPos += 25;
+      // Realtor company logo
+      var realtorLogoContainer = document.getElementById('flyer2-realtor-logo-container');
+      var realtorCompanyLogo = document.getElementById('flyer2-realtor-company-logo');
+      if (data.realtorLogo) {
+        realtorCompanyLogo.src = data.realtorLogo;
+        realtorLogoContainer.style.display = 'flex';
+      } else {
+        realtorLogoContainer.style.display = 'none';
+      }
 
-      // Contact Section Header
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.text('Contact Us', margin, yPos);
-      yPos += 25;
+      // Loan Officer info
+      document.getElementById('flyer2-lo-name').textContent = data.loName || 'Loan Officer';
+      document.getElementById('flyer2-lo-phone').textContent = formatPhoneNumber(data.loPhone);
+      document.getElementById('flyer2-lo-website').textContent = data.loWebsite || '';
+      document.getElementById('flyer2-lo-email').textContent = data.loEmail || '';
 
-      // Two column contact cards
-      var colWidth = (contentWidth - 20) / 2;
+      // LO photo
+      var loPhotoEl = document.getElementById('flyer2-lo-photo');
+      if (data.loPhoto) {
+        loPhotoEl.src = data.loPhoto;
+        loPhotoEl.style.display = 'block';
+      } else {
+        loPhotoEl.style.display = 'none';
+      }
 
-      // Realtor Card
-      doc.setFillColor(255, 255, 255);
-      doc.setDrawColor(230, 230, 230);
-      doc.roundedRect(margin, yPos, colWidth, 100, 5, 5, 'FD');
+      // NMLS
+      var nmlsEl = document.getElementById('flyer2-nmls');
+      if (data.loNmls) {
+        nmlsEl.textContent = 'NMLS #' + data.loNmls;
+      } else {
+        nmlsEl.textContent = '';
+      }
+    }
 
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.text(data.realtorName || 'Realtor', margin + 15, yPos + 25);
+    function generateFlyerPDF(data, btn) {
+      // Populate the template
+      populateFlyerTemplate(data);
 
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
-      doc.text(data.realtorTitle, margin + 15, yPos + 40);
-      if (data.realtorCompany) doc.text(data.realtorCompany, margin + 15, yPos + 53);
-      if (data.realtorPhone) doc.text(data.realtorPhone, margin + 15, yPos + 66);
-      if (data.realtorEmail) doc.text(data.realtorEmail, margin + 15, yPos + 79);
-      if (data.realtorLicense) doc.text(data.realtorLicense, margin + 15, yPos + 92);
+      var template = document.getElementById('flyer-template-2');
+      var content = document.getElementById('flyer-content-2');
 
-      // Loan Officer Card
-      var loX = margin + colWidth + 20;
-      doc.roundedRect(loX, yPos, colWidth, 100, 5, 5, 'FD');
+      // Make template visible for rendering
+      template.style.left = '0';
+      template.style.top = '0';
+      template.style.zIndex = '9999';
 
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(17, 153, 142);
-      doc.text(data.loName || 'Loan Officer', loX + 15, yPos + 25);
+      // Preload images
+      var photos = data.photos || [];
+      var imagesToPreload = [];
+      photos.forEach(function(photo) {
+        if (photo) imagesToPreload.push(photo);
+      });
+      if (data.realtorPhoto) imagesToPreload.push(data.realtorPhoto);
+      if (data.loPhoto) imagesToPreload.push(data.loPhoto);
+      if (data.realtorLogo) imagesToPreload.push(data.realtorLogo);
 
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
-      doc.text(data.loTitle, loX + 15, yPos + 40);
-      if (data.loCompany) doc.text(data.loCompany, loX + 15, yPos + 53);
-      if (data.loPhone) doc.text(data.loPhone, loX + 15, yPos + 66);
-      if (data.loEmail) doc.text(data.loEmail, loX + 15, yPos + 79);
-      if (data.loNmls) doc.text('NMLS# ' + data.loNmls, loX + 15, yPos + 92);
+      var preloadPromises = imagesToPreload.map(function(src) {
+        return new Promise(function(resolve) {
+          var img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = resolve;
+          img.onerror = resolve;
+          img.src = src;
+        });
+      });
 
-      yPos += 120;
+      Promise.all(preloadPromises).then(function() {
+        setTimeout(function() {
+          html2canvas(content, {
+            scale: 5,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            width: 612,
+            height: 792,
+            logging: false,
+            imageTimeout: 0,
+            onclone: function(clonedDoc) {
+              var imgs = clonedDoc.querySelectorAll('img');
+              imgs.forEach(function(img) {
+                img.style.imageRendering = 'auto';
+                img.setAttribute('crossorigin', 'anonymous');
+              });
+            }
+          }).then(function(canvas) {
+            // Hide template
+            template.style.left = '-9999px';
+            template.style.zIndex = 'auto';
 
-      // Website URL
-      doc.setFontSize(10);
-      doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
-      doc.text('View online: ' + data.pageUrl, margin, yPos);
+            // Create PDF
+            var jsPDF = window.jspdf.jsPDF;
+            var doc = new jsPDF('p', 'pt', 'letter');
+            var imgData = canvas.toDataURL('image/jpeg', 0.9);
+            doc.addImage(imgData, 'JPEG', 0, 0, 612, 792);
 
-      // Footer
-      doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.rect(0, pageHeight - 80, pageWidth, 80, 'F');
+            // Save
+            var filename = data.address.replace(/[^a-z0-9]/gi, '-').toLowerCase() + '-flyer.pdf';
+            doc.save(filename);
 
-      doc.setFontSize(7);
-      doc.setTextColor(255, 255, 255);
-      var disclaimer = 'Luminate Bank NMLS 1281698 Bank Headquarters 2523 S. Wayzata Blvd., Suite 100 Minneapolis, MN 55405 (952) 939-7200. This is not an offer to enter into an agreement. Information, rates and programs are subject to change without prior notice and may not be available in all states. All loans are subject to credit and property approval. Luminate Bank is not affiliated with any government agency. 2026 Luminate Bank. All rights reserved. Member FDIC. Equal Housing Opportunity Lender';
-      var disclaimerLines = doc.splitTextToSize(disclaimer, contentWidth);
-      doc.text(disclaimerLines, margin, pageHeight - 55);
-
-      // Save the PDF
-      var filename = data.address.replace(/[^a-z0-9]/gi, '-').toLowerCase() + '-flyer.pdf';
-      doc.save(filename);
-
-      // Reset button
-      btn.disabled = false;
-      btn.querySelector('span').textContent = 'Download Flyer';
+            // Reset button
+            btn.disabled = false;
+            btn.querySelector('span').textContent = 'Download Flyer';
+          }).catch(function(err) {
+            console.error('html2canvas error:', err);
+            template.style.left = '-9999px';
+            template.style.zIndex = 'auto';
+            btn.disabled = false;
+            btn.querySelector('span').textContent = 'Download Flyer';
+            alert('Error generating flyer. Please try again.');
+          });
+        }, 800);
+      });
     }
   </script>
   {{ standard_footer_includes }}
