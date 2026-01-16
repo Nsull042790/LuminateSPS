@@ -894,138 +894,7 @@
     return phone;
   }
 
-  // Populate Design 1 (Classic) template
-  function populateDesign1(p, r, lo, photos, priceNum, fullAddress) {
-    // Hero image
-    var heroImg = document.getElementById('flyer-hero-img');
-    if (photos.length > 0) {
-      heroImg.src = photos[0];
-      heroImg.style.display = 'block';
-    } else {
-      heroImg.style.display = 'none';
-    }
-
-    // Price
-    document.getElementById('flyer-price').textContent = '$' + priceNum.toLocaleString();
-
-    // Thumbnail images
-    var thumbIds = ['flyer-thumb-1', 'flyer-thumb-2', 'flyer-thumb-3'];
-    for (var i = 0; i < 3; i++) {
-      var thumbEl = document.getElementById(thumbIds[i]);
-      if (photos[i + 1]) {
-        thumbEl.src = photos[i + 1];
-        thumbEl.style.display = 'block';
-        thumbEl.parentElement.style.display = 'block';
-      } else {
-        thumbEl.style.display = 'none';
-        thumbEl.parentElement.style.display = 'none';
-      }
-    }
-
-    // Address and location
-    document.getElementById('flyer-address').textContent = fullAddress;
-    document.getElementById('flyer-city-state').textContent = p.city + ', ' + p.state + ' ' + p.zip;
-
-    // Stats
-    var bedsEl = document.getElementById('flyer-stat-beds');
-    var bathsEl = document.getElementById('flyer-stat-baths');
-    var sqftEl = document.getElementById('flyer-stat-sqft');
-    var yearEl = document.getElementById('flyer-stat-year');
-
-    if (p.bedrooms) {
-      bedsEl.querySelector('span:first-child').textContent = p.bedrooms;
-      bedsEl.style.display = 'flex';
-    } else {
-      bedsEl.style.display = 'none';
-    }
-
-    if (p.bathrooms) {
-      bathsEl.querySelector('span:first-child').textContent = p.bathrooms;
-      bathsEl.style.display = 'flex';
-    } else {
-      bathsEl.style.display = 'none';
-    }
-
-    if (p.sqft) {
-      var sqftNum = parseFloat(String(p.sqft).replace(/,/g, '')) || 0;
-      sqftEl.querySelector('span:first-child').textContent = sqftNum.toLocaleString();
-      sqftEl.style.display = 'flex';
-    } else {
-      sqftEl.style.display = 'none';
-    }
-
-    if (p.yearBuilt && p.yearBuilt !== '0' && p.yearBuilt !== 0) {
-      yearEl.querySelector('span:first-child').textContent = p.yearBuilt;
-      yearEl.style.display = 'flex';
-    } else {
-      yearEl.style.display = 'none';
-    }
-
-    // MLS
-    var mlsEl = document.getElementById('flyer-mls');
-    if (p.mlsNumber) {
-      mlsEl.textContent = 'MLS# ' + p.mlsNumber;
-      mlsEl.style.display = 'block';
-    } else {
-      mlsEl.style.display = 'none';
-    }
-
-    // Description
-    document.getElementById('flyer-description').textContent = p.description || '';
-
-    // Realtor info
-    document.getElementById('flyer-realtor-name').textContent = r.name || 'Realtor';
-    document.getElementById('flyer-realtor-title').textContent = r.title || 'Licensed Realtor';
-    document.getElementById('flyer-realtor-company').textContent = r.company || '';
-    document.getElementById('flyer-realtor-phone').textContent = formatPhoneNumber(r.phone);
-    document.getElementById('flyer-realtor-email').textContent = r.email || '';
-
-    // Realtor photo
-    var realtorPhotoEl = document.getElementById('flyer-realtor-photo');
-    if (r.photo) {
-      realtorPhotoEl.src = r.photo;
-      realtorPhotoEl.style.display = 'block';
-    } else {
-      realtorPhotoEl.style.display = 'none';
-    }
-
-    // Realtor company logo
-    var realtorLogoContainer = document.getElementById('flyer-realtor-logo-container');
-    var realtorCompanyLogo = document.getElementById('flyer-realtor-company-logo');
-    if (r.logo) {
-      realtorCompanyLogo.src = r.logo;
-      realtorLogoContainer.style.display = 'block';
-    } else {
-      realtorLogoContainer.style.display = 'none';
-    }
-
-    // Loan Officer info
-    document.getElementById('flyer-lo-name').textContent = lo.name || 'Loan Officer';
-    document.getElementById('flyer-lo-title').textContent = lo.title || 'Loan Officer';
-    document.getElementById('flyer-lo-company').textContent = lo.company || 'Luminate Bank';
-    document.getElementById('flyer-lo-phone').textContent = formatPhoneNumber(lo.phone);
-    document.getElementById('flyer-lo-email').textContent = lo.email || '';
-
-    // LO photo
-    var loPhotoEl = document.getElementById('flyer-lo-photo');
-    if (lo.photo) {
-      loPhotoEl.src = lo.photo;
-      loPhotoEl.style.display = 'block';
-    } else {
-      loPhotoEl.style.display = 'none';
-    }
-
-    // NMLS
-    var nmlsEl = document.getElementById('flyer-nmls');
-    if (lo.nmls) {
-      nmlsEl.textContent = 'NMLS #' + lo.nmls;
-      nmlsEl.style.display = 'block';
-    } else {
-      nmlsEl.style.display = 'none';
-    }
-  }
-
-  // Populate Design 2 (Modern) template
+  // Populate flyer template with property data
   function populateDesign2(p, r, lo, photos, priceNum, fullAddress) {
     // Hero image
     var heroImg = document.getElementById('flyer2-hero-img');
@@ -1133,23 +1002,10 @@
     var fullAddress = p.address + (address2Val ? ' ' + address2Val : '');
     var priceNum = parseFloat(String(p.price || 0).replace(/[$,]/g, '')) || 0;
 
-    // Get selected flyer design
-    var selectedDesign = document.querySelector('input[name="flyerDesign"]:checked');
-    var designChoice = selectedDesign ? selectedDesign.value : 'design1';
-
-    var template, content;
-
-    if (designChoice === 'design2') {
-      // Use Design 2 (Modern)
-      template = document.getElementById('flyer-template-2');
-      content = document.getElementById('flyer-content-2');
-      populateDesign2(p, r, lo, photos, priceNum, fullAddress);
-    } else {
-      // Use Design 1 (Classic)
-      template = document.getElementById('flyer-template');
-      content = document.getElementById('flyer-content');
-      populateDesign1(p, r, lo, photos, priceNum, fullAddress);
-    }
+    // Use Modern design template
+    var template = document.getElementById('flyer-template-2');
+    var content = document.getElementById('flyer-content-2');
+    populateDesign2(p, r, lo, photos, priceNum, fullAddress);
 
     // Make template visible for rendering (move to visible area temporarily)
     template.style.left = '0';
