@@ -1,4 +1,4 @@
-// Property Generator Module JavaScript v6.10 - HubDB Version
+// Property Generator Module JavaScript v7.1 - HubDB Version
 // Uses HubDB for data storage with dynamic pages
 // Fixed: Proper aspect ratio for all images, embedded Luminate logo for compliance
 (function() {
@@ -53,7 +53,7 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v6.10 (HubDB) initialized');
+    console.log('Property Generator v7.1 (HubDB) initialized');
 
     // Check for URL query parameters first (from HubSpot CRM integration)
     var urlParams = new URLSearchParams(window.location.search);
@@ -905,8 +905,20 @@
       heroImg.style.display = 'none';
     }
 
-    // Price
-    document.getElementById('flyer2-price').textContent = '$' + priceNum.toLocaleString();
+    // Price - dynamically adjust font size to fit on one line
+    var priceEl = document.getElementById('flyer2-price');
+    var formattedPrice = '$' + priceNum.toLocaleString();
+    priceEl.textContent = formattedPrice;
+
+    // Adjust font size based on price length to keep it on one line
+    var priceLength = formattedPrice.length;
+    var fontSize = 34; // default size
+    if (priceLength > 10) {
+      fontSize = 22; // $10,000,000+ (11+ chars)
+    } else if (priceLength > 8) {
+      fontSize = 26; // $1,000,000 - $9,999,999 (9-10 chars)
+    }
+    priceEl.style.fontSize = fontSize + 'px';
 
     // Thumbnail images
     var thumbIds = ['flyer2-thumb-1', 'flyer2-thumb-2', 'flyer2-thumb-3'];

@@ -850,8 +850,20 @@
         heroImg.style.display = 'none';
       }
 
-      // Price
-      document.getElementById('flyer2-price').textContent = '$' + priceNum.toLocaleString();
+      // Price - dynamically adjust font size to fit on one line
+      var priceEl = document.getElementById('flyer2-price');
+      var formattedPrice = '$' + priceNum.toLocaleString();
+      priceEl.textContent = formattedPrice;
+
+      // Adjust font size based on price length to keep it on one line
+      var priceLength = formattedPrice.length;
+      var fontSize = 34; // default size
+      if (priceLength > 10) {
+        fontSize = 22; // $10,000,000+ (11+ chars)
+      } else if (priceLength > 8) {
+        fontSize = 26; // $1,000,000 - $9,999,999 (9-10 chars)
+      }
+      priceEl.style.fontSize = fontSize + 'px';
 
       // Thumbnail images
       var thumbIds = ['flyer2-thumb-1', 'flyer2-thumb-2', 'flyer2-thumb-3'];
@@ -1036,7 +1048,7 @@
         'Property: ' + propertyAddress + '\n' +
         'Page: ' + pageUrl + '\n' +
         'Browser: ' + browser + '\n' +
-        'Version: v6.10\n' +
+        'Version: v7.1\n' +
         'Timestamp: ' + new Date().toISOString()
       );
       window.location.href = 'mailto:nicholas.sullivan@luminate.bank?subject=' + subject + '&body=' + body;
