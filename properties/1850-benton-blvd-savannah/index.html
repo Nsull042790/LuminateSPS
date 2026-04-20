@@ -192,6 +192,10 @@
             .qr-section { page-break-inside: avoid; }
             .footer { background: #1a1a2e !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             a[href]::after { content: none; }
+            /* Scale down large price values so 8+ figure prices fit on the flyer */
+            .price-tag { font-size: 1.6em; padding: 10px 25px; max-width: 100%; white-space: nowrap; }
+            .hero-content h1 { font-size: 2em; }
+            .hero-content p { font-size: 1em; }
         }
 
         /* Responsive */
@@ -620,6 +624,13 @@
 
                 var homePrice = parseFloat(homePriceInput.replace(/[$,]/g, '')) || 0;
                 var downPayment = parseFloat(downPaymentInput.replace(/[$,]/g, '')) || 0;
+
+                // Prevent down payment from exceeding home price (would cause negative loan)
+                if (downPayment > homePrice) {
+                    downPayment = homePrice;
+                    document.getElementById('down-payment').value = '$' + homePrice.toLocaleString();
+                }
+
                 var loanAmount = homePrice - downPayment;
 
                 if (loanAmount > 0 && interestRate > 0) {
@@ -631,6 +642,11 @@
                     document.getElementById('loan-amount').textContent = '$' + loanAmount.toLocaleString();
                     document.getElementById('total-interest').textContent = '$' + Math.round(totalInterest).toLocaleString();
                     document.getElementById('total-cost').textContent = '$' + Math.round(totalPayment).toLocaleString();
+                } else {
+                    document.getElementById('monthly-payment').textContent = '$0';
+                    document.getElementById('loan-amount').textContent = '$' + Math.max(loanAmount, 0).toLocaleString();
+                    document.getElementById('total-interest').textContent = '$0';
+                    document.getElementById('total-cost').textContent = '$0';
                 }
             }
 
