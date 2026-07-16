@@ -1,4 +1,4 @@
-// Property Generator Module JavaScript v7.1 - HubDB Version
+// Property Generator Module JavaScript v7.2 - HubDB Version
 // Uses HubDB for data storage with dynamic pages
 // Fixed: Proper aspect ratio for all images, embedded Luminate logo for compliance
 (function() {
@@ -53,7 +53,7 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v7.1 (HubDB) initialized');
+    console.log('Property Generator v7.2 (HubDB) initialized');
 
     // Check for URL query parameters first (from HubSpot CRM integration)
     var urlParams = new URLSearchParams(window.location.search);
@@ -1002,6 +1002,22 @@
     } else {
       nmlsEl.textContent = '';
     }
+
+    // QR code linking to the live property page.
+    // In edit mode the real slug is known; for new properties predict it
+    // using the same slug rules as the createprop serverless function.
+    var qrEl = document.getElementById('flyer2-qr');
+    if (qrEl) {
+      var slug = currentEditSlug;
+      if (!slug) {
+        slug = (p.address + (p.address_2 ? '-' + p.address_2 : '') + '-' + p.city)
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
+      }
+      var propertyUrl = window.location.origin + '/properties-1/' + slug;
+      qrEl.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=0&data=' + encodeURIComponent(propertyUrl);
+    }
   }
 
   // Generate the actual PDF flyer using HTML template + html2canvas
@@ -1035,6 +1051,9 @@
     if (lo.photo) imagesToPreload.push(lo.photo);
     // Realtor company logo
     if (r.logo) imagesToPreload.push(r.logo);
+    // QR code
+    var qrPreload = document.getElementById('flyer2-qr');
+    if (qrPreload && qrPreload.src) imagesToPreload.push(qrPreload.src);
 
     var preloadPromises = imagesToPreload.map(function(src) {
       return new Promise(function(resolve) {
@@ -1132,25 +1151,25 @@
     html += '<title>' + p.address + ', ' + p.city + '</title>';
     html += '<link rel="preconnect" href="https://fonts.googleapis.com">';
     html += '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>';
-    html += '<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">';
+    html += '<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">';
     html += '<style>';
     html += '* { margin: 0; padding: 0; box-sizing: border-box; }';
     html += 'body { font-family: "Josefin Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.6; color: #333; }';
     html += 'h1, h2, h3 { font-family: "Poppins", sans-serif; font-weight: 700; }';
     html += '.hero { position: relative; height: 70vh; background: url("' + heroImage + '") center/cover; }';
-    html += '.hero-overlay { position: absolute; inset: 0; background: linear-gradient(transparent 40%, rgba(13,23,60,0.9)); display: flex; align-items: flex-end; padding: 40px; }';
+    html += '.hero-overlay { position: absolute; inset: 0; background: linear-gradient(transparent 40%, rgba(12,23,61,0.77)); display: flex; align-items: flex-end; padding: 40px; }';
     html += '.hero-content { color: white; max-width: 900px; }';
     html += '.hero h1 { font-size: 2.8em; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }';
     html += '.hero .location { font-size: 1.2em; opacity: 0.9; }';
-    html += '.hero .price { font-size: 2.5em; color: #96daf8; font-weight: bold; margin-top: 15px; }';
+    html += '.hero .price { font-size: 2.5em; color: #90E1FF; font-weight: bold; margin-top: 15px; }';
     html += '.stats { display: flex; gap: 40px; margin-top: 25px; }';
     html += '.stat { text-align: center; }';
     html += '.stat-value { font-size: 1.8em; font-weight: bold; }';
     html += '.stat-label { font-size: 0.9em; opacity: 0.8; }';
     html += '.section { padding: 60px 40px; max-width: 1200px; margin: 0 auto; }';
-    html += '.section-dark { background: #f7fafc; }';
-    html += '.section-title { font-size: 2em; color: #0d173c; margin-bottom: 30px; display: flex; align-items: center; gap: 15px; }';
-    html += '.section-title:before { content: ""; display: block; width: 5px; height: 35px; background: linear-gradient(135deg, #0d173c, #96daf8); border-radius: 3px; }';
+    html += '.section-dark { background-color: #f7fafc; background-image: radial-gradient(rgba(12,23,61,0.05) 1.5px, transparent 1.5px); background-size: 18px 18px; }';
+    html += '.section-title { font-size: 2em; color: #0C173D; margin-bottom: 30px; display: flex; align-items: center; gap: 15px; }';
+    html += '.section-title:before { content: ""; display: block; width: 5px; height: 35px; background: linear-gradient(135deg, #90E1FF 0%, #AE7BFE 55%, #DF8FE1 100%); border-radius: 3px; }';
     html += '.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }';
     html += '.gallery-item { overflow: hidden; border-radius: 12px; }';
     html += '.gallery-item img { width: 100%; height: 250px; object-fit: cover; }';
@@ -1159,23 +1178,23 @@
     html += '.features-list li { padding: 10px 0; font-size: 1.05em; }';
     html += '.contacts { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; }';
     html += '.contact-card { background: white; border-radius: 16px; padding: 30px; display: flex; gap: 25px; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }';
-    html += '.contact-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #96daf8; }';
-    html += '.contact-placeholder { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #0d173c, #96daf8); display: flex; align-items: center; justify-content: center; font-size: 2.5em; color: white; }';
-    html += '.contact-placeholder.lo { background: linear-gradient(135deg, #11998e, #38ef7d); }';
-    html += '.contact-info h3 { color: #0d173c; font-size: 1.3em; margin-bottom: 5px; }';
-    html += '.contact-info .title { color: #0d173c; font-weight: 600; margin-bottom: 10px; }';
+    html += '.contact-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #90E1FF; }';
+    html += '.contact-placeholder { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #0C173D, #90E1FF); display: flex; align-items: center; justify-content: center; font-size: 2.5em; color: white; }';
+    html += '.contact-placeholder.lo { background: linear-gradient(135deg, #0C173D, #AE7BFE); }';
+    html += '.contact-info h3 { color: #0C173D; font-size: 1.3em; margin-bottom: 5px; }';
+    html += '.contact-info .title { color: #0C173D; font-weight: 600; margin-bottom: 10px; }';
     html += '.contact-info p { color: #718096; font-size: 0.95em; margin: 5px 0; }';
     html += '.calculator { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); max-width: 500px; }';
     html += '.calc-input { display: flex; flex-direction: column; margin-bottom: 20px; }';
     html += '.calc-input label { font-weight: 600; margin-bottom: 8px; color: #4a5568; }';
     html += '.calc-input input { padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1em; }';
-    html += '.calc-result { background: linear-gradient(135deg, #0d173c, #1a2a5e); color: white; padding: 25px; border-radius: 12px; text-align: center; margin-top: 20px; }';
-    html += '.calc-result .amount { font-size: 2.5em; font-weight: bold; color: #96daf8; }';
+    html += '.calc-result { background: linear-gradient(135deg, #0C173D, #1a2a5e); color: white; padding: 25px; border-radius: 12px; text-align: center; margin-top: 20px; }';
+    html += '.calc-result .amount { font-size: 2.5em; font-weight: bold; color: #90E1FF; }';
     html += '.calc-result .label { opacity: 0.9; margin-top: 5px; }';
-    html += '.footer { background: #0d173c; color: white; padding: 40px; text-align: center; }';
+    html += '.footer { background: #0C173D; color: white; padding: 40px; text-align: center; }';
     html += '.footer p { margin: 5px 0; }';
     html += '.footer .disclaimer { font-size: 0.85em; opacity: 0.7; margin-top: 20px; }';
-    html += '.preview-banner { background: #0d173c; color: #96daf8; padding: 12px; text-align: center; font-weight: bold; position: sticky; top: 0; z-index: 100; }';
+    html += '.preview-banner { background: #0C173D; color: #90E1FF; padding: 12px; text-align: center; font-weight: bold; position: sticky; top: 0; z-index: 100; }';
     html += '</style></head><body>';
 
     html += '<div class="preview-banner">PREVIEW - This is how your property site will look</div>';
@@ -1243,11 +1262,11 @@
     // Loan Officer Card
     html += '<div class="contact-card">';
     if (lo.photo) {
-      html += '<img src="' + lo.photo + '" class="contact-photo" style="border-color:#11998e;">';
+      html += '<img src="' + lo.photo + '" class="contact-photo" style="border-color:#AE7BFE;">';
     } else {
       html += '<div class="contact-placeholder lo">&#128100;</div>';
     }
-    html += '<div class="contact-info"><h3>' + lo.name + '</h3><p class="title" style="color:#11998e;">' + lo.title + '</p>';
+    html += '<div class="contact-info"><h3>' + lo.name + '</h3><p class="title">' + lo.title + '</p>';
     if (lo.company) html += '<p>' + lo.company + '</p>';
     if (lo.phone) html += '<p>&#128222; ' + lo.phone + '</p>';
     if (lo.email) html += '<p>&#9993; ' + lo.email + '</p>';
@@ -1259,7 +1278,8 @@
     html += '<footer class="footer">';
     html += '<p>&copy; ' + new Date().getFullYear() + ' ' + (r.company || 'Real Estate') + ' & ' + (lo.company || 'Mortgage Services') + '</p>';
     if (p.mlsNumber) html += '<p style="margin-top:10px;">MLS# ' + p.mlsNumber + '</p>';
-    html += '<p class="disclaimer">Equal Housing Opportunity. This is not a commitment to lend.</p>';
+    html += '<img src="https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/member-fdic-equal-housing-lender1-WHT.png" alt="Member FDIC | Equal Housing Lender" style="height:32px;width:auto;margin-top:20px;">';
+    html += '<p class="disclaimer">Equal Housing Opportunity. This is not a commitment to lend. Member FDIC.</p>';
     html += '</footer>';
 
     // Calculator Script

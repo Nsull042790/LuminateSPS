@@ -3,7 +3,7 @@
   label: Property Detail Page
   screenshotPath: ../images/template-preview.png
   isAvailableForNewContent: true
-  version: 6.9
+  version: 7.2
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -49,12 +49,22 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* Luminate Bank brand tokens (Brand Guidelines 2025) */
+    :root {
+      --lumi-navy: #0C173D;
+      --lumi-navy-soft: #1a2a5e;
+      --brilliant-blue: #90E1FF;
+      --radiant-pink: #DF8FE1;
+      --luminous-lavender: #AE7BFE;
+      --brighter-yellow: #FFD158;
+      --lumi-gradient: linear-gradient(135deg, #90E1FF 0%, #AE7BFE 55%, #DF8FE1 100%);
+    }
     body { font-family: 'Josefin Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.6; color: #333; }
-    h1, h2, h3 { font-family: 'Poppins', sans-serif; font-weight: 700; }
+    h1, h2, h3 { font-family: 'Poppins', sans-serif; font-weight: 700; line-height: 1.3; }
 
     /* Hero Section */
     .hero {
@@ -63,11 +73,11 @@
       {% if hero_image %}
       background: url("{{ hero_image }}") center/cover;
       {% else %}
-      background: linear-gradient(135deg, #0d173c 0%, #1a365d 50%, #2c5282 100%);
+      background: linear-gradient(135deg, #0C173D 0%, #1a2a5e 60%, #35508a 100%);
       {% endif %}
     }
     .hero.no-photo .hero-overlay {
-      background: linear-gradient(transparent 20%, rgba(0,0,0,0.7));
+      background: linear-gradient(rgba(12,23,61,0) 20%, rgba(12,23,61,0.77));
     }
     .hero-placeholder-text {
       position: absolute;
@@ -83,15 +93,15 @@
     .hero-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(transparent 40%, rgba(0,0,0,0.85));
+      background: linear-gradient(rgba(12,23,61,0) 35%, rgba(12,23,61,0.77));
       display: flex;
       align-items: flex-end;
       padding: 40px;
     }
     .hero-content { color: white; max-width: 900px; }
-    .hero h1 { font-size: 2.8em; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-    .hero .location { font-size: 1.2em; opacity: 0.9; }
-    .hero .price { font-size: 2.5em; color: #96daf8; font-weight: bold; margin-top: 15px; }
+    .hero h1 { font-size: 2.8em; font-weight: 800; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(12,23,61,0.35); }
+    .hero .location { font-size: 1.2em; opacity: 0.9; font-weight: 300; letter-spacing: 0.04em; }
+    .hero .price { font-family: 'Poppins', sans-serif; font-size: 2.5em; color: #90E1FF; font-weight: 700; margin-top: 15px; }
     .stats { display: flex; gap: 40px; margin-top: 25px; }
     .stat { text-align: center; }
     .stat-value { font-size: 1.8em; font-weight: bold; }
@@ -126,22 +136,27 @@
       cursor: pointer;
       border: none;
     }
-    .share-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-    .share-btn-facebook { background: #0d173c; color: white; }
-    .share-btn-twitter { background: #0d173c; color: white; }
-    .share-btn-linkedin { background: #96daf8; color: #0d173c; }
-    .share-btn-email { background: #d4a5c9; color: #0d173c; }
-    .share-btn-sms { background: #9b8dc9; color: white; }
-    .share-btn-copy { background: #0d173c; color: white; }
-    .share-btn-flyer { background: #f5c86e; color: white; }
+    .share-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(12,23,61,0.2); }
+    .share-btn-facebook { background: #0C173D; color: white; }
+    .share-btn-twitter { background: #0C173D; color: white; }
+    .share-btn-linkedin { background: #0C173D; color: white; }
+    .share-btn-email { background: #0C173D; color: white; }
+    .share-btn-sms { background: #0C173D; color: white; }
+    .share-btn-copy { background: #90E1FF; color: #0C173D; }
+    .share-btn-flyer { background: #FFD158; color: #0C173D; }
     .share-btn svg { width: 18px; height: 18px; fill: currentColor; }
 
     /* Sections */
     .section { padding: 60px 40px; max-width: 1200px; margin: 0 auto; }
-    .section-dark { background: #f7fafc; }
+    /* Luminate dot pattern accent - navy on light at 5% opacity */
+    .section-dark {
+      background-color: #f7fafc;
+      background-image: radial-gradient(rgba(12,23,61,0.05) 1.5px, transparent 1.5px);
+      background-size: 18px 18px;
+    }
     .section-title {
       font-size: 2em;
-      color: #0d173c;
+      color: #0C173D;
       margin-bottom: 30px;
       display: flex;
       align-items: center;
@@ -152,7 +167,7 @@
       display: block;
       width: 5px;
       height: 35px;
-      background: linear-gradient(135deg, #0d173c, #96daf8);
+      background: var(--lumi-gradient);
       border-radius: 3px;
     }
 
@@ -164,7 +179,7 @@
 
     /* Open House Banner */
     .open-house-banner {
-      background: linear-gradient(135deg, #f5c86e 0%, #f0b849 100%);
+      background: linear-gradient(135deg, #FFD158 0%, #f7c93e 100%);
       padding: 20px 40px;
     }
     .open-house-content {
@@ -184,10 +199,10 @@
     }
     .open-house-text strong {
       font-size: 1.2em;
-      color: #0d173c;
+      color: #0C173D;
     }
     .open-house-text span {
-      color: #0d173c;
+      color: #0C173D;
       font-size: 1em;
     }
 
@@ -212,24 +227,24 @@
       height: 100px;
       border-radius: 50%;
       object-fit: cover;
-      border: 4px solid #96daf8;
+      border: 4px solid #90E1FF;
     }
     .contact-photo-placeholder {
       width: 100px;
       height: 100px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #0d173c, #96daf8);
+      background: linear-gradient(135deg, #0C173D, #90E1FF);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 2.5em;
       color: white;
     }
-    .contact-photo-placeholder.lo { background: linear-gradient(135deg, #11998e, #38ef7d); }
-    .contact-info h3 { color: #0d173c; font-size: 1.3em; margin-bottom: 5px; }
-    .contact-info .title { color: #0d173c; font-weight: 600; margin-bottom: 10px; }
+    .contact-photo-placeholder.lo { background: linear-gradient(135deg, #0C173D, #AE7BFE); }
+    .contact-info h3 { color: #0C173D; font-size: 1.3em; margin-bottom: 5px; }
+    .contact-info .title { color: #0C173D; font-weight: 600; margin-bottom: 10px; }
     .contact-info p { color: #718096; font-size: 0.95em; margin: 5px 0; }
-    .contact-info a { color: #0d173c; text-decoration: none; }
+    .contact-info a { color: #0C173D; text-decoration: none; }
     .contact-info a:hover { text-decoration: underline; }
 
     /* Calculator */
@@ -244,14 +259,14 @@
     .calc-input label { font-weight: 600; margin-bottom: 8px; color: #4a5568; }
     .calc-input input { padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1em; }
     .calc-result {
-      background: linear-gradient(135deg, #0d173c, #96daf8);
+      background: linear-gradient(135deg, #0C173D, #1a2a5e);
       color: white;
       padding: 25px;
       border-radius: 12px;
       text-align: center;
       margin-top: 20px;
     }
-    .calc-result .amount { font-size: 2.5em; font-weight: bold; }
+    .calc-result .amount { font-family: 'Poppins', sans-serif; font-size: 2.5em; font-weight: 700; color: #90E1FF; }
     .calc-result .label { opacity: 0.9; margin-top: 5px; }
 
     /* Inquiry Form */
@@ -280,11 +295,11 @@
     }
     .inquiry-form-container input:focus,
     .inquiry-form-container textarea:focus {
-      border-color: #96daf8;
+      border-color: #90E1FF;
       outline: none;
     }
     .inquiry-form-container .hs-button {
-      background: linear-gradient(135deg, #0d173c, #1a2a5e);
+      background: #0C173D;
       color: white;
       border: none;
       padding: 14px 30px;
@@ -292,15 +307,25 @@
       font-size: 1em;
       font-weight: 600;
       cursor: pointer;
+      position: relative;
       transition: transform 0.2s, box-shadow 0.2s;
+    }
+    /* Signature gradient underline on the primary CTA */
+    .inquiry-form-container .hs-button:after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 4px;
+      border-radius: 0 0 8px 8px;
+      background: var(--lumi-gradient);
     }
     .inquiry-form-container .hs-button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(13,23,60,0.3);
+      box-shadow: 0 4px 12px rgba(12,23,61,0.3);
     }
 
     /* Footer */
-    .footer { background: #0d173c; color: white; padding: 40px; text-align: center; }
+    .footer { background: #0C173D; color: white; padding: 40px; text-align: center; }
     .footer p { margin: 5px 0; }
     .footer .disclaimer { font-size: 0.85em; opacity: 0.7; margin-top: 20px; }
 
@@ -327,7 +352,7 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background: #0d173c;
+      background: #0C173D;
       color: white;
       padding: 12px 24px;
       border-radius: 8px;
@@ -485,26 +510,26 @@
     <div style="display: flex; gap: 30px; flex-wrap: wrap; margin-bottom: 30px;">
       {% if row.walk_score %}
       <div style="text-align: center; padding: 20px 30px; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
-        <div style="font-size: 2.5em; font-weight: bold; color: #0d173c;">{{ row.walk_score }}</div>
+        <div style="font-size: 2.5em; font-weight: bold; color: #0C173D;">{{ row.walk_score }}</div>
         <div style="color: #718096; font-size: 0.9em;">Walk Score</div>
       </div>
       {% endif %}
       {% if row.transit_score %}
       <div style="text-align: center; padding: 20px 30px; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
-        <div style="font-size: 2.5em; font-weight: bold; color: #0d173c;">{{ row.transit_score }}</div>
+        <div style="font-size: 2.5em; font-weight: bold; color: #0C173D;">{{ row.transit_score }}</div>
         <div style="color: #718096; font-size: 0.9em;">Transit Score</div>
       </div>
       {% endif %}
       {% if row.bike_score %}
       <div style="text-align: center; padding: 20px 30px; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
-        <div style="font-size: 2.5em; font-weight: bold; color: #0d173c;">{{ row.bike_score }}</div>
+        <div style="font-size: 2.5em; font-weight: bold; color: #0C173D;">{{ row.bike_score }}</div>
         <div style="color: #718096; font-size: 0.9em;">Bike Score</div>
       </div>
       {% endif %}
     </div>
     {% if row.amenities %}
     <div>
-      <h3 style="color: #0d173c; margin-bottom: 15px;">Nearby Amenities</h3>
+      <h3 style="color: #0C173D; margin-bottom: 15px;">Nearby Amenities</h3>
       <p style="color: #4a5568; line-height: 1.8;">{{ row.amenities }}</p>
     </div>
     {% endif %}
@@ -578,13 +603,13 @@
       <!-- Loan Officer Card -->
       <div class="contact-card">
         {% if row.lo_photo %}
-        <img src="{{ row.lo_photo }}" alt="{{ row.lo_name }}" class="contact-photo" style="border-color:#11998e;">
+        <img src="{{ row.lo_photo }}" alt="{{ row.lo_name }}" class="contact-photo" style="border-color:#AE7BFE;">
         {% else %}
         <div class="contact-photo-placeholder lo">&#128100;</div>
         {% endif %}
         <div class="contact-info">
           <h3>{{ row.lo_name }}</h3>
-          <p class="title" style="color:#11998e;">{{ row.lo_title|default('Loan Officer') }}</p>
+          <p class="title">{{ row.lo_title|default('Loan Officer') }}</p>
           {% if row.lo_company %}<p>{{ row.lo_company }}</p>{% endif %}
           {% if row.lo_phone %}<p>&#128222; <a href="tel:{{ row.lo_phone }}">{{ row.lo_phone }}</a></p>{% endif %}
           {% if row.lo_email %}<p>&#9993; <a href="mailto:{{ row.lo_email }}">{{ row.lo_email }}</a></p>{% endif %}
@@ -599,6 +624,7 @@
   <footer class="footer">
     <p>&copy; {{ year }} {{ row.realtor_company|default('Real Estate') }} & {{ row.lo_company|default('Mortgage Services') }}</p>
     {% if row.mls_number %}<p style="margin-top:10px;">MLS# {{ row.mls_number }}</p>{% endif %}
+    <img src="https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/member-fdic-equal-housing-lender1-WHT.png" alt="Member FDIC | Equal Housing Lender" style="height: 32px; width: auto; margin-top: 20px;">
     <p class="disclaimer" style="margin-top:20px; font-size:0.75em; line-height:1.5;">Luminate Bank NMLS 1281698 Bank Headquarters 2523 S. Wayzata Blvd., Suite 100 Minneapolis, MN 55405 (952) 939-7200. This is not an offer to enter into an agreement. Any information provided outlining minimum down payment requirements that are allowed by specific loan program and product guidelines. Information, rates and programs are subject to change without prior notice and may not be available in all states. All loans are subject to credit and property approval. Luminate Bank is not affiliated with any government agency. 2026 Luminate Bank. All rights reserved. Member FDIC. Equal Housing Opportunity Lender</p>
   </footer>
 
@@ -681,14 +707,14 @@
       <!-- Hero Section -->
       <div style="display: flex; height: 270px; width: 100%; flex-shrink: 0;">
         <div style="width: 190px; min-width: 190px; background: #ffffff; display: flex; flex-direction: column;">
-          <div style="background: #0d173c; padding: 15px; display: flex; justify-content: center; align-items: center; height: 90px;">
+          <div style="background: #0C173D; padding: 15px; display: flex; justify-content: center; align-items: center; height: 90px;">
             <img src="https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/Luminatebank_PrimaryLogo_White_Gradient.png" style="width: 150px; height: auto;" crossorigin="anonymous" />
           </div>
           <div id="flyer2-realtor-logo-container" style="background: #ffffff; padding: 15px 12px; display: flex; align-items: center; justify-content: center; height: 90px;">
             <img id="flyer2-realtor-company-logo" src="" style="max-width: 140px; max-height: 70px; width: auto; height: auto;" crossorigin="anonymous" />
           </div>
-          <div style="background: #0d173c; padding: 12px 10px; margin-top: auto;">
-            <div id="flyer2-price" style="font-family: 'Poppins', sans-serif; font-size: 34px; font-weight: 700; color: #96daf8; text-align: center;">$600,000</div>
+          <div style="background: #0C173D; padding: 12px 10px; margin-top: auto;">
+            <div id="flyer2-price" style="font-family: 'Poppins', sans-serif; font-size: 34px; font-weight: 700; color: #90E1FF; text-align: center;">$600,000</div>
           </div>
         </div>
         <div style="flex: 1; overflow: hidden; position: relative; background: #cccccc;">
@@ -698,21 +724,21 @@
       <!-- White Gap -->
       <div style="height: 10px; background: #ffffff; flex-shrink: 0;"></div>
       <!-- Thumbnails Section -->
-      <div style="display: flex; height: 130px; background: #0d173c; padding: 15px 20px; gap: 15px; justify-content: center; flex-shrink: 0;">
+      <div style="display: flex; height: 130px; background: #0C173D; padding: 15px 20px; gap: 15px; justify-content: center; flex-shrink: 0;">
         <div style="position: relative; width: 180px; height: 100px;">
-          <div style="position: absolute; top: 6px; left: 6px; width: 100%; height: 100%; background: #96daf8; border-radius: 12px;"></div>
+          <div style="position: absolute; top: 6px; left: 6px; width: 100%; height: 100%; background: #90E1FF; border-radius: 12px;"></div>
           <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; overflow: hidden; background: #cccccc;">
             <img id="flyer2-thumb-1" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
           </div>
         </div>
         <div style="position: relative; width: 180px; height: 100px;">
-          <div style="position: absolute; top: 6px; left: 6px; width: 100%; height: 100%; background: #96daf8; border-radius: 12px;"></div>
+          <div style="position: absolute; top: 6px; left: 6px; width: 100%; height: 100%; background: #90E1FF; border-radius: 12px;"></div>
           <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; overflow: hidden; background: #cccccc;">
             <img id="flyer2-thumb-2" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
           </div>
         </div>
         <div style="position: relative; width: 180px; height: 100px;">
-          <div style="position: absolute; top: 6px; left: 6px; width: 100%; height: 100%; background: #96daf8; border-radius: 12px;"></div>
+          <div style="position: absolute; top: 6px; left: 6px; width: 100%; height: 100%; background: #90E1FF; border-radius: 12px;"></div>
           <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; overflow: hidden; background: #cccccc;">
             <img id="flyer2-thumb-3" src="" style="width: 100%; height: auto; min-height: 100%; display: block;" crossorigin="anonymous" />
           </div>
@@ -720,10 +746,10 @@
       </div>
       <!-- Property Details Section -->
       <div style="display: flex; padding: 8px 20px 6px 0; gap: 15px; background: #ffffff; flex-shrink: 0;">
-        <div style="width: 175px; min-width: 175px; background: #96daf8; border-radius: 0 8px 8px 0; padding: 8px 15px 8px 20px;">
-          <div id="flyer2-address" style="font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 700; color: #0d173c; line-height: 1.2;">123 Main St</div>
-          <div id="flyer2-city-state" style="font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: #0d173c; line-height: 1.2; margin-bottom: 10px; white-space: nowrap;">City, ST 12345</div>
-          <div style="font-family: 'Josefin Sans', sans-serif; font-size: 13px; color: #0d173c; line-height: 1.6;">
+        <div style="width: 175px; min-width: 175px; background: #90E1FF; border-radius: 0 8px 8px 0; padding: 8px 15px 8px 20px;">
+          <div id="flyer2-address" style="font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 700; color: #0C173D; line-height: 1.2;">123 Main St</div>
+          <div id="flyer2-city-state" style="font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: #0C173D; line-height: 1.2; margin-bottom: 10px; white-space: nowrap;">City, ST 12345</div>
+          <div style="font-family: 'Josefin Sans', sans-serif; font-size: 13px; color: #0C173D; line-height: 1.6;">
             <span id="flyer2-bedrooms">3</span> Bedrooms<br>
             <span id="flyer2-bathrooms">2</span> Bath<br>
             <span id="flyer2-sqft">2,500</span> Sq Ft<br>
@@ -735,7 +761,7 @@
         </div>
       </div>
       <!-- Agents Section + Footer -->
-      <div style="background: #0d173c; flex: 1; display: flex; flex-direction: column;">
+      <div style="background: #0C173D; flex: 1; display: flex; flex-direction: column;">
         <!-- Contact Cards -->
         <div style="display: flex; padding: 12px 20px; gap: 20px;">
           <!-- Loan Officer Card -->
@@ -748,17 +774,24 @@
             </div>
             <div style="display: flex; flex-direction: column; gap: 0px;">
               <div id="flyer2-lo-name" style="font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: #ffffff; margin-bottom: 1px;">Loan Officer Name</div>
-              <div style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; font-weight: 600; color: #96daf8; margin-bottom: 1px;">Luminate Bank</div>
+              <div style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; font-weight: 600; color: #90E1FF; margin-bottom: 1px;">Luminate Bank</div>
               <div id="flyer2-lo-phone" style="font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff; line-height: 1.4;">Phone</div>
               <div id="flyer2-lo-website" style="font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff; line-height: 1.4;">Website</div>
               <div id="flyer2-lo-email" style="font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff; line-height: 1.4;">Email</div>
             </div>
           </div>
+          <!-- QR Code - scan to view the live property site -->
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; flex-shrink: 0;">
+            <div style="background: #ffffff; border-radius: 8px; padding: 5px; width: 78px; height: 78px;">
+              <img id="flyer2-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=0&data={{ request.full_url|urlencode }}" style="width: 68px; height: 68px; display: block;" crossorigin="anonymous" />
+            </div>
+            <div style="font-family: 'Josefin Sans', sans-serif; font-size: 8px; font-weight: 600; color: #90E1FF; margin-top: 4px; text-align: center;">SCAN FOR FULL LISTING</div>
+          </div>
           <!-- Realtor Card -->
           <div style="display: flex; align-items: flex-start; gap: 10px; flex: 1; justify-content: flex-end;">
             <div style="display: flex; flex-direction: column; gap: 0px; text-align: right;">
               <div id="flyer2-realtor-name" style="font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: #ffffff; margin-bottom: 1px;">Realtor Name</div>
-              <div id="flyer2-realtor-company" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; font-weight: 600; color: #96daf8; margin-bottom: 1px;">Company</div>
+              <div id="flyer2-realtor-company" style="font-family: 'Josefin Sans', sans-serif; font-size: 10px; font-weight: 600; color: #90E1FF; margin-bottom: 1px;">Company</div>
               <div id="flyer2-realtor-phone" style="font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff; line-height: 1.4;">Phone</div>
               <div id="flyer2-realtor-website" style="font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff; line-height: 1.4;">Website</div>
               <div id="flyer2-realtor-email" style="font-family: 'Josefin Sans', sans-serif; font-size: 9px; color: #ffffff; line-height: 1.4;">Email</div>
@@ -970,6 +1003,8 @@
       if (data.realtorPhoto) imagesToPreload.push(data.realtorPhoto);
       if (data.loPhoto) imagesToPreload.push(data.loPhoto);
       if (data.realtorLogo) imagesToPreload.push(data.realtorLogo);
+      var qrImg = document.getElementById('flyer2-qr');
+      if (qrImg && qrImg.src) imagesToPreload.push(qrImg.src);
 
       var preloadPromises = imagesToPreload.map(function(src) {
         return new Promise(function(resolve) {
@@ -1031,7 +1066,7 @@
   </script>
 
   <!-- Floating Feedback Button -->
-  <a href="#" id="feedback-btn" title="Report an issue" style="position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #0d173c, #1a2a5e); color: white; padding: 12px 18px; border-radius: 50px; text-decoration: none; font-family: 'Josefin Sans', sans-serif; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(13, 23, 60, 0.4); transition: all 0.3s ease; z-index: 9999;">
+  <a href="#" id="feedback-btn" title="Report an issue" style="position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #0C173D, #1a2a5e); color: white; padding: 12px 18px; border-radius: 50px; text-decoration: none; font-family: 'Josefin Sans', sans-serif; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(13, 23, 60, 0.4); transition: all 0.3s ease; z-index: 9999;">
     <span style="font-size: 18px;">🐛</span>
     <span>Report Issue</span>
   </a>
@@ -1048,7 +1083,7 @@
         'Property: ' + propertyAddress + '\n' +
         'Page: ' + pageUrl + '\n' +
         'Browser: ' + browser + '\n' +
-        'Version: v7.1\n' +
+        'Version: v7.2\n' +
         'Timestamp: ' + new Date().toISOString()
       );
       window.location.href = 'mailto:nicholas.sullivan@luminate.bank?subject=' + subject + '&body=' + body;

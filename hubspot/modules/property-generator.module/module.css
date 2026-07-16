@@ -37,10 +37,10 @@ main,
 }
 
 .property-generator {
-  --primary: #0d173c;
+  --primary: #0C173D;
   --primary-light: #1a2a5e;
   margin-top: 0 !important;
-  --accent: #96daf8;
+  --accent: #90E1FF;
   --success: #10b981;
   --error: #ef4444;
   --gray-100: #f7fafc;
@@ -242,7 +242,7 @@ main,
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), #764ba2);
+  background: linear-gradient(135deg, #90E1FF, #AE7BFE);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -254,7 +254,7 @@ main,
 }
 
 .pg-avatar.loan-officer {
-  background: linear-gradient(135deg, #11998e, #38ef7d);
+  background: linear-gradient(135deg, #0C173D, #AE7BFE);
 }
 
 .pg-avatar img {
@@ -392,13 +392,13 @@ main,
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent), #764ba2);
-  color: white;
+  background: linear-gradient(135deg, #90E1FF, #AE7BFE);
+  color: #0C173D;
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 15px rgba(174, 123, 254, 0.4);
 }
 
 .btn-secondary {
@@ -631,16 +631,16 @@ main,
 
 /* Edit mode button styling */
 .btn-primary.edit-mode {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+  background: linear-gradient(135deg, #FFD158, #f0be32);
 }
 
 .btn-primary.edit-mode:hover {
-  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+  box-shadow: 0 4px 15px rgba(255, 209, 88, 0.4);
 }
 
 /* Flyer download button */
 .btn-flyer {
-  background: linear-gradient(135deg, #0d173c, #1a365d);
+  background: linear-gradient(135deg, #0C173D, #1a365d);
   color: white;
 }
 
@@ -785,7 +785,7 @@ main,
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background: linear-gradient(135deg, #0d173c, #1a2a5e);
+  background: linear-gradient(135deg, #0C173D, #1a2a5e);
   color: white;
   padding: 12px 18px;
   border-radius: 50px;
