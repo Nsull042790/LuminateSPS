@@ -1,0 +1,27 @@
+{
+  "config": {
+    "auth": {
+      "type": "static",
+      "optionalScopes": [],
+      "requiredScopes": [
+        "files",
+        "hubdb",
+        "crm.objects.contacts.write",
+        "crm.objects.contacts.read",
+        "settings.users.read"
+      ],
+      "conditionallyRequiredScopes": []
+    },
+    "name": "Property Generator",
+    "description": "Create property listing pages for real estate",
+    "isUserLevel": false,
+    "distribution": "PRIVATE",
+    "permittedUrls": {
+      "img": [],
+      "fetch": [],
+      "iframe": []
+    }
+  },
+  "uid": "PropertyGeneratorApp",
+  "type": "app"
+}

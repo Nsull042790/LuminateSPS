@@ -1,0 +1,12 @@
+{
+  "config": {
+    "name": "Property Generator",
+    "location": "crm.record.sidebar",
+    "entrypoint": "/app/cards/PropertyGeneratorCard.jsx",
+    "objectTypes": [
+      "contacts"
+    ]
+  },
+  "uid": "PropertyGeneratorCard",
+  "type": "card"
+}
