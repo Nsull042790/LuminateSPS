@@ -1,4 +1,4 @@
-// Property Generator Module JavaScript v7.1 - HubDB Version
+// Property Generator Module JavaScript v8.0 - HubDB Version
 // Uses HubDB for data storage with dynamic pages
 // Fixed: Proper aspect ratio for all images, embedded Luminate logo for compliance
 (function() {
@@ -53,7 +53,7 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v7.1 (HubDB) initialized');
+    console.log('Property Generator v8.0 (HubDB) initialized');
 
     // Check for URL query parameters first (from HubSpot CRM integration)
     var urlParams = new URLSearchParams(window.location.search);
@@ -744,14 +744,14 @@
     // Add Luminate Bank logo (white version for dark blue LO card)
     imagesToLoad.push({
       key: 'luminateLogo',
-      url: 'https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/Luminatebank_PrimaryLogo_White_Gradient.png',
+      url: 'https://242109586.fs1.hubspotusercontent-na2.net/hubfs/242109586/Luminatebank_PrimaryLogo_White_Gradient.png',
       keepTransparent: true
     });
 
     // Add FDIC/Equal Housing Lender logo for footer
     imagesToLoad.push({
       key: 'fdicLogo',
-      url: 'https://244637957.fs1.hubspotusercontent-na2.net/hubfs/244637957/member-fdic-equal-housing-lender1-WHT.png',
+      url: 'https://242109586.fs1.hubspotusercontent-na2.net/hubfs/242109586/member-fdic-equal-housing-lender1-WHT.png',
       keepTransparent: true
     });
 
@@ -919,6 +919,12 @@
       fontSize = 26; // $1,000,000 - $9,999,999 (9-10 chars)
     }
     priceEl.style.fontSize = fontSize + 'px';
+
+    // QR code linking to the property detail page
+    var qrEl = document.getElementById('flyer2-qr');
+    var propSlug = p.slug || (fullAddress + '-' + (p.city || '')).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    var propUrl = window.location.origin + '/properties-1/' + propSlug;
+    qrEl.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=0&data=' + encodeURIComponent(propUrl);
 
     // Thumbnail images
     var thumbIds = ['flyer2-thumb-1', 'flyer2-thumb-2', 'flyer2-thumb-3'];
