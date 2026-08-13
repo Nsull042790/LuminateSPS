@@ -4,6 +4,7 @@
       "type": "static",
       "optionalScopes": [],
       "requiredScopes": [
+        "oauth",
         "files",
         "hubdb",
         "crm.objects.contacts.write",
