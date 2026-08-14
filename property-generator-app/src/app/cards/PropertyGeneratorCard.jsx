@@ -39,22 +39,10 @@ const PropertyGenerator = ({ context, actions }) => {
       </Tile>
 
       <Button
-        onClick={() => actions.openIframeModal({
-          uri: generatorWithUser,
-          height: 800,
-          width: 1200,
-          title: 'Property Generator'
-        })}
+        onClick={() => actions.openExternalUrl(generatorWithUser)}
         variant="primary"
       >
         Open Property Generator
-      </Button>
-
-      <Button
-        onClick={() => actions.openExternalUrl(generatorWithUser)}
-        variant="secondary"
-      >
-        Open in New Tab
       </Button>
     </Flex>
   );
