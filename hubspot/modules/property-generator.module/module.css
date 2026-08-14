@@ -78,6 +78,7 @@ main,
 .pg-header h1 {
   margin: 0;
   font-size: 1.5em;
+  color: #ffffff; /* explicit - page theme h1 rules override inheritance */
 }
 
 .pg-header .version {
