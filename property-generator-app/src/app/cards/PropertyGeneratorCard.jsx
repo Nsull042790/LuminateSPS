@@ -6,7 +6,7 @@ hubspot.extend(({ context, actions }) => (
 ));
 
 const PropertyGenerator = ({ context, actions }) => {
-  const generatorUrl = 'https://242109586.hs-sites-na2.com/listing-generator';
+  const generatorUrl = 'https://242109586.hubspotpagebuilder.net/listing-generator';
 
   // Get user info from HubSpot context - try multiple possible field names
   const userEmail = context?.user?.email || '';

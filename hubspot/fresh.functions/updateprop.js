@@ -121,7 +121,8 @@ exports.main = async (context, sendResponse) => {
 
     // STEP 2: Update the row
     console.log('STEP 2: Updating row in HubDB draft...');
-    const updateResult = await updateRow(token, tableId, rowId, rowData);
+    const rowPath = existingRow.path || existingRow.values.slug || '';
+    const updateResult = await updateRow(token, tableId, rowId, rowData, rowPath);
     console.log('Row updated - ID:', updateResult.id);
 
     // STEP 3: Publish the table
@@ -204,10 +205,17 @@ function getRow(token, tableId, rowId) {
   });
 }
 
-function updateRow(token, tableId, rowId, data) {
+function updateRow(token, tableId, rowId, data, path) {
   return new Promise((resolve, reject) => {
-    // Don't include path - HubDB preserves the existing path for the same row
+    // Send root-level path/name (hs_path/hs_name) so dynamic page routing is
+    // kept - and repaired on older rows that were imported without them
     const requestBody = { values: data };
+    if (path) {
+      requestBody.path = path;
+    }
+    if (data.name) {
+      requestBody.name = data.name;
+    }
     const postBody = JSON.stringify(requestBody);
     console.log('Updating row', rowId, 'with', Object.keys(data).length, 'fields');
 

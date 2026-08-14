@@ -208,10 +208,14 @@ function sleep(ms) {
 
 function createRow(token, tableId, data, path) {
   return new Promise((resolve, reject) => {
-    // path goes at root level for HubDB dynamic pages, values contains the column data
+    // path and name go at root level for HubDB dynamic pages (hs_path/hs_name),
+    // values contains the column data
     const requestBody = { values: data };
     if (path) {
       requestBody.path = path;
+    }
+    if (data.name) {
+      requestBody.name = data.name;
     }
     const postBody = JSON.stringify(requestBody);
     console.log('Creating row with', Object.keys(data).length, 'fields, path:', path);
