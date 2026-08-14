@@ -2,7 +2,7 @@
   "runtime": "nodejs18.x",
   "version": "1.0",
   "environment": {
-    "HUBDB_TABLE_ID": "820635359"
+    "HUBDB_TABLE_ID": "2035234543"
   },
   "secrets": ["HUBSPOT_PRIVATE_APP_TOKEN"],
   "endpoints": {
