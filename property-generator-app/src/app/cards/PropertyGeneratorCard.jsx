@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, Text, Flex, Tile, hubspot } from '@hubspot/ui-extensions';
+import { Button, Text, Flex, Tile, hubspot } from '@hubspot/ui-extensions';
 
 hubspot.extend(({ context }) => (
   <PropertyGenerator context={context} />
@@ -38,9 +38,12 @@ const PropertyGenerator = ({ context }) => {
         </Flex>
       </Tile>
 
-      <Link href={generatorWithUser} variant="primary">
+      <Button
+        href={{ url: generatorWithUser, external: true }}
+        variant="primary"
+      >
         Open Property Generator
-      </Link>
+      </Button>
     </Flex>
   );
 };
