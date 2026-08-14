@@ -1,11 +1,11 @@
 import React from 'react';
-import { Button, Link, Text, Flex, Tile, hubspot } from '@hubspot/ui-extensions';
+import { Link, Text, Flex, Tile, hubspot } from '@hubspot/ui-extensions';
 
-hubspot.extend(({ context, actions }) => (
-  <PropertyGenerator context={context} actions={actions} />
+hubspot.extend(({ context }) => (
+  <PropertyGenerator context={context} />
 ));
 
-const PropertyGenerator = ({ context, actions }) => {
+const PropertyGenerator = ({ context }) => {
   const generatorUrl = 'https://242109586.hubspotpagebuilder.net/listing-generator';
 
   // Get user info from HubSpot context - try multiple possible field names
@@ -38,12 +38,9 @@ const PropertyGenerator = ({ context, actions }) => {
         </Flex>
       </Tile>
 
-      <Button
-        onClick={() => actions.openExternalUrl(generatorWithUser)}
-        variant="primary"
-      >
+      <Link href={generatorWithUser} variant="primary">
         Open Property Generator
-      </Button>
+      </Link>
     </Flex>
   );
 };
