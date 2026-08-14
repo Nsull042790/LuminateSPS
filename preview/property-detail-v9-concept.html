@@ -1,0 +1,543 @@
+<title>LumiListing Vision</title>
+<!-- ============================================================
+  LUMILISTING VISION — v9 concept for the generator's property template
+  Brand: Luminate Bank — Navy #0d173c · Sky #96daf8 · Gold #f5c86e
+         Orchid #d4a5c9 · Iris #9b8dc9 · Poppins / Josefin Sans
+  Every feature zone is annotated with the HubL binding it replaces.
+  Sample data: 1850 Benton Blvd, Savannah GA — $1,250,000
+============================================================ -->
+<style>
+  /* ---------- Token system (committed navy-night world) ---------- */
+  :root{
+    --ink:#070e28;          /* deepest ground */
+    --navy:#0d173c;         /* brand primary */
+    --navy-soft:#16224f;    /* raised navy surface */
+    --paper:#f4f6fb;        /* blue-biased light ground */
+    --paper-dim:#e6eaf4;
+    --sky:#96daf8;          /* interactive / data accent */
+    --gold:#f5c86e;         /* the "moment" accent — price, open house */
+    --orchid:#d4a5c9;
+    --iris:#9b8dc9;
+    --text-on-dark:#eef2fb;
+    --muted-on-dark:#9aa6c9;
+    --text-on-light:#101a3d;
+    --muted-on-light:#5a6484;
+    --display:'Poppins','Avenir Next',Montserrat,'Segoe UI',sans-serif;
+    --body:'Josefin Sans',Futura,'Century Gothic','Avenir Next',sans-serif;
+    --radius:22px;
+    --shadow:0 30px 80px -20px rgba(4,8,30,.55);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink);color:var(--text-on-dark);
+    font-family:var(--body);font-size:17px;line-height:1.65;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--gold);color:var(--navy)}
+  img{max-width:100%}
+  h1,h2,h3{font-family:var(--display);text-wrap:balance}
+  a{color:inherit}
+  button{font-family:inherit;cursor:pointer}
+
+  /* ---------- Scroll progress ---------- */
+  #progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:120;
+    background:linear-gradient(90deg,var(--sky),var(--iris),var(--gold));
+    box-shadow:0 0 12px rgba(150,218,248,.8)}
+
+  /* ---------- Nav ---------- */
+  nav{position:fixed;inset:0 0 auto 0;z-index:110;display:flex;align-items:center;
+    justify-content:space-between;padding:18px 34px;transition:.45s;
+    background:transparent}
+  nav.scrolled{background:rgba(7,14,40,.82);backdrop-filter:blur(14px);
+    border-bottom:1px solid rgba(150,218,248,.14);padding:12px 34px}
+  .brand{display:flex;align-items:center;gap:12px;font-family:var(--display);
+    font-weight:700;letter-spacing:.04em;font-size:1.02rem}
+  .brand svg{width:34px;height:34px}
+  .nav-cta{font-family:var(--display);font-weight:600;font-size:.86rem;
+    letter-spacing:.06em;color:var(--navy);background:var(--sky);
+    border:0;border-radius:999px;padding:11px 22px;position:relative;overflow:hidden}
+  .nav-cta:hover{background:var(--gold)}
+  .nav-addr{font-size:.8rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--muted-on-dark);opacity:0;transition:.4s}
+  nav.scrolled .nav-addr{opacity:1}
+
+  /* ---------- Photo placeholder chrome (concept only) ---------- */
+  .ph{position:relative;background:
+      linear-gradient(120deg,#152048 0%,#1d2a5c 45%,#152048 100%);
+    overflow:hidden;display:flex;align-items:flex-end}
+  .ph::before{content:"";position:absolute;inset:0;
+    background:linear-gradient(105deg,transparent 42%,rgba(150,218,248,.12) 50%,transparent 58%);
+    transform:translateX(-100%);animation:shimmer 3.2s infinite}
+  @keyframes shimmer{to{transform:translateX(100%)}}
+  .ph .tag{position:relative;margin:14px;font-size:.68rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--sky);background:rgba(7,14,40,.72);
+    border:1px dashed rgba(150,218,248,.45);padding:6px 10px;border-radius:6px}
+
+  /* ---------- Hero ---------- */
+  /* FEATURE: HERO — photo = {{ photos[0] }}, address = {{ row.address }} {{ row.address_2 }},
+     locality = {{ row.city }}, {{ row.state }} {{ row.zip }}, price = {{ row.price }}
+     (keep v8 dynamic price font-size logic), stats = row.bedrooms/bathrooms/sqft/year_built */
+  header{position:relative;min-height:100svh;display:grid;
+    grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);align-items:stretch}
+  .orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;pointer-events:none}
+  .orb.a{width:520px;height:520px;background:var(--iris);top:-140px;left:-120px;animation:drift 16s ease-in-out infinite alternate}
+  .orb.b{width:420px;height:420px;background:var(--orchid);bottom:-160px;left:32%;animation:drift 20s ease-in-out infinite alternate-reverse}
+  .orb.c{width:380px;height:380px;background:var(--sky);top:20%;right:-120px;opacity:.35;animation:drift 24s ease-in-out infinite alternate}
+  @keyframes drift{to{transform:translate(60px,40px) scale(1.12)}}
+  .hero-copy{position:relative;z-index:2;display:flex;flex-direction:column;
+    justify-content:center;padding:120px 4vw 90px 6vw;gap:26px}
+  .kicker{display:flex;align-items:center;gap:14px;font-size:.78rem;
+    letter-spacing:.34em;text-transform:uppercase;color:var(--sky)}
+  .kicker::before{content:"";width:44px;height:1px;background:var(--sky)}
+  .hero-copy h1{font-size:clamp(2.6rem,5.6vw,4.6rem);line-height:1.04;font-weight:700}
+  .hero-copy h1 .line{display:block;overflow:hidden}
+  .hero-copy h1 .line span{display:inline-block;transform:translateY(110%);
+    animation:rise .9s cubic-bezier(.2,.7,.2,1) forwards}
+  .hero-copy h1 .line:nth-child(2) span{animation-delay:.15s;color:var(--sky)}
+  @keyframes rise{to{transform:translateY(0)}}
+  .locality{font-size:1.05rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted-on-dark)}
+  .price-row{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}
+  .price{font-family:var(--display);font-weight:700;color:var(--gold);
+    font-size:clamp(2.2rem,4vw,3.4rem);font-variant-numeric:tabular-nums;
+    text-shadow:0 0 34px rgba(245,200,110,.35)}
+  .price-note{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted-on-dark)}
+  .stat-chips{display:flex;gap:12px;flex-wrap:wrap}
+  .chip{border:1px solid rgba(150,218,248,.3);border-radius:12px;padding:12px 18px;
+    background:rgba(13,23,60,.55);backdrop-filter:blur(6px);min-width:96px}
+  .chip b{display:block;font-family:var(--display);font-size:1.35rem;color:var(--sky);
+    font-variant-numeric:tabular-nums}
+  .chip small{font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted-on-dark)}
+  .hero-photo{clip-path:polygon(12% 0,100% 0,100% 100%,0 100%);min-height:60vh}
+  .scroll-cue{position:absolute;bottom:26px;left:6vw;display:flex;align-items:center;
+    gap:12px;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted-on-dark)}
+  .scroll-cue i{width:1px;height:44px;background:linear-gradient(var(--sky),transparent);
+    display:block;animation:cue 1.8s infinite}
+  @keyframes cue{50%{transform:scaleY(.4);transform-origin:top}}
+
+  /* ---------- Open house marquee ---------- */
+  /* FEATURE: OPEN HOUSE — {% if row.open_house_date %} banner; countdown from
+     row.open_house_date (ms epoch) + row.open_house_start/end */
+  .marquee{background:var(--gold);color:var(--navy);overflow:hidden;white-space:nowrap;
+    font-family:var(--display);font-weight:700;letter-spacing:.12em;font-size:.9rem;
+    padding:13px 0;position:relative}
+  .marquee .track{display:inline-block;animation:scrollx 22s linear infinite}
+  @keyframes scrollx{to{transform:translateX(-50%)}}
+  .marquee b{margin:0 26px}
+  .marquee .count{background:var(--navy);color:var(--gold);border-radius:6px;
+    padding:3px 10px;font-variant-numeric:tabular-nums}
+
+  /* ---------- Section scaffolding ---------- */
+  section{padding:110px 6vw;position:relative}
+  .eyebrow{font-size:.74rem;letter-spacing:.34em;text-transform:uppercase;
+    color:var(--iris);margin-bottom:14px}
+  .light .eyebrow{color:#7a6fb0}
+  h2{font-size:clamp(1.9rem,3.4vw,2.9rem);font-weight:700;margin-bottom:18px}
+  .light{background:var(--paper);color:var(--text-on-light)}
+  .light p{color:var(--muted-on-light)}
+  .reveal{opacity:0;transform:translateY(46px);transition:opacity .8s,transform .8s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  /* ---------- Gallery bento ---------- */
+  /* FEATURE: GALLERY — loop {{ photos }} into tiles; click opens lightbox (kept from v8) */
+  .bento{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:150px;gap:14px;margin-top:38px}
+  .bento .ph{border-radius:var(--radius);cursor:pointer;transition:transform .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s}
+  .bento .ph:hover{transform:translateY(-6px) scale(1.015);box-shadow:var(--shadow)}
+  .b1{grid-column:span 4;grid-row:span 2}.b2{grid-column:span 2;grid-row:span 1}
+  .b3{grid-column:span 2;grid-row:span 1}.b4{grid-column:span 2;grid-row:span 2}
+  .b5{grid-column:span 4;grid-row:span 1}
+
+  /* ---------- Story ---------- */
+  /* FEATURE: DESCRIPTION — {{ row.description }}; FEATURES — split row.features into chips */
+  .story{display:grid;grid-template-columns:1.2fr .8fr;gap:70px;align-items:start}
+  .story .lede{font-size:1.16rem;max-width:62ch}
+  .story .lede::first-letter{font-family:var(--display);font-weight:700;font-size:3.4em;
+    float:left;line-height:.82;margin:6px 12px 0 0;color:var(--navy)}
+  .feat-chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+  .feat-chips span{border:1px solid #c9d2ea;background:#fff;border-radius:999px;
+    padding:9px 16px;font-size:.82rem;letter-spacing:.04em;color:var(--text-on-light);
+    transition:.3s}
+  .feat-chips span:hover{border-color:var(--iris);background:var(--iris);color:#fff;transform:translateY(-2px)}
+
+  /* ---------- Neighborhood gauges ---------- */
+  /* FEATURE: NEIGHBORHOOD — {% if row.show_neighborhood %}; gauges from
+     row.walk_score / transit_score / bike_score; amenity tags from row.amenities */
+  .gauges{display:grid;grid-template-columns:repeat(3,minmax(180px,1fr));gap:30px;margin-top:46px}
+  .gauge{background:var(--navy-soft);border:1px solid rgba(150,218,248,.16);
+    border-radius:var(--radius);padding:34px 20px;text-align:center}
+  .gauge svg{width:130px;height:130px;transform:rotate(-90deg)}
+  .gauge .bgc{fill:none;stroke:rgba(150,218,248,.14);stroke-width:9}
+  .gauge .fgc{fill:none;stroke:var(--sky);stroke-width:9;stroke-linecap:round;
+    stroke-dasharray:339.3;stroke-dashoffset:339.3;transition:stroke-dashoffset 1.6s cubic-bezier(.2,.7,.2,1)}
+  .gauge.g2 .fgc{stroke:var(--orchid)}.gauge.g3 .fgc{stroke:var(--gold)}
+  .gauge b{display:block;font-family:var(--display);font-size:2rem;margin-top:-86px;
+    font-variant-numeric:tabular-nums}
+  .gauge small{display:block;margin-top:52px;font-size:.72rem;letter-spacing:.26em;
+    text-transform:uppercase;color:var(--muted-on-dark)}
+
+  /* ---------- Calculator ---------- */
+  /* FEATURE: MORTGAGE CALCULATOR — prefill price from {{ row.price }};
+     keep client-side math from v8 (calc-price/down/rate/term → monthly) */
+  .calc-wrap{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+  .calc-card{background:#fff;border-radius:var(--radius);padding:40px;box-shadow:0 24px 60px -30px rgba(13,23,60,.35)}
+  .calc-card label{display:flex;justify-content:space-between;font-size:.78rem;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--muted-on-light);margin:26px 0 10px}
+  .calc-card label output{font-variant-numeric:tabular-nums;color:var(--text-on-light);font-weight:600}
+  input[type=range]{width:100%;appearance:none;height:5px;border-radius:99px;
+    background:linear-gradient(90deg,var(--navy) var(--fill,50%),#dbe2f2 var(--fill,50%))}
+  input[type=range]::-webkit-slider-thumb{appearance:none;width:22px;height:22px;border-radius:50%;
+    background:var(--navy);border:5px solid var(--sky);box-shadow:0 2px 10px rgba(13,23,60,.4)}
+  .payment{background:linear-gradient(135deg,var(--navy),#1b2a63);border-radius:var(--radius);
+    color:#fff;text-align:center;padding:46px 30px}
+  .payment b{font-family:var(--display);font-size:clamp(2.6rem,4vw,3.6rem);color:var(--sky);
+    font-variant-numeric:tabular-nums;display:block}
+  .payment small{letter-spacing:.24em;text-transform:uppercase;font-size:.7rem;color:var(--muted-on-dark)}
+  .payment .cta-inline{margin-top:26px;display:inline-block;background:var(--gold);color:var(--navy);
+    font-family:var(--display);font-weight:600;font-size:.85rem;letter-spacing:.06em;
+    border-radius:999px;padding:13px 26px;text-decoration:none}
+
+  /* ---------- CTA split (v8 feature, elevated) ---------- */
+  /* FEATURE: CTAs — realtor: tel/mailto row.realtor_phone/email · LO: tel row.lo_phone,
+     mailto row.lo_email "Get Pre-Approved" (prefilled subject/body as in v8) */
+  .cta-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:44px}
+  .cta-card{border-radius:var(--radius);padding:44px;position:relative;overflow:hidden;
+    background:var(--navy-soft);border:1px solid rgba(150,218,248,.18)}
+  .cta-card.lo{background:linear-gradient(140deg,#2a2452,#0d173c);border-color:rgba(245,200,110,.35)}
+  .cta-card h3{font-size:1.5rem;margin-bottom:8px}
+  .cta-card p{color:var(--muted-on-dark);max-width:46ch}
+  .cta-btns{display:flex;gap:14px;margin-top:26px;flex-wrap:wrap}
+  .btn{font-family:var(--display);font-weight:600;font-size:.9rem;letter-spacing:.04em;
+    border-radius:14px;padding:15px 26px;text-decoration:none;border:0;
+    position:relative;overflow:hidden;transition:transform .25s}
+  .btn:hover{transform:translateY(-3px)}
+  .btn::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.35) 50%,transparent 60%);transform:translateX(-120%)}
+  .btn:hover::after{animation:shine .7s forwards}
+  @keyframes shine{to{transform:translateX(120%)}}
+  .btn.call{background:var(--sky);color:var(--navy)}
+  .btn.mail{background:transparent;color:var(--sky);border:1px solid var(--sky)}
+  .btn.gold{background:var(--gold);color:var(--navy)}
+  .btn.gold-line{background:transparent;color:var(--gold);border:1px solid var(--gold)}
+
+  /* ---------- Contact cards ---------- */
+  /* FEATURE: CONTACTS — realtor_photo/name/title/company/phone/email/website/license
+     + lo_photo/name/title/company/phone/email/website/nmls */
+  .people{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:44px}
+  .person{display:flex;gap:24px;background:#fff;border-radius:var(--radius);padding:30px;
+    box-shadow:0 20px 50px -30px rgba(13,23,60,.35);color:var(--text-on-light)}
+  .person .ph{width:110px;height:130px;border-radius:16px;flex-shrink:0}
+  .person .ph .tag{margin:8px;font-size:.5rem;padding:4px 6px}
+  .person h3{font-size:1.2rem;color:var(--navy)}
+  .person .role{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--iris);margin:2px 0 10px}
+  .person ul{list-style:none;font-size:.92rem;color:var(--muted-on-light);display:grid;gap:4px}
+  .person .lic{font-size:.72rem;color:#98a1bd;margin-top:8px}
+
+  /* ---------- Share dock ---------- */
+  /* FEATURE: SHARE + FLYER — FB/X/LinkedIn/Email/SMS/Copy (v8 share-btns) and
+     Download Flyer triggers jsPDF flyer w/ QR (hidden #flyer-template-2 stays as-is) */
+  .dock{position:fixed;right:22px;top:50%;transform:translateY(-50%) translateX(90px);
+    z-index:100;display:flex;flex-direction:column;gap:10px;transition:transform .5s}
+  .dock.show{transform:translateY(-50%)}
+  .dock button{width:46px;height:46px;border-radius:14px;border:1px solid rgba(150,218,248,.25);
+    background:rgba(13,23,60,.8);backdrop-filter:blur(10px);color:var(--sky);
+    display:grid;place-items:center;transition:.25s}
+  .dock button:hover{background:var(--sky);color:var(--navy);transform:translateX(-4px)}
+  .dock button.fly{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+  .dock svg{width:19px;height:19px;fill:currentColor}
+
+  /* ---------- Lightbox ---------- */
+  .lightbox{position:fixed;inset:0;background:rgba(4,8,26,.94);z-index:130;display:none;
+    align-items:center;justify-content:center;flex-direction:column;gap:20px}
+  .lightbox.open{display:flex}
+  .lightbox .ph{width:min(82vw,1000px);height:min(70vh,640px);border-radius:var(--radius)}
+  .lightbox .x{position:absolute;top:26px;right:34px;font-size:2rem;background:none;
+    border:0;color:#fff}
+
+  /* ---------- Footer ---------- */
+  footer{background:var(--ink);padding:70px 6vw 40px;border-top:1px solid rgba(150,218,248,.12)}
+  footer .cols{display:flex;justify-content:space-between;gap:40px;align-items:center;flex-wrap:wrap}
+  footer .fine{font-size:.62rem;line-height:1.7;color:#6b7699;max-width:900px;margin-top:34px}
+  .badge-ph{border:1px dashed rgba(150,218,248,.4);border-radius:8px;padding:10px 16px;
+    font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sky)}
+
+  /* ---------- Responsive ---------- */
+  @media(max-width:960px){
+    header{grid-template-columns:1fr}
+    .hero-photo{clip-path:polygon(0 12%,100% 0,100% 100%,0 100%);min-height:44vh;order:2}
+    .story,.calc-wrap,.cta-grid,.people{grid-template-columns:1fr}
+    .gauges{grid-template-columns:1fr}
+    .bento{grid-template-columns:repeat(2,1fr)}
+    .b1,.b2,.b3,.b4,.b5{grid-column:span 2;grid-row:span 1}
+    .dock{display:none}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+    .reveal{opacity:1;transform:none}
+  }
+</style>
+
+<div id="progress"></div>
+
+<nav id="nav">
+  <div class="brand">
+    <!-- Luminate dotted-sphere mark (placeholder — swap for hosted SVG/PNG) -->
+    <svg viewBox="0 0 40 40" aria-hidden="true">
+      <g fill="#96daf8"><circle cx="20" cy="8" r="2.4"/><circle cx="29" cy="11" r="2.1"/>
+      <circle cx="33" cy="20" r="2.4" fill="#f5c86e"/><circle cx="29" cy="29" r="2.1" fill="#d4a5c9"/>
+      <circle cx="20" cy="32" r="2.4" fill="#9b8dc9"/><circle cx="11" cy="29" r="2.1"/>
+      <circle cx="7" cy="20" r="2.4" fill="#d4a5c9"/><circle cx="11" cy="11" r="2.1" fill="#f5c86e"/>
+      <circle cx="20" cy="20" r="3" /></g>
+    </svg>
+    LUMINATE&nbsp;BANK
+  </div>
+  <div class="nav-addr">1850 Benton Blvd · Savannah GA</div>
+  <button class="nav-cta">Get Pre-Approved</button>
+</nav>
+
+<header>
+  <div class="orb a"></div><div class="orb b"></div><div class="orb c"></div>
+  <div class="hero-copy">
+    <div class="kicker">Exclusive Listing · MLS #SAV-90211</div>
+    <h1>
+      <span class="line"><span>1850 Benton</span></span>
+      <span class="line"><span>Boulevard</span></span>
+    </h1>
+    <div class="locality">Savannah · Georgia · 31407</div>
+    <div class="price-row">
+      <div class="price" id="price" data-value="1250000">$0</div>
+      <div class="price-note">List price</div>
+    </div>
+    <div class="stat-chips">
+      <div class="chip"><b data-count="4">0</b><small>Bedrooms</small></div>
+      <div class="chip"><b data-count="3.5" data-dec="1">0</b><small>Baths</small></div>
+      <div class="chip"><b data-count="3250" data-comma="1">0</b><small>Sq Ft</small></div>
+      <div class="chip"><b data-count="2021">0</b><small>Built</small></div>
+    </div>
+  </div>
+  <div class="ph hero-photo"><span class="tag">Hero photo — {{ photos[0] }}</span></div>
+  <div class="scroll-cue"><i></i> Discover the residence</div>
+</header>
+
+<div class="marquee" aria-label="Open house">
+  <div class="track" id="mtrack">
+    <b>OPEN HOUSE</b> SATURDAY AUG 22 <b>·</b> 1:00 – 3:00 PM <b>·</b>
+    <span class="count" id="countdown">—</span> <b>·</b> PRIVATE TOURS BY APPOINTMENT <b>·</b>
+    <b>OPEN HOUSE</b> SATURDAY AUG 22 <b>·</b> 1:00 – 3:00 PM <b>·</b>
+    <span class="count">—</span> <b>·</b> PRIVATE TOURS BY APPOINTMENT <b>·</b>
+  </div>
+</div>
+
+<section class="light">
+  <div class="reveal">
+    <div class="eyebrow">The Residence</div>
+    <h2>Every angle, beautifully captured</h2>
+  </div>
+  <div class="bento reveal">
+    <div class="ph b1" onclick="openLb()"><span class="tag">photos[0] — grand living</span></div>
+    <div class="ph b2" onclick="openLb()"><span class="tag">photos[1] — kitchen</span></div>
+    <div class="ph b3" onclick="openLb()"><span class="tag">photos[2] — primary suite</span></div>
+    <div class="ph b4" onclick="openLb()"><span class="tag">photos[3] — pool &amp; lanai</span></div>
+    <div class="ph b5" onclick="openLb()"><span class="tag">photos[4] — twilight exterior</span></div>
+  </div>
+</section>
+
+<section class="light" style="padding-top:0">
+  <div class="story">
+    <div class="reveal">
+      <div class="eyebrow">The Story</div>
+      <h2 style="color:var(--navy)">A modern lowcountry estate</h2>
+      <p class="lede">Set behind a canopy of century oaks, 1850 Benton Boulevard pairs
+      classic Savannah proportion with a light-filled modern plan. Ten-foot ceilings run the
+      full main level, a chef's kitchen anchors the great room, and pocketing glass walls
+      open the living space to a resort pool and summer kitchen. The primary wing offers a
+      private terrace, spa bath, and boutique dressing room.
+      <!-- HubL: {{ row.description }} --></p>
+    </div>
+    <div class="reveal">
+      <div class="eyebrow">Signature Features</div>
+      <div class="feat-chips">
+        <!-- HubL: split row.features -->
+        <span>Chef's kitchen</span><span>Pocketing glass walls</span><span>Heated saltwater pool</span>
+        <span>Summer kitchen</span><span>Primary terrace</span><span>3-car garage</span>
+        <span>Whole-home generator</span><span>Smart lighting</span><span>EV charging</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="reveal">
+    <div class="eyebrow">The Neighborhood</div>
+    <h2>Life within walking distance</h2>
+    <p style="color:var(--muted-on-dark);max-width:60ch">Scores draw themselves as you arrive.
+    <!-- HubL: wrap section in {% if row.show_neighborhood %} --></p>
+  </div>
+  <div class="gauges reveal">
+    <div class="gauge g1"><svg viewBox="0 0 120 120"><circle class="bgc" cx="60" cy="60" r="54"/><circle class="fgc" data-score="88" cx="60" cy="60" r="54"/></svg><b data-count="88">0</b><small>Walk Score</small></div>
+    <div class="gauge g2"><svg viewBox="0 0 120 120"><circle class="bgc" cx="60" cy="60" r="54"/><circle class="fgc" data-score="64" cx="60" cy="60" r="54"/></svg><b data-count="64">0</b><small>Transit Score</small></div>
+    <div class="gauge g3"><svg viewBox="0 0 120 120"><circle class="bgc" cx="60" cy="60" r="54"/><circle class="fgc" data-score="92" cx="60" cy="60" r="54"/></svg><b data-count="92">0</b><small>Bike Score</small></div>
+  </div>
+</section>
+
+<section class="light">
+  <div class="calc-wrap">
+    <div class="reveal">
+      <div class="eyebrow">The Numbers</div>
+      <h2 style="color:var(--navy)">See yourself at home here</h2>
+      <div class="calc-card">
+        <label>Home price <output id="o-price">$1,250,000</output></label>
+        <input type="range" id="r-price" min="200000" max="3000000" step="10000" value="1250000">
+        <label>Down payment <output id="o-down">20%</output></label>
+        <input type="range" id="r-down" min="3" max="50" step="1" value="20">
+        <label>Interest rate <output id="o-rate">6.5%</output></label>
+        <input type="range" id="r-rate" min="3" max="10" step="0.125" value="6.5">
+        <label>Loan term <output id="o-term">30 yr</output></label>
+        <input type="range" id="r-term" min="10" max="30" step="5" value="30">
+      </div>
+    </div>
+    <div class="payment reveal">
+      <small>Estimated monthly payment</small>
+      <b id="pay">$0</b>
+      <small>Principal &amp; interest · illustrative only</small><br>
+      <a class="cta-inline" href="#cta">Get an exact quote →</a>
+    </div>
+  </div>
+</section>
+
+<section id="cta">
+  <div class="reveal">
+    <div class="eyebrow">Take The Next Step</div>
+    <h2>Two calls. One new address.</h2>
+  </div>
+  <div class="cta-grid reveal">
+    <div class="cta-card">
+      <h3>Tour this home</h3>
+      <p>Reach Nicholas Sullivan of Piff Media Realty for a private showing or same-day video walk-through.</p>
+      <div class="cta-btns">
+        <a class="btn call" href="#">Call Realtor</a>
+        <a class="btn mail" href="#">Email Realtor</a>
+      </div>
+    </div>
+    <div class="cta-card lo">
+      <h3>Finance it with Luminate</h3>
+      <p>Talk to your Luminate Bank loan officer about rate options and a same-week pre-approval letter.</p>
+      <div class="cta-btns">
+        <a class="btn gold" href="#">Get Pre-Approved</a>
+        <a class="btn gold-line" href="#">Call Loan Officer</a>
+      </div>
+    </div>
+  </div>
+  <div class="people reveal">
+    <div class="person">
+      <div class="ph"><span class="tag">realtor_photo</span></div>
+      <div><h3>Nicholas Sullivan</h3><div class="role">Licensed Realtor · Piff Media</div>
+        <ul><li>(912) 555-0184</li><li>nick@piffmedia.com</li><li>piffmedia.com</li></ul>
+        <div class="lic">License # GA-402790</div></div>
+    </div>
+    <div class="person">
+      <div class="ph"><span class="tag">lo_photo</span></div>
+      <div><h3>Jordan Wells</h3><div class="role">Loan Officer · Luminate Bank</div>
+        <ul><li>(952) 555-0142</li><li>jwells@luminate.bank</li><li>luminate.bank</li></ul>
+        <div class="lic">NMLS # 1281698</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="dock" id="dock" aria-label="Share">
+  <button title="Share on Facebook"><svg viewBox="0 0 24 24"><path d="M13 22v-8h3l.5-4H13V7.5c0-1.1.3-1.9 2-1.9h1.6V2.2C16.3 2.1 15.1 2 13.8 2 11 2 9 3.7 9 6.9V10H6v4h3v8h4z"/></svg></button>
+  <button title="Share on X"><svg viewBox="0 0 24 24"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.3l-4.9-6.4L6.2 22H3l7.3-8.4L1 2h6.5l4.4 5.9L18.9 2zm-1.1 18h1.7L6.6 3.9H4.8L17.8 20z"/></svg></button>
+  <button title="Email this listing"><svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg></button>
+  <button title="Copy link" onclick="copyLink(this)"><svg viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg></button>
+  <button class="fly" title="Download flyer (QR + dynamic price)"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></button>
+</div>
+
+<div class="lightbox" id="lb" onclick="this.classList.remove('open')">
+  <button class="x">×</button>
+  <div class="ph"><span class="tag">Lightbox — full-size photo w/ prev / next (kept from v8)</span></div>
+</div>
+
+<footer>
+  <div class="cols">
+    <div class="brand" style="font-size:.9rem">LUMINATE&nbsp;BANK</div>
+    <div style="display:flex;gap:14px">
+      <div class="badge-ph">Member FDIC badge</div>
+      <div class="badge-ph">Equal Housing Lender badge</div>
+    </div>
+  </div>
+  <p class="fine">Luminate Bank NMLS 1281698 · Bank Headquarters 2523 S. Wayzata Blvd., Suite 100
+  Minneapolis, MN 55405 (952) 939-7200. This is not an offer to enter into an agreement. Information
+  provided outlines minimum down payment requirements as allowed by specific loan program and product
+  guidelines; rates and programs are subject to change without notice and may not be available in all
+  states. All loans subject to credit and property approval. Luminate Bank is not affiliated with any
+  government agency. All rights reserved. · Payment estimates are illustrative and exclude taxes and insurance.</p>
+</footer>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* progress + nav + dock */
+  addEventListener('scroll', () => {
+    const t = document.documentElement;
+    $('#progress').style.width = (t.scrollTop / (t.scrollHeight - innerHeight) * 100) + '%';
+    $('#nav').classList.toggle('scrolled', t.scrollTop > 60);
+    $('#dock').classList.toggle('show', t.scrollTop > innerHeight * .7);
+  }, {passive:true});
+
+  /* reveals */
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('in');
+    e.target.querySelectorAll('.fgc').forEach(c => {
+      c.style.strokeDashoffset = 339.3 * (1 - c.dataset.score / 100);
+    });
+    e.target.querySelectorAll('[data-count]').forEach(el => countUp(el));
+    io.unobserve(e.target);
+  }), {threshold:.25});
+  $$('.reveal').forEach(el => io.observe(el));
+
+  /* count-up (also drives hero price + chips) */
+  function countUp(el){
+    const end = parseFloat(el.dataset.count ?? el.dataset.value), dec = +(el.dataset.dec||0);
+    if (reduced) { el.textContent = fmt(end, el, dec); return; }
+    const t0 = performance.now(), D = 1400;
+    (function tick(t){
+      const p = Math.min((t - t0) / D, 1), e = 1 - Math.pow(1 - p, 4);
+      el.textContent = fmt(end * e, el, dec);
+      if (p < 1) requestAnimationFrame(tick);
+    })(t0);
+  }
+  const fmt = (v, el, dec) => el.id === 'price'
+    ? '$' + Math.round(v).toLocaleString()
+    : (el.dataset.comma ? Math.round(v).toLocaleString() : v.toFixed(dec));
+  countUp($('#price'));
+  $$('.stat-chips [data-count]').forEach(countUp);
+
+  /* open-house countdown — prod: row.open_house_date + open_house_start */
+  const oh = new Date(); oh.setDate(oh.getDate() + ((6 - oh.getDay() + 7) % 7 || 7)); oh.setHours(13,0,0,0);
+  setInterval(() => {
+    const ms = oh - Date.now();
+    if (ms < 0) return;
+    const d = ms/864e5|0, h = ms%864e5/36e5|0, m = ms%36e5/6e4|0;
+    $('#countdown').textContent = `${d}d ${h}h ${m}m`;
+  }, 1000);
+
+  /* calculator */
+  const R = id => $('#r-'+id), O = id => $('#o-'+id);
+  function calc(){
+    const p = +R('price').value, d = +R('down').value, r = +R('rate').value/100/12, n = +R('term').value*12;
+    O('price').textContent = '$' + p.toLocaleString();
+    O('down').textContent = d + '%'; O('rate').textContent = R('rate').value + '%';
+    O('term').textContent = R('term').value + ' yr';
+    const P = p * (1 - d/100), m = r ? P * r / (1 - Math.pow(1 + r, -n)) : P/n;
+    $('#pay').textContent = '$' + Math.round(m).toLocaleString();
+    $$('.calc-card input').forEach(i => i.style.setProperty('--fill',
+      ((i.value - i.min) / (i.max - i.min) * 100) + '%'));
+  }
+  $$('.calc-card input').forEach(i => i.addEventListener('input', calc)); calc();
+
+  /* lightbox + copy */
+  window.openLb = () => $('#lb').classList.add('open');
+  window.copyLink = b => { navigator.clipboard?.writeText(location.href); b.style.background='var(--gold)'; };
+})();
+</script>
