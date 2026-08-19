@@ -17,6 +17,7 @@ Create this table in HubSpot: **Marketing → Files and Templates → HubDB → 
 | `name` | Name | Text | Yes | Built-in HubDB column |
 | `slug` | Slug | Text | Yes | For dynamic page URL (e.g., "123-main-st-austin") |
 | `address` | Address | Text | Yes | Street address |
+| `address_2` | Address 2 | Text | No | Apt / Suite / Unit |
 | `city` | City | Text | Yes | |
 | `state` | State | Text | Yes | |
 | `zip` | ZIP Code | Text | Yes | |
@@ -26,6 +27,9 @@ Create this table in HubSpot: **Marketing → Files and Templates → HubDB → 
 | `sqft` | Square Feet | Number | No | |
 | `year_built` | Year Built | Number | No | |
 | `mls_number` | MLS Number | Text | No | |
+| `open_house_date` | Open House Date | Date | No | Written as ms epoch timestamp |
+| `open_house_start` | Open House Start | Text | No | e.g. "1:00 PM" |
+| `open_house_end` | Open House End | Text | No | e.g. "3:00 PM" |
 | `description` | Description | Rich Text | No | Property description |
 | `features` | Features | Text | No | Comma-separated list |
 | `photos` | Photos | Text | No | JSON array of photo URLs |
@@ -36,6 +40,8 @@ Create this table in HubSpot: **Marketing → Files and Templates → HubDB → 
 | `realtor_email` | Realtor Email | Text | No | |
 | `realtor_license` | Realtor License | Text | No | |
 | `realtor_photo` | Realtor Photo | Text | No | Photo URL |
+| `realtor_website` | Realtor Website | Text | No | |
+| `realtor_logo` | Realtor Logo | Text | No | Company logo URL |
 | `lo_name` | Loan Officer Name | Text | Yes | |
 | `lo_title` | Loan Officer Title | Text | No | |
 | `lo_company` | Loan Officer Company | Text | No | |
@@ -43,6 +49,7 @@ Create this table in HubSpot: **Marketing → Files and Templates → HubDB → 
 | `lo_email` | Loan Officer Email | Text | No | |
 | `lo_nmls` | Loan Officer NMLS | Text | No | |
 | `lo_photo` | Loan Officer Photo | Text | No | Photo URL |
+| `lo_website` | Loan Officer Website | Text | No | |
 | `show_neighborhood` | Show Neighborhood | Boolean | No | Default: false |
 | `walk_score` | Walk Score | Number | No | |
 | `transit_score` | Transit Score | Number | No | |
