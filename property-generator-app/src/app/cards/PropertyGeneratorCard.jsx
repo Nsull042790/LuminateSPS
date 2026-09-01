@@ -27,7 +27,7 @@ const PropertyGenerator = ({ context, actions }) => {
       <Tile>
         <Flex direction="column" gap="small">
           <Text format={{ fontWeight: 'bold' }}>
-            Property Site Generator v8.2
+            Property Site Generator v8.3
           </Text>
           <Text>
             Create property listing pages with photo uploads, drag-and-drop reordering, and contact profiles.

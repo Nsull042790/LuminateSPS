@@ -1,4 +1,4 @@
-// Property Generator Module JavaScript v8.2 - HubDB Version
+// Property Generator Module JavaScript v8.3 - HubDB Version
 // Uses HubDB for data storage with dynamic pages
 // Fixed: Proper aspect ratio for all images, embedded Luminate logo for compliance
 (function() {
@@ -53,7 +53,7 @@
 
   // Initialize when DOM is ready
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Property Generator v8.2 (HubDB) initialized');
+    console.log('Property Generator v8.3 (HubDB) initialized');
 
     // Check for URL query parameters first (from HubSpot CRM integration)
     var urlParams = new URLSearchParams(window.location.search);
@@ -628,6 +628,7 @@
           document.getElementById('success-url').textContent = propertyUrl;
           document.getElementById('success-url').href = propertyUrl;
           document.getElementById('success-modal').classList.add('active');
+          startShareReadiness(propertyUrl);
           loadExistingProperties();
           showToast('Property updated successfully!', 'success');
 
@@ -669,6 +670,7 @@
           document.getElementById('success-url').textContent = propertyUrl;
           document.getElementById('success-url').href = propertyUrl;
           document.getElementById('success-modal').classList.add('active');
+          startShareReadiness(propertyUrl);
           loadExistingProperties();
 
           // Check verification status and show appropriate message
@@ -876,6 +878,47 @@
     }
 
     return { width: boxWidth, height: boxHeight, sourceWidth: width, sourceHeight: height, offsetX: offsetX, offsetY: offsetY };
+  }
+
+  // Poll the freshly published page until the CDN serves it, so agents
+  // don't share a link that Facebook would scrape (and cache) as a 404
+  function startShareReadiness(path) {
+    var anchor = document.getElementById('success-url');
+    if (!anchor || !anchor.parentNode) return;
+    var status = document.getElementById('share-status');
+    if (!status) {
+      status = document.createElement('div');
+      status.id = 'share-status';
+      status.style.cssText = 'margin-top:10px;padding:10px 14px;border-radius:8px;font-size:14px;font-weight:600;line-height:1.4;';
+      anchor.parentNode.appendChild(status);
+    }
+    status.style.background = '#fff6dd';
+    status.style.color = '#8a6d1a';
+    status.textContent = '⏳ Publishing to the web — hold off on sharing for a moment…';
+
+    var url = window.location.origin + path;
+    var started = Date.now();
+    var TIMEOUT_MS = 180000;
+    var timer = setInterval(function() {
+      // cache-busting query gets a fresh answer past any cached 404
+      fetch(url + '?warm=' + Date.now(), { method: 'GET', cache: 'no-store' })
+        .then(function(res) {
+          if (res.ok) {
+            clearInterval(timer);
+            status.style.background = '#e7f7ec';
+            status.style.color = '#1c7c3c';
+            status.textContent = '✓ Live and ready to share — link previews will work';
+          } else if (Date.now() - started > TIMEOUT_MS) {
+            clearInterval(timer);
+            status.style.background = '#fdecec';
+            status.style.color = '#a33636';
+            status.textContent = 'Still publishing — give it a minute before sharing this link';
+          }
+        })
+        .catch(function() {
+          if (Date.now() - started > TIMEOUT_MS) clearInterval(timer);
+        });
+    }, 6000);
   }
 
   // Format phone number as (xxx) xxx-xxxx

@@ -3,7 +3,7 @@
   label: Property Detail Page
   screenshotPath: ../images/template-preview.png
   isAvailableForNewContent: true
-  version: 8.2
+  version: 8.3
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -36,15 +36,16 @@
   <meta property="og:url" content="{{ request.full_url }}">
   <meta property="og:site_name" content="Luminate Bank Properties">
   <meta property="og:title" content="{{ row.address }}{% if row.address_2 %} {{ row.address_2 }}{% endif %}, {{ row.city }}, {{ row.state }} - ${{ row.price|format_number }}">
-  <meta property="og:description" content="{{ row.bedrooms }} bed, {{ row.bathrooms }} bath home in {{ row.city }}">
+  <meta property="og:description" content="{{ row.bedrooms }} bed &middot; {{ row.bathrooms }} bath &middot; {{ row.sqft|format_number }} sq ft in {{ row.city }}, {{ row.state }}{% if row.open_house_date %} &mdash; Open House {{ row.open_house_date|format_datetime('EEE M/d') }}{% if row.open_house_start %} {{ row.open_house_start }}&ndash;{{ row.open_house_end }}{% endif %}{% endif %}. Photos, full details &amp; payment calculator.">
   <meta property="og:image" content="{{ hero_image }}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="{{ row.address }}, {{ row.city }} {{ row.state }} - exterior photo">
 
   <!-- Twitter Card Tags -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{ row.address }}{% if row.address_2 %} {{ row.address_2 }}{% endif %}, {{ row.city }}, {{ row.state }} - ${{ row.price|format_number }}">
-  <meta name="twitter:description" content="{{ row.bedrooms }} bed, {{ row.bathrooms }} bath home in {{ row.city }}">
+  <meta name="twitter:description" content="{{ row.bedrooms }} bed &middot; {{ row.bathrooms }} bath &middot; {{ row.sqft|format_number }} sq ft in {{ row.city }}, {{ row.state }}{% if row.open_house_date %} &mdash; Open House {{ row.open_house_date|format_datetime('EEE M/d') }}{% endif %}. Photos, full details &amp; payment calculator.">
   <meta name="twitter:image" content="{{ hero_image }}">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1097,7 +1098,7 @@
         'Property: ' + propertyAddress + '\n' +
         'Page: ' + pageUrl + '\n' +
         'Browser: ' + browser + '\n' +
-        'Version: v8.2\n' +
+        'Version: v8.3\n' +
         'Timestamp: ' + new Date().toISOString()
       );
       window.location.href = 'mailto:nicholas.sullivan@luminate.bank?subject=' + subject + '&body=' + body;
